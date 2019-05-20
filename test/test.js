@@ -1,6 +1,6 @@
 const {
   ClientService,
-} = require('../client_service');
+} = require('..');
 const {
   IllegalArgumentError,
 } = require('../illegal_argument_error');
