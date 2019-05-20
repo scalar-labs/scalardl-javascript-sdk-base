@@ -1,5 +1,5 @@
 const {
-  ClientService,
+  ClientServiceBase,
 } = require('..');
 const {
   IllegalArgumentError,
@@ -18,7 +18,7 @@ describe('The constructor', () => {
         'scalar.ledger.client.cert_holder_id': 'hold',
       };
       assert.throws(() => {
-        new ClientService(ledgerClient, protobuf, clientProperties);
+        new ClientServiceBase(ledgerClient, protobuf, clientProperties);
       }, IllegalArgumentError, 'private_key_pem');
     });
     it('when the certificate is missing', () => {
@@ -28,7 +28,7 @@ describe('The constructor', () => {
         'scalar.ledger.client.cert_holder_id': 'hold',
       };
       assert.throws(() => {
-        new ClientService(ledgerClient, protobuf, clientProperties);
+        new ClientServiceBase(ledgerClient, protobuf, clientProperties);
       }, IllegalArgumentError, 'cert_pem');
     });
     it('when holder id is missing', () => {
@@ -38,7 +38,7 @@ describe('The constructor', () => {
         // 'scalar.ledger.client.cert_holder_id': 'hold',
       };
       assert.throws(() => {
-        new ClientService(ledgerClient, protobuf, clientProperties);
+        new ClientServiceBase(ledgerClient, protobuf, clientProperties);
       }, IllegalArgumentError, 'cert_holder_id');
     });
   });
@@ -52,7 +52,8 @@ async () => {
     'scalar.ledger.client.cert_pem': 'cert',
     'scalar.ledger.client.cert_holder_id': 'hold',
   };
-  const service = new ClientService(ledgerClient, protobuf, clientProperties);
+  const service = new ClientServiceBase(
+      ledgerClient, protobuf, clientProperties);
   service.client = 'toto';
   try {
     await service.registerContract('contract1', 'foo', 'wrongType');

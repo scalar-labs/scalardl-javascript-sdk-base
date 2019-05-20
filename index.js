@@ -17,7 +17,7 @@ const {SignatureSigner} = require('./signer');
  * contracts.
  * @class
  */
-class ClientService {
+class ClientServiceBase {
   /**
    * @param {LedgerClient} ledgerClient LedgerClient object to inject
    * @param {Protobuf} protobuf protobuf object to inject
@@ -262,6 +262,6 @@ class ClientService {
 }
 
 module.exports = {
-  ClientService,
+  ClientServiceBase,
   StatusCode,
 };
