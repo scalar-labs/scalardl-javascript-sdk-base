@@ -3,7 +3,7 @@
     "jsrsasign": "^8.0.12"
   },
   "name": "@scalar-labs/scalardl-javascript-sdk-base",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "This package is the base of Scalar DL JavaScript SDK. You probably don't really need to use this package directly. Check @scalar-labs/scalardl-web-client-sdk.",
   "author": "Scalar, Inc.",
   "license": "AGPL-3.0-or-later",
