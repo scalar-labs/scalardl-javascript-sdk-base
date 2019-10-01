@@ -90,24 +90,18 @@ class ClientServiceBase {
    * @return {Promise<ClientServiceResponse>}
    */
   async registerCertificate() {
-    const request = new CertificateRegistrationRequestBuilder(
-        new this.protobuf.CertificateRegistrationRequest()
-    ).withCertHolderId(this.certHolderId)
-        .withCertVersion(this.certVersion)
-        .withCertPem(this.certPem)
-        .build();
+    // TODO re-implement later
+    // const request = new CertificateRegistrationRequestBuilder(
+    //     new this.protobuf.CertificateRegistrationRequest()
+    // ).withCertHolderId(this.certHolderId)
+    //     .withCertVersion(this.certVersion)
+    //     .withCertPem(this.certPem)
+    //     .build();
     return this.sendRequest('registerCert', () =>
-      new Promise((resolve, reject) => {
-        this.ledgerClient.registerCert(request,
-            this.metadata, (err, response) => {
-              if (err) {
-                reject(err);
-              } else {
-                resolve(response);
-              }
-            });
-      }
-      ));
+      new Promise((_, reject) => {
+        reject(new Error('This method will be reimplemented later'));
+      })
+    );
   }
 
   /**
