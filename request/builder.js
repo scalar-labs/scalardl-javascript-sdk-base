@@ -417,6 +417,16 @@ class ContractExecutionRequestBuilder {
   }
 
   /**
+   * Sets the function argument
+   * @param {string} argument
+   * @return {ContractExecutionRequestBuilder}
+   */
+  withFunctionArgument(argument) {
+    this.functionArgument = argument;
+    return this;
+  }
+
+  /**
    * Builds the ContractExecutionRequest
    * @return {ContractExecutionRequest}
    */
@@ -426,6 +436,7 @@ class ContractExecutionRequestBuilder {
     request.setContractArgument(this.contractArgument);
     request.setCertHolderId(this.certHolderId);
     request.setCertVersion(this.certVersion);
+    request.setFunctionArgument(this.functionArgument);
 
     const contractIdEncoded = new TextEncoder('utf-8').encode(this.contractId);
     const contractArgument = new TextEncoder('utf-8')

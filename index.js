@@ -198,16 +198,19 @@ class ClientServiceBase {
   /**
    * @param {number} contractId
    * @param {Object} argument
+   * @param {Object} [functionArgument=null]
    * @return {Promise<ClientServiceResponse|void|*>}
    */
-  async executeContract(contractId, argument) {
+  async executeContract(contractId, argument, functionArgument = null) {
     argument['nonce'] = new Date().getTime().toString();
     const argumentJson = JSON.stringify(argument);
+    const functionArgumentJson = JSON.stringify(functionArgument);
 
     const request = new ContractExecutionRequestBuilder(
         new this.protobuf.ContractExecutionRequest(), this.signer)
         .withContractId(contractId)
         .withContractArgument(argumentJson)
+        .withFunctionArgument(functionArgumentJson)
         .withCertHolderId(this.certHolderId)
         .withCertVersion(this.certVersion)
         .build();
