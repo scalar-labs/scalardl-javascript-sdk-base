@@ -11,6 +11,7 @@
     "chai": "^4.2.0",
     "eslint": "^5.16.0",
     "eslint-config-google": "^0.13.0",
-    "mocha": "^6.1.4"
+    "mocha": "^6.1.4",
+    "sinon": "^7.5.0"
   }
 }
