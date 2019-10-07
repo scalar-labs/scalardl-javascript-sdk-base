@@ -13,5 +13,8 @@
     "eslint-config-google": "^0.13.0",
     "mocha": "^6.1.4",
     "sinon": "^7.5.0"
+  },
+  "scripts": {
+    "test": "npx mocha test/"
   }
 }
