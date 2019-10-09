@@ -11,4 +11,20 @@ describe('Class SignatureSigner', () => {
       signer.sign('content');
     }).to.throw('Failed to load private key');
   });
+
+  it('throws exception when it not ASN.1 hex string', () => {
+    const signer = new SignatureSigner('mocked_pem_file.pem');
+    expect(() => {
+      signer.sign('content');
+    }).to.throw('Failed to load private key not ASN.1 hex string');
+  });
+
+  it('should work properly', () => {
+    const signer = new SignatureSigner('ASN1.pem');
+    expect(() => {
+      signer.sign('content');
+    }).to.throw('Failed to load private key not ASN.1 hex string');
+  });
+
+  it()
 });
