@@ -23,7 +23,8 @@ class SignatureSigner {
       const base64 = this.pem.replace('-----BEGIN EC PRIVATE KEY-----', '').
           replace('-----END EC PRIVATE KEY-----', '').
           replace(/\n/g, '');
-      ecdsa.readPKCS5PrvKeyHex(jsrsasign.b64utohex(base64));
+      const toHex = jsrsasign.b64utohex(base64);
+      ecdsa.readPKCS5PrvKeyHex(toHex);
     } catch (err) {
       throw new Error(`Failed to load private key ${err}`);
     }
