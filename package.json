@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "elliptic": "^6.5.1",
     "jsrsasign": "^8.0.12"
   },
   "name": "@scalar-labs/scalardl-javascript-sdk-base",
