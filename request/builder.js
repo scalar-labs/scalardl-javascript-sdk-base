@@ -12,8 +12,9 @@ class TextEncoder {
    */
   encode(string) {
     return !string
-    ? new Uint8Array()
-    : new Uint8Array(jsrsasign.hextoArrayBuffer(jsrsasign.utf8tohex(string)));
+        ? new Uint8Array()
+        : new Uint8Array(
+            jsrsasign.hextoArrayBuffer(jsrsasign.utf8tohex(string)));
   }
 }
 
@@ -76,6 +77,64 @@ class CertificateRegistrationRequestBuilder {
 }
 
 /**
+ * Used to build a FunctionRegistrationRequest.
+ */
+class FunctionRegistrationRequestBuilder {
+  /**
+   * @constructor
+   * @param {FunctionRegistrationRequest} request
+   */
+  constructor(request) {
+    this.request = request;
+  }
+
+  /**
+   * Sets the ID of the certificate holder
+   * @param {string} id
+   * @return {FunctionRegistrationRequestBuilder}
+   */
+  withFunctionId(id) {
+    /** @const */
+    this.functionId = id;
+    return this;
+  }
+
+  /**
+   * Sets the certificate version
+   * @param {string} name
+   * @return {FunctionRegistrationRequestBuilder}
+   */
+  withFunctionBinaryName(name) {
+    /** @const */
+    this.functionBinaryName = name;
+    return this;
+  }
+
+  /**
+   * Sets the functionBytes of the certificate
+   * @param {string} functionBytes
+   * @return {FunctionRegistrationRequestBuilder}
+   */
+  withFunctionByteCode(functionBytes) {
+    /** @const */
+    this.functionByteCode = functionBytes;
+    return this;
+  }
+
+  /**
+   * Builds the FunctionRegistrationRequest
+   * @return {FunctionRegistrationRequest}
+   */
+  build() {
+    const request = this.request;
+    request.setFunctionId(this.functionId);
+    request.setFunctionBinaryName(this.functionBinaryName);
+    request.setFunctionByteCode(this.functionByteCode);
+    return request;
+  }
+}
+
+/**
  * Used for building a ContractRegistrationRequest
  */
 class ContractRegistrationRequestBuilder {
@@ -88,6 +147,7 @@ class ContractRegistrationRequestBuilder {
     this.request = request;
     this.signer = signer;
   }
+
   /**
    * Sets the contract ID
    * @param {string} id
@@ -168,11 +228,11 @@ class ContractRegistrationRequestBuilder {
     request.setCertVersion(this.certVersion);
 
     const contractId = new TextEncoder('utf-8').encode(this.contractId);
-    const contractBinaryName = new TextEncoder('utf-8')
-        .encode(this.contractBinaryName);
+    const contractBinaryName = new TextEncoder('utf-8').encode(
+        this.contractBinaryName);
     const contractBytes = this.contractByteCode;
-    const contractProperties = new TextEncoder('utf-8')
-        .encode(this.contractProperties);
+    const contractProperties = new TextEncoder('utf-8').encode(
+        this.contractProperties);
     const certHolderId = new TextEncoder('utf-8').encode(this.certHolderId);
     const view = new DataView(new ArrayBuffer(4));
     view.setUint32(0, this.certVersion);
@@ -215,6 +275,7 @@ class ContractsListingRequestBuilder {
     this.request = request;
     this.signer = signer;
   }
+
   /**
    * Sets the ID of the certificate holder
    * @param {string} id
@@ -258,7 +319,6 @@ class ContractsListingRequestBuilder {
     request.setCertVersion(this.certVersion);
     request.setContractId(this.contractId);
 
-
     const certHolderId = new TextEncoder('utf-8').encode(this.certHolderId);
     const view = new DataView(new ArrayBuffer(4));
     view.setUint32(0, this.certVersion);
@@ -295,6 +355,7 @@ class LedgerValidationRequestBuilder {
     this.request = request;
     this.signer = signer;
   }
+
   /**
    * Sets the asset ID
    * @param {string} id
@@ -372,6 +433,7 @@ class ContractExecutionRequestBuilder {
     this.request = request;
     this.signer = signer;
   }
+
   /**
    * Sets the contract ID
    * @param {string} id
@@ -428,8 +490,8 @@ class ContractExecutionRequestBuilder {
     request.setCertVersion(this.certVersion);
 
     const contractIdEncoded = new TextEncoder('utf-8').encode(this.contractId);
-    const contractArgument = new TextEncoder('utf-8')
-        .encode(this.contractArgument);
+    const contractArgument = new TextEncoder('utf-8').encode(
+        this.contractArgument);
     const certHolderId = new TextEncoder('utf-8').encode(this.certHolderId);
     const view = new DataView(new ArrayBuffer(4));
     view.setUint32(0, this.certVersion);
@@ -455,6 +517,7 @@ class ContractExecutionRequestBuilder {
 
 module.exports = {
   CertificateRegistrationRequestBuilder,
+  FunctionRegistrationRequestBuilder,
   ContractRegistrationRequestBuilder,
   ContractsListingRequestBuilder,
   LedgerValidationRequestBuilder,
