@@ -457,6 +457,17 @@ class ContractExecutionRequestBuilder {
   }
 
   /**
+   * Sets the contract Function Argument
+   * @param {string} argument
+   * @return {ContractExecutionRequestBuilder}
+   */
+  withFunctionArgument(functionArgumentJson) {
+    /** @const */
+    this.functionArgumentJson = functionArgumentJson;
+    return this;
+  }
+
+  /**
    * Sets the ID of the certificate holder
    * @param {string} id
    * @return {ContractExecutionRequestBuilder}
@@ -487,6 +498,9 @@ class ContractExecutionRequestBuilder {
     request.setContractId(this.contractId);
     request.setContractArgument(this.contractArgument);
     request.setCertHolderId(this.certHolderId);
+    if (this.functionArgumentJson) {
+      request.setFunctionArgument(this.functionArgumentJson);
+    }
     request.setCertVersion(this.certVersion);
 
     const contractIdEncoded = new TextEncoder('utf-8').encode(this.contractId);
@@ -496,10 +510,13 @@ class ContractExecutionRequestBuilder {
     const view = new DataView(new ArrayBuffer(4));
     view.setUint32(0, this.certVersion);
     const certVersion = new Uint8Array(view.buffer);
+    const contractFunctionArgument = new TextEncoder('utf-8').encode(
+        this.functionArgumentJson);
 
     const buffer = new Uint8Array(
         contractIdEncoded.byteLength + contractArgument.byteLength +
-        certHolderId.byteLength + certVersion.byteLength);
+        certHolderId.byteLength + certVersion.byteLength +
+        contractFunctionArgument.byteLength);
     let offset = 0;
     buffer.set(contractIdEncoded, offset);
     offset += contractIdEncoded.byteLength;
@@ -508,6 +525,8 @@ class ContractExecutionRequestBuilder {
     buffer.set(certHolderId, offset);
     offset += certHolderId.byteLength;
     buffer.set(certVersion, offset);
+    offset += contractFunctionArgument.byteLength;
+    buffer.set(contractFunctionArgument, offset);
 
     request.setSignature(this.signer.sign(buffer));
 
