@@ -1,4 +1,4 @@
-const {SignatureSigner} = require('../signer.js');
+const {SignatureSigner, JsrsasignSignatureSigner} = require('../signer.js');
 const expect = require('chai').expect;
 const assert = require('chai').assert;
 const jsrsasign = require('jsrsasign');
@@ -18,7 +18,7 @@ describe('Class SignatureSigner', () => {
 
   it('throws exception when pem file is not correct', () => {
     genericArrayBuffertoHexMocker();
-    const signer = new SignatureSigner('incorrect pem');
+    const signer = new JsrsasignSignatureSigner('incorrect pem');
     expect(() => {
       signer.sign('content');
     }).to.throw('Failed to load private key');
@@ -26,7 +26,7 @@ describe('Class SignatureSigner', () => {
 
   it('throws exception when it not ASN.1 hex string', () => {
     genericArrayBuffertoHexMocker();
-    const signer = new SignatureSigner('mocked non ASN.1 string');
+    const signer = new JsrsasignSignatureSigner('mocked non ASN.1 string');
     expect(() => {
       signer.sign('content');
     }).to.throw('Failed to load private key not ASN.1 hex string');
@@ -48,7 +48,7 @@ describe('Class SignatureSigner', () => {
     sinon.replace(jsrsasign.KJUR.crypto, 'Signature',
         sinon.fake.returns(mockedSignature));
     genericArrayBuffertoHexMocker();
-    const signer = new SignatureSigner(pem);
+    const signer = new JsrsasignSignatureSigner(pem);
     const mockSpyECDSA = sinon.spy(mockedECDSA, 'readPKCS5PrvKeyHex');
     const mockSpySignatureInit = sinon.spy(mockedSignature, 'init');
     const mockSpySignatureUpdateHex = sinon.spy(mockedSignature, 'updateHex');
