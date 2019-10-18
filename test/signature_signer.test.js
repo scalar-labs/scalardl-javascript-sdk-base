@@ -32,31 +32,9 @@ describe('Class SignatureSigner', () => {
     });
 
     it('should work properly', () => {
-      const mockedECDSA = {
-        readPKCS5PrvKeyHex: function() {},
-      };
-      const mockedSignature = {
-        init: function() {},
-        updateHex: function() {},
-        sign: function() {},
-      };
       const pem = fs.readFileSync(__dirname + '/key.pem', 'utf-8');
-      sinon.replace(jsrsasign.KJUR.crypto, 'ECDSA',
-          sinon.fake.returns(mockedECDSA));
-      sinon.replace(jsrsasign, 'hextoArrayBuffer',
-          sinon.fake.returns([1, 2, 3]));
-      sinon.replace(jsrsasign.KJUR.crypto, 'Signature',
-          sinon.fake.returns(mockedSignature));
       const signer = new JsrsasignSignatureSigner(pem);
-      const mockSpyECDSA = sinon.spy(mockedECDSA, 'readPKCS5PrvKeyHex');
-      const mockSpySignatureInit = sinon.spy(mockedSignature, 'init');
-      const mockSpySignatureUpdateHex = sinon.spy(mockedSignature, 'updateHex');
-      const mockSpySignatureSign = sinon.spy(mockedSignature, 'sign');
-      signer.sign('content');
-      assert(mockSpySignatureInit.calledOnce);
-      assert(mockSpySignatureUpdateHex.withArgs('hex-value').calledOnce);
-      assert(mockSpySignatureSign.calledOnce);
-      assert(mockSpyECDSA.calledOnce);
+      assert.instanceOf(signer.sign('Content'), Uint8Array);
     });
   });
 
