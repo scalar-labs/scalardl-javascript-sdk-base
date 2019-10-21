@@ -307,22 +307,6 @@ class ClientServiceBase {
       return response;
     }
   }
-
-  async storeProofs(proofs) {
-    try {
-      this.proofRegistry.store(proofs);
-    } catch (e) {
-      throw 'Failed to store the proof ' + e;
-    }
-  };
-
-  async retrieveProofs(assetId) {
-    try {
-      this.proofRegistry.retrieve(assetId);
-    } catch (e) {
-      throw 'Failed to retrieve the proof ' + e;
-    }
-  }
 }
 
 module.exports = {
