@@ -249,10 +249,10 @@ class ClientServiceBase {
   /**
    * @param {number} contractId
    * @param {Object} argument
-   * @param {Object} [functionArgument=null]
+   * @param {Object} [functionArgument=undefined]
    * @return {Promise<ClientServiceResponse|void|*>}
    */
-  async executeContract(contractId, argument, functionArgument = null) {
+  async executeContract(contractId, argument, functionArgument) {
     argument['nonce'] = new Date().getTime().toString();
     const argumentJson = JSON.stringify(argument);
     const functionArgumentJson = JSON.stringify(functionArgument);
