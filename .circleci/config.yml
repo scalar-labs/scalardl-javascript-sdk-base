@@ -21,6 +21,12 @@ jobs:
             - v1-dependencies-
 
       - run:
+          - ls -a
+
+      - run:
+          - ls -R
+
+      - run:
           command: npm install
 
       - save_cache:
