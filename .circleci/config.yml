@@ -15,7 +15,7 @@ jobs:
           MAX_HEAP_SIZE: 2048m
           HEAP_NEWSIZE: 512m
 
-  working_directory: ~/web-client-sdk-base
+    working_directory: ~/web-client-sdk-base
 
     steps:
       - checkout
@@ -23,8 +23,6 @@ jobs:
       - restore_cache:
           keys:
             - dependency-cache-{{ checksum "package-lock.json" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
 
       - run:
           command: ls -a | pwd
