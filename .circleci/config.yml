@@ -8,7 +8,6 @@ jobs:
     branches:
       only:
         - master
-        - information-bank
         - /feature\/ci.*/
     docker:
       - image: circleci/node:10-browsers-legacy
