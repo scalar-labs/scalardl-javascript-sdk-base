@@ -21,10 +21,10 @@ jobs:
             - v1-dependencies-
 
       - run:
-          - ls -a
+          command: ls -a
 
       - run:
-          - ls -R
+          command: ls -R
 
       - run:
           command: npm install
