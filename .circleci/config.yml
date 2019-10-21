@@ -25,7 +25,7 @@ jobs:
             - dependency-cache-{{ checksum "package-lock.json" }}
 
       - run:
-          command: ls -a | pwd
+          command: ls -a && pwd
 
       - run:
           command: npm install
