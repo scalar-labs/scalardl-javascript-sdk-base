@@ -20,14 +20,18 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
 
+
+      - run:
+          command: npm install
+
+      - run:
+          command: pwd
+
       - run:
           command: ls -a
 
       - run:
           command: ls -R
-
-      - run:
-          command: npm install
 
       - save_cache:
           key: v1-dependencies-{{ checksum "package-lock.json" }}
