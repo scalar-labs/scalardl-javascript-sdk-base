@@ -15,6 +15,8 @@ jobs:
           MAX_HEAP_SIZE: 2048m
           HEAP_NEWSIZE: 512m
 
+  working_directory: ~/web-client-sdk-base
+
     steps:
       - checkout
       # Download and cache dependencies.
@@ -24,18 +26,11 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
 
+      - run:
+          command: ls -a | pwd
 
       - run:
           command: npm install
-
-      - run:
-          command: pwd
-
-      - run:
-          command: ls -a
-
-      - run:
-          command: ls -R
 
       - save_cache:
           key: v1-dependencies-{{ checksum "package-lock.json" }}
