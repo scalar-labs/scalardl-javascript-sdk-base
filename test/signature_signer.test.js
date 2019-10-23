@@ -24,7 +24,7 @@ describe('Class SignatureSigner', () => {
       }).to.throw('Failed to load private key');
     });
 
-    it('throws exception when it not is ASN.1 hex string', () => {
+    it('throws exception when it is not an ASN.1 hex string', () => {
       const signer = new JsrsasignSignatureSigner('mocked non ASN.1 string');
       expect(() => {
         signer.sign('content');
