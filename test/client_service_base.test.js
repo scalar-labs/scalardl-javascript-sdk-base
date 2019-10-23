@@ -1,5 +1,5 @@
 const {
-  ClientServiceBase,
+  ClientServiceBase, StatusCode,
 } = require('..');
 const {
   IllegalArgumentError,
@@ -284,6 +284,7 @@ describe('Class ClientServiceBase', () => {
     });
     describe('sendRequest', () => {
       it('should reject on anonymous function name', async () => {
+        const mockedErrorMessage = 'Mocked error message';
         const mock = {
           setMessage: function() {},
           setStatus: function() {},
@@ -300,11 +301,11 @@ describe('Class ClientServiceBase', () => {
         const service = new ClientServiceBase(
             ledgerClient, mockedProtobuf, clientProperties);
         await service.sendRequest('registerCert', () => {
-          throw new Error();
+          throw new Error(mockedErrorMessage);
         });
-        sinon.assert.calledOnce(mockSpyLedgerServiceResponse);
-        sinon.assert.calledOnce(mockSpySetMessage);
-        sinon.assert.calledOnce(mockSpySetStatus);
+        assert(mockSpyLedgerServiceResponse.calledOnce);
+        assert(mockSpySetMessage.calledWithExactly(mockedErrorMessage));
+        assert(mockSpySetStatus.calledWithExactly(StatusCode.RUNTIME_ERROR));
       });
     });
   });
