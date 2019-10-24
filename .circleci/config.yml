@@ -15,7 +15,7 @@ jobs:
           MAX_HEAP_SIZE: 2048m
           HEAP_NEWSIZE: 512m
 
-    working_directory: ~/web-client-sdk-base
+    working_directory: ~/javascript-sdk-base
 
     steps:
       - checkout
