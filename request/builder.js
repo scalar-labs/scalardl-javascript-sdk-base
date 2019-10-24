@@ -12,8 +12,9 @@ class TextEncoder {
    */
   encode(string) {
     return !string
-    ? new Uint8Array()
-    : new Uint8Array(jsrsasign.hextoArrayBuffer(jsrsasign.utf8tohex(string)));
+        ? new Uint8Array()
+        : new Uint8Array(
+            jsrsasign.hextoArrayBuffer(jsrsasign.utf8tohex(string)));
   }
 }
 
@@ -88,6 +89,7 @@ class ContractRegistrationRequestBuilder {
     this.request = request;
     this.signer = signer;
   }
+
   /**
    * Sets the contract ID
    * @param {string} id
@@ -168,11 +170,11 @@ class ContractRegistrationRequestBuilder {
     request.setCertVersion(this.certVersion);
 
     const contractId = new TextEncoder('utf-8').encode(this.contractId);
-    const contractBinaryName = new TextEncoder('utf-8')
-        .encode(this.contractBinaryName);
+    const contractBinaryName = new TextEncoder('utf-8').encode(
+        this.contractBinaryName);
     const contractBytes = this.contractByteCode;
-    const contractProperties = new TextEncoder('utf-8')
-        .encode(this.contractProperties);
+    const contractProperties = new TextEncoder('utf-8').encode(
+        this.contractProperties);
     const certHolderId = new TextEncoder('utf-8').encode(this.certHolderId);
     const view = new DataView(new ArrayBuffer(4));
     view.setUint32(0, this.certVersion);
@@ -215,6 +217,7 @@ class ContractsListingRequestBuilder {
     this.request = request;
     this.signer = signer;
   }
+
   /**
    * Sets the ID of the certificate holder
    * @param {string} id
@@ -258,7 +261,6 @@ class ContractsListingRequestBuilder {
     request.setCertVersion(this.certVersion);
     request.setContractId(this.contractId);
 
-
     const certHolderId = new TextEncoder('utf-8').encode(this.certHolderId);
     const view = new DataView(new ArrayBuffer(4));
     view.setUint32(0, this.certVersion);
@@ -295,6 +297,7 @@ class LedgerValidationRequestBuilder {
     this.request = request;
     this.signer = signer;
   }
+
   /**
    * Sets the asset ID
    * @param {string} id
@@ -372,6 +375,7 @@ class ContractExecutionRequestBuilder {
     this.request = request;
     this.signer = signer;
   }
+
   /**
    * Sets the contract ID
    * @param {string} id
@@ -439,8 +443,8 @@ class ContractExecutionRequestBuilder {
     request.setFunctionArgument(this.functionArgument);
 
     const contractIdEncoded = new TextEncoder('utf-8').encode(this.contractId);
-    const contractArgument = new TextEncoder('utf-8')
-        .encode(this.contractArgument);
+    const contractArgument = new TextEncoder('utf-8').encode(
+        this.contractArgument);
     const certHolderId = new TextEncoder('utf-8').encode(this.certHolderId);
     const view = new DataView(new ArrayBuffer(4));
     view.setUint32(0, this.certVersion);
