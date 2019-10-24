@@ -1,7 +1,6 @@
 const {StatusCode} = require('./status_code');
 
 const {
-  CertificateRegistrationRequestBuilder,
   ContractRegistrationRequestBuilder,
   ContractsListingRequestBuilder,
   LedgerValidationRequestBuilder,
@@ -47,7 +46,7 @@ class ClientServiceBase {
         'scalar.ledger.client.cert_holder_id');
     /** @const */
     this.credential =
-      properties['scalar.ledger.client.authorization.credential'];
+        properties['scalar.ledger.client.authorization.credential'];
     /** @const */
     this.certVersion = properties['scalar.ledger.client.cert_version'];
 
@@ -98,9 +97,9 @@ class ClientServiceBase {
     //     .withCertPem(this.certPem)
     //     .build();
     return this.sendRequest('registerCert', () =>
-      new Promise((_, reject) => {
-        reject(new Error('This method will be reimplemented later'));
-      })
+        new Promise((_, reject) => {
+          reject(new Error('This method will be reimplemented later'));
+        }),
     );
   }
 
@@ -116,31 +115,31 @@ class ClientServiceBase {
   async registerContract(id, name, contractBytes, properties) {
     if (!(contractBytes instanceof Uint8Array)) {
       throw new IllegalArgumentError(
-          'parameter contractBytes is not a \'Uint8Array\''
+          'parameter contractBytes is not a \'Uint8Array\'',
       );
     }
 
     const propertiesJson = JSON.stringify(properties);
     const request = new ContractRegistrationRequestBuilder(
-        new this.protobuf.ContractRegistrationRequest(), this.signer)
-        .withContractId(id)
-        .withContractBinaryName(name)
-        .withContractByteCode(contractBytes)
-        .withContractProperties(propertiesJson)
-        .withCertHolderId(this.certHolderId)
-        .withCertVersion(this.certVersion)
-        .build();
+        new this.protobuf.ContractRegistrationRequest(),
+        this.signer).withContractId(id).
+        withContractBinaryName(name).
+        withContractByteCode(contractBytes).
+        withContractProperties(propertiesJson).
+        withCertHolderId(this.certHolderId).
+        withCertVersion(this.certVersion).
+        build();
     return this.sendRequest('registerContract', () =>
-      new Promise((resolve, reject) => {
-        this.ledgerClient.registerContract(request, this.metadata,
-            (err, response) => {
-              if (err) {
-                reject(err);
-              } else {
-                resolve(response);
-              }
-            });
-      }));
+        new Promise((resolve, reject) => {
+          this.ledgerClient.registerContract(request, this.metadata,
+              (err, response) => {
+                if (err) {
+                  reject(err);
+                } else {
+                  resolve(response);
+                }
+              });
+        }));
   }
 
   /**
@@ -151,22 +150,22 @@ class ClientServiceBase {
    */
   async listContracts(contractId) {
     const request = new ContractsListingRequestBuilder(
-        new this.protobuf.ContractsListingRequest(), this.signer)
-        .withCertHolderId(this.certHolderId)
-        .withCertVersion(this.certVersion)
-        .withContractId(contractId)
-        .build();
+        new this.protobuf.ContractsListingRequest(),
+        this.signer).withCertHolderId(this.certHolderId).
+        withCertVersion(this.certVersion).
+        withContractId(contractId).
+        build();
     return this.sendRequest('listContracts', () =>
-      new Promise((resolve, reject) => {
-        this.ledgerClient.listContracts(request,
-            this.metadata, (err, response) => {
-              if (err) {
-                reject(err);
-              } else {
-                resolve(response);
-              }
-            });
-      }));
+        new Promise((resolve, reject) => {
+          this.ledgerClient.listContracts(request,
+              this.metadata, (err, response) => {
+                if (err) {
+                  reject(err);
+                } else {
+                  resolve(response);
+                }
+              });
+        }));
   }
 
   /**
@@ -176,23 +175,23 @@ class ClientServiceBase {
    */
   async validateLedger(assetId) {
     const request = new LedgerValidationRequestBuilder(
-        new this.protobuf.LedgerValidationRequest(), this.signer)
-        .withAssetId(assetId)
-        .withCertHolderId(this.certHolderId)
-        .withCertVersion(this.certVersion)
-        .build();
+        new this.protobuf.LedgerValidationRequest(), this.signer).withAssetId(
+        assetId).
+        withCertHolderId(this.certHolderId).
+        withCertVersion(this.certVersion).
+        build();
 
     return this.sendRequest('validateLedger', () =>
-      new Promise((resolve, reject) => {
-        this.ledgerClient.validateLedger(request, this.metadata,
-            (err, response) => {
-              if (err) {
-                reject(err);
-              } else {
-                resolve(response);
-              }
-            });
-      }));
+        new Promise((resolve, reject) => {
+          this.ledgerClient.validateLedger(request, this.metadata,
+              (err, response) => {
+                if (err) {
+                  reject(err);
+                } else {
+                  resolve(response);
+                }
+              });
+        }));
   }
 
   /**
@@ -207,25 +206,25 @@ class ClientServiceBase {
     const functionArgumentJson = JSON.stringify(functionArgument);
 
     const request = new ContractExecutionRequestBuilder(
-        new this.protobuf.ContractExecutionRequest(), this.signer)
-        .withContractId(contractId)
-        .withContractArgument(argumentJson)
-        .withFunctionArgument(functionArgumentJson)
-        .withCertHolderId(this.certHolderId)
-        .withCertVersion(this.certVersion)
-        .build();
+        new this.protobuf.ContractExecutionRequest(),
+        this.signer).withContractId(contractId).
+        withContractArgument(argumentJson).
+        withFunctionArgument(functionArgumentJson).
+        withCertHolderId(this.certHolderId).
+        withCertVersion(this.certVersion).
+        build();
 
     return this.sendRequest('executeContract', () =>
-      new Promise((resolve, reject) => {
-        this.ledgerClient.executeContract(request, this.metadata,
-            (err, response) => {
-              if (err) {
-                reject(err);
-              } else {
-                resolve(response);
-              }
-            });
-      }));
+        new Promise((resolve, reject) => {
+          this.ledgerClient.executeContract(request, this.metadata,
+              (err, response) => {
+                if (err) {
+                  reject(err);
+                } else {
+                  resolve(response);
+                }
+              });
+        }));
   }
 
   /**
