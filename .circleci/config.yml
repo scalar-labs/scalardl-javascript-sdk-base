@@ -14,6 +14,7 @@ jobs:
         environment:
           MAX_HEAP_SIZE: 2048m
           HEAP_NEWSIZE: 512m
+          MOCHA_FILE: "$CIRCLE_TEST_REPORTS/test-results.xml"
 
     working_directory: ~/javascript-sdk-base
 
