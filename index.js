@@ -119,6 +119,9 @@ class ClientServiceBase {
   }
 
   /**
+   * @param {number} id of the function
+   * @param {string} name of the function
+   * @param {Uint8Array} functionBytes of the function
    * @return {Promise<ClientServiceResponse>}
    */
   async registerFunction(id, name, functionBytes) {
@@ -148,7 +151,7 @@ class ClientServiceBase {
   };
 
   /**
-   * @param {number} id the contract id
+   * @param {number} id of the contract
    * @param {string} name  the canonical name of the contract class.
    *  For example "com.banking.contract1"
    * @param {Uint8Array} contractBytes
