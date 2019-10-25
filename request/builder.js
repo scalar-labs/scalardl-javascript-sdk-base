@@ -457,17 +457,6 @@ class ContractExecutionRequestBuilder {
   }
 
   /**
-   * Sets the contract Function Argument
-   * @param {string} functionArgumentJson
-   * @return {ContractExecutionRequestBuilder}
-   */
-  withFunctionArgument(functionArgumentJson) {
-    /** @const */
-    this.functionArgumentJson = functionArgumentJson;
-    return this;
-  }
-
-  /**
    * Sets the ID of the certificate holder
    * @param {string} id
    * @return {ContractExecutionRequestBuilder}
@@ -508,7 +497,6 @@ class ContractExecutionRequestBuilder {
     request.setContractId(this.contractId);
     request.setContractArgument(this.contractArgument);
     request.setCertHolderId(this.certHolderId);
-    request.setFunctionArgument(this.functionArgumentJson);
     request.setCertVersion(this.certVersion);
     request.setFunctionArgument(this.functionArgument);
 

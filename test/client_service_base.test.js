@@ -10,10 +10,11 @@ const {SignatureSigner} = require('../signer');
 const elliptic = require('elliptic');
 const crypto = require('crypto');
 const assert = require('chai').assert;
-const ledgerClient = {};
 const protobuf = {};
-const ledgerPrivileged = {};
-const proofRegistry = {};
+const service = {
+  'ledgerPrivileged': {},
+  'ledgerClient': {},
+};
 const clientProperties = {
   'scalar.ledger.client.private_key_pem': 'key',
   'scalar.ledger.client.cert_pem': 'cert',
@@ -30,8 +31,7 @@ describe('Class ClientServiceBase', () => {
           'scalar.ledger.client.cert_holder_id': 'hold',
         };
         assert.throws(() => {
-          new ClientServiceBase(ledgerClient, ledgerPrivileged, proofRegistry,
-              protobuf, clientProperties);
+          new ClientServiceBase(service, protobuf, clientProperties);
         }, IllegalArgumentError, 'private_key_pem');
       });
       it('when the certificate is missing', () => {
@@ -41,8 +41,7 @@ describe('Class ClientServiceBase', () => {
           'scalar.ledger.client.cert_holder_id': 'hold',
         };
         assert.throws(() => {
-          new ClientServiceBase(ledgerClient, ledgerPrivileged, proofRegistry,
-              protobuf, clientProperties);
+          new ClientServiceBase(service, protobuf, clientProperties);
         }, IllegalArgumentError, 'cert_pem');
       });
       it('when holder id is missing', () => {
@@ -53,8 +52,7 @@ describe('Class ClientServiceBase', () => {
           // 'scalar.ledger.client.cert_holder_id': 'hold',
         };
         assert.throws(() => {
-          new ClientServiceBase(ledgerClient, ledgerPrivileged, proofRegistry,
-              protobuf, clientProperties);
+          new ClientServiceBase(service, protobuf, clientProperties);
         }, IllegalArgumentError, 'cert_holder_id');
       });
     });
@@ -68,13 +66,14 @@ describe('Class ClientServiceBase', () => {
             'scalar.ledger.client.authorization.credential':
                 'mocked-credentials',
           };
-          const service = new ClientServiceBase(ledgerClient, ledgerPrivileged,
-              proofRegistry, protobuf, clientProperties);
-          assert.equal(service.privateKeyPem, 'key');
-          assert.equal(service.certPem, 'cert');
-          assert.equal(service.certHolderId, 'hold');
-          assert.equal(service.certVersion, '1.0');
-          assert.equal(service.metadata.Authorization, 'mocked-credentials');
+          const clientService = new ClientServiceBase(service,
+              protobuf, clientProperties);
+          assert.equal(clientService.privateKeyPem, 'key');
+          assert.equal(clientService.certPem, 'cert');
+          assert.equal(clientService.certHolderId, 'hold');
+          assert.equal(clientService.certVersion, '1.0');
+          assert.equal(clientService.metadata.Authorization,
+              'mocked-credentials');
         });
   });
   describe('The method', () => {
@@ -102,10 +101,9 @@ describe('Class ClientServiceBase', () => {
             return mockedCertificateRegistrationRequest;
           },
         };
-        const service = new ClientServiceBase(
-            ledgerClient, ledgerPrivileged, proofRegistry, mockedProtobuf,
-            clientProperties);
-        genericEllipticSignatureSigner(service);
+        const clientService = new ClientServiceBase(
+            service, mockedProtobuf, clientProperties);
+        genericEllipticSignatureSigner(clientService);
         const mockSpySetCertHolderId = sinon.spy(
             mockedCertificateRegistrationRequest,
             'setCertHolderId');
@@ -115,24 +113,27 @@ describe('Class ClientServiceBase', () => {
         const mockSpySetCertPem = sinon.spy(
             mockedCertificateRegistrationRequest,
             'setCertPem');
-        const request = await service.registerCertificate();
+        const request = await clientService.registerCertificate();
 
         assert(mockSpySetCertHolderId.calledOnce);
         assert(mockSpySetCertVersion.calledOnce);
         assert(mockSpySetCertPem.calledOnce);
         assert.instanceOf(request, Function);
       });
-
     });
+
+    // describe('registerFunction', () => {
+    //
+    // })
 
     describe('registerContract', () => {
       it('should throw an error when contractBytes is not a Uint8Array',
           async () => {
-            const service = new ClientServiceBase(
-                ledgerClient, ledgerPrivileged, proofRegistry, protobuf,
+            const clientService = new ClientServiceBase(service, protobuf,
                 clientProperties);
             try {
-              await service.registerContract('contract1', 'foo', 'wrongType');
+              await clientService.registerContract('contract1', 'foo',
+                  'wrongType');
             } catch (e) {
               assert.instanceOf(e, IllegalArgumentError);
             }
@@ -153,9 +154,9 @@ describe('Class ClientServiceBase', () => {
             return mockedContractRegistrationRequest;
           },
         };
-        const service = new ClientServiceBase(ledgerClient, ledgerPrivileged,
-            proofRegistry, mockedProtobuf, clientProperties);
-        genericEllipticSignatureSigner(service);
+        const clientService = new ClientServiceBase(service,
+            mockedProtobuf, clientProperties);
+        genericEllipticSignatureSigner(clientService);
         const mockSpyContractRegistrationRequest = sinon.spy(mockedProtobuf,
             'ContractRegistrationRequest');
         const mockSpySetContractBinaryName = sinon.spy(
@@ -179,7 +180,8 @@ describe('Class ClientServiceBase', () => {
         const mockSpySetSignature = sinon.spy(
             mockedContractRegistrationRequest,
             'setSignature');
-        const request = await service.registerContract('contractId', 'foo',
+        const request = await clientService.registerContract('contractId',
+            'foo',
             new Uint8Array([1, 2, 3]), clientProperties);
         assert(mockSpySetContractId.calledOnce);
         assert(mockSpyContractRegistrationRequest.calledOnce);
@@ -205,8 +207,8 @@ describe('Class ClientServiceBase', () => {
             return mockedListContracts;
           },
         };
-        const service = new ClientServiceBase(ledgerClient, ledgerPrivileged,
-            proofRegistry, mockedProtobuf, clientProperties);
+        const clientService = new ClientServiceBase(service, mockedProtobuf,
+            clientProperties);
         const mockSpyContractsListingRequest = sinon.spy(mockedProtobuf,
             'ContractsListingRequest');
         const mockSpySetCertHolderId = sinon.spy(mockedListContracts,
@@ -217,8 +219,8 @@ describe('Class ClientServiceBase', () => {
             'setContractId');
         const mockSpySetSignature = sinon.spy(mockedListContracts,
             'setSignature');
-        genericEllipticSignatureSigner(service);
-        const request = await service.listContracts('contractId');
+        genericEllipticSignatureSigner(clientService);
+        const request = await clientService.listContracts('contractId');
         assert(mockSpyContractsListingRequest.calledOnce);
         assert(mockSpySetCertHolderId.calledOnce);
         assert(mockSpySetCertVersion.calledOnce);
@@ -240,8 +242,8 @@ describe('Class ClientServiceBase', () => {
             return mockedValidateLedger;
           },
         };
-        const service = new ClientServiceBase(ledgerClient, ledgerPrivileged,
-            proofRegistry, mockedProtobuf, clientProperties);
+        const clientService = new ClientServiceBase(service, mockedProtobuf,
+            clientProperties);
         const mockSpyLedgerValidationRequest = sinon.spy(mockedProtobuf,
             'LedgerValidationRequest');
         const mockSpySetAssetId = sinon.spy(mockedValidateLedger,
@@ -252,8 +254,8 @@ describe('Class ClientServiceBase', () => {
             'setCertVersion');
         const mockSpySetSignature = sinon.spy(mockedValidateLedger,
             'setSignature');
-        genericEllipticSignatureSigner(service);
-        const request = await service.validateLedger('contractId');
+        genericEllipticSignatureSigner(clientService);
+        const request = await clientService.validateLedger('contractId');
         assert(mockSpyLedgerValidationRequest.calledOnce);
         assert(mockSpySetAssetId.calledOnce);
         assert(mockSpySetCertHolderId.calledOnce);
@@ -277,8 +279,8 @@ describe('Class ClientServiceBase', () => {
             return mockedExecuteContract;
           },
         };
-        const service = new ClientServiceBase(ledgerClient, ledgerPrivileged,
-            proofRegistry, mockedProtobuf, clientProperties);
+        const clientService = new ClientServiceBase(service, mockedProtobuf,
+            clientProperties);
         const mockSpyContractExecutionRequest = sinon.spy(mockedProtobuf,
             'ContractExecutionRequest');
         const mockSpySetContractId = sinon.spy(mockedExecuteContract,
@@ -293,8 +295,8 @@ describe('Class ClientServiceBase', () => {
             'setFunctionArgument');
         const mockSpySetSignature = sinon.spy(mockedExecuteContract,
             'setSignature');
-        genericEllipticSignatureSigner(service);
-        const request = await service.executeContract('contractId',
+        genericEllipticSignatureSigner(clientService);
+        const request = await clientService.executeContract('contractId',
             {'mocked': 'argument'});
         assert(mockSpyContractExecutionRequest.calledOnce);
         assert(mockSpySetContractId.calledOnce);
@@ -319,9 +321,9 @@ describe('Class ClientServiceBase', () => {
             return mock;
           },
         };
-        const service = new ClientServiceBase(ledgerClient, ledgerPrivileged,
-            proofRegistry, mockedProtobuf, clientProperties);
-        await service.sendRequest('registerCert', () => {
+        const clientService = new ClientServiceBase(service, mockedProtobuf,
+            clientProperties);
+        await clientService.sendRequest('registerCert', () => {
           throw new Error();
         });
         sinon.assert.calledOnce(mockSpySetMessage);
