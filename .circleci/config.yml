@@ -1,0 +1,37 @@
+# Java Gradle CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-java/ for more details
+#
+version: 2
+jobs:
+  build:
+    branches:
+      only:
+        - master
+        - /feature\/ci.*/
+    docker:
+      - image: circleci/node:10-browsers-legacy
+        environment:
+          MAX_HEAP_SIZE: 2048m
+          HEAP_NEWSIZE: 512m
+
+    working_directory: ~/javascript-sdk-base
+
+    steps:
+      - checkout
+      # Download and cache dependencies.
+      - restore_cache:
+          keys:
+            - dependency-cache-{{ checksum "package-lock.json" }}
+
+      - run:
+          command: npm install
+
+      - save_cache:
+          key: v1-dependencies-{{ checksum "package-lock.json" }}
+          paths:
+            - ./node_modules
+
+      # run tests!
+      - run:
+          command: npm test
