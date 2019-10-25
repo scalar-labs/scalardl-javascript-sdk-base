@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/scalar-labs/scalardl-javascript-sdk-base/tree/master.svg?style=svg)](https://circleci.com/gh/scalar-labs/scalardl-javascript-sdk-base/tree/master)
+
 NPM package `@scalar-labs/scalardl-javascript-sdk-base` is the common part for package [@scalar-labs/scalardl-web-client-sdk](https://github.com/scalar-labs/scalardl-web-client-sdk) and [@scalar-labs/scalardl-node-client-sdk](https://github.com/scalar-labs/scalardl-node-client-sdk).
 Although those two packages use different gRPC tools to generate the service and the Protobuf objects, they can use @scalar-labs/scalardl-javascript-sdk-base after they inject the objects. We will introduce how to generate related static files later in this README.
 
