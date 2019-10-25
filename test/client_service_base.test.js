@@ -122,9 +122,47 @@ describe('Class ClientServiceBase', () => {
       });
     });
 
-    // describe('registerFunction', () => {
-    //
-    // })
+    describe('registerFunction', () => {
+      it('should throw an error when contractBytes is not a Uint8Array',
+          async () => {
+            const clientService = new ClientServiceBase(service, protobuf,
+                clientProperties);
+            try {
+              await clientService.registerFunction('contract1', 'foo',
+                  'wrongType');
+            } catch (e) {
+              assert.instanceOf(e, IllegalArgumentError);
+            }
+          },
+      );
+      it('should work as expected', async () => {
+        const mockedFunctionRegistrationRequest = {
+          setFunctionId: function() {},
+          setFunctionBinaryName: function() {},
+          setFunctionByteCode: function() {},
+        };
+        const mockedProtobuf = {
+          FunctionRegistrationRequest: function() {
+            return mockedFunctionRegistrationRequest;
+          },
+        };
+        const clientService = new ClientServiceBase(service, mockedProtobuf,
+            clientProperties);
+        genericEllipticSignatureSigner(clientService);
+        const mockSpyFunctionRegistrationRequest = sinon.spy(mockedProtobuf,
+            'FunctionRegistrationRequest');
+        const mockSpySetFunctionId = sinon.spy(
+            mockedFunctionRegistrationRequest, 'setFunctionId');
+        const mockSpySetFunctionBinaryName = sinon.spy(
+            mockedFunctionRegistrationRequest, 'setFunctionBinaryName');
+        const mockSpySetFunctionByteCode = sinon.spy(
+            mockedFunctionRegistrationRequest, 'setFunctionByteCode');
+        const request = await clientService.registerFunction('contractId',
+            'foo',
+            new Uint8Array([1, 2, 3]), clientProperties);
+        assert.instanceOf(request, Function);
+      });
+    });
 
     describe('registerContract', () => {
       it('should throw an error when contractBytes is not a Uint8Array',

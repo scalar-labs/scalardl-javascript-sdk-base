@@ -5,6 +5,7 @@ const {
   ContractRegistrationRequestBuilder,
   ContractsListingRequestBuilder,
   LedgerValidationRequestBuilder,
+  FunctionRegistrationRequestBuilder,
   ContractExecutionRequestBuilder,
 } = require('./request/builder');
 
@@ -128,7 +129,8 @@ class ClientServiceBase {
     }
 
     const request = new FunctionRegistrationRequestBuilder(
-        new this.protobuf.FunctionRegistrationRequest()).withFunctionId(id).
+        new this.protobuf.FunctionRegistrationRequest(),
+        this.signer).withFunctionId(id).
         withFunctionBinaryName(name).
         withFunctionByteCode(functionBytes).build();
     return this.sendRequest('registerFunction', () => {
