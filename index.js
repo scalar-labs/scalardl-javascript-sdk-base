@@ -1,10 +1,10 @@
 const {StatusCode} = require('./status_code');
 
 const {
-  CertificateRegistrationRequestBuilder,
   ContractRegistrationRequestBuilder,
   ContractsListingRequestBuilder,
   LedgerValidationRequestBuilder,
+  CertificateRegistrationRequestBuilder,
   FunctionRegistrationRequestBuilder,
   ContractExecutionRequestBuilder,
 } = require('./request/builder');

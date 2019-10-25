@@ -1,14 +1,10 @@
 const {
-  ClientServiceBase,
+  ClientServiceBase, StatusCode,
 } = require('..');
 const {
   IllegalArgumentError,
 } = require('../illegal_argument_error');
 const sinon = require('sinon');
-const jsrsasign = require('jsrsasign');
-const {SignatureSigner} = require('../signer');
-const elliptic = require('elliptic');
-const crypto = require('crypto');
 const assert = require('chai').assert;
 const protobuf = {};
 const service = {
@@ -19,6 +15,7 @@ const clientProperties = {
   'scalar.ledger.client.private_key_pem': 'key',
   'scalar.ledger.client.cert_pem': 'cert',
   'scalar.ledger.client.cert_holder_id': 'hold',
+  'scalar.ledger.client.cert_version': '1.0',
 };
 
 describe('Class ClientServiceBase', () => {
@@ -101,9 +98,9 @@ describe('Class ClientServiceBase', () => {
             return mockedCertificateRegistrationRequest;
           },
         };
-        const clientService = new ClientServiceBase(
+        const clientServiceBase = new ClientServiceBase(
             service, mockedProtobuf, clientProperties);
-        genericEllipticSignatureSigner(clientService);
+        genericEllipticSignatureSigner(clientServiceBase);
         const mockSpySetCertHolderId = sinon.spy(
             mockedCertificateRegistrationRequest,
             'setCertHolderId');
@@ -113,11 +110,14 @@ describe('Class ClientServiceBase', () => {
         const mockSpySetCertPem = sinon.spy(
             mockedCertificateRegistrationRequest,
             'setCertPem');
-        const request = await clientService.registerCertificate();
+        const request = await clientServiceBase.registerCertificate();
 
-        assert(mockSpySetCertHolderId.calledOnce);
-        assert(mockSpySetCertVersion.calledOnce);
-        assert(mockSpySetCertPem.calledOnce);
+        assert(mockSpySetCertHolderId.calledWithExactly(
+            clientProperties['scalar.ledger.client.cert_holder_id']));
+        assert(mockSpySetCertVersion.calledWithExactly(
+            clientProperties['scalar.ledger.client.cert_version']));
+        assert(mockSpySetCertPem.calledWithExactly(
+            clientProperties['scalar.ledger.client.cert_pem']));
         assert.instanceOf(request, Function);
       });
     });
@@ -125,10 +125,10 @@ describe('Class ClientServiceBase', () => {
     describe('registerFunction', () => {
       it('should throw an error when contractBytes is not a Uint8Array',
           async () => {
-            const clientService = new ClientServiceBase(service, protobuf,
+            const clientServiceBase = new ClientServiceBase(service, protobuf,
                 clientProperties);
             try {
-              await clientService.registerFunction('contract1', 'foo',
+              await clientServiceBase.registerFunction('contract1', 'foo',
                   'wrongType');
             } catch (e) {
               assert.instanceOf(e, IllegalArgumentError);
@@ -136,6 +136,9 @@ describe('Class ClientServiceBase', () => {
           },
       );
       it('should work as expected', async () => {
+        const mockedContractId = 12345;
+        const mockedName = 'foo';
+        const mockedByteCode = new Uint8Array([1, 2, 3]);
         const mockedFunctionRegistrationRequest = {
           setFunctionId: function() {},
           setFunctionBinaryName: function() {},
@@ -146,9 +149,9 @@ describe('Class ClientServiceBase', () => {
             return mockedFunctionRegistrationRequest;
           },
         };
-        const clientService = new ClientServiceBase(service, mockedProtobuf,
+        const clientServiceBase = new ClientServiceBase(service, mockedProtobuf,
             clientProperties);
-        genericEllipticSignatureSigner(clientService);
+        genericEllipticSignatureSigner(clientServiceBase);
         const mockSpyFunctionRegistrationRequest = sinon.spy(mockedProtobuf,
             'FunctionRegistrationRequest');
         const mockSpySetFunctionId = sinon.spy(
@@ -157,9 +160,13 @@ describe('Class ClientServiceBase', () => {
             mockedFunctionRegistrationRequest, 'setFunctionBinaryName');
         const mockSpySetFunctionByteCode = sinon.spy(
             mockedFunctionRegistrationRequest, 'setFunctionByteCode');
-        const request = await clientService.registerFunction('contractId',
-            'foo',
-            new Uint8Array([1, 2, 3]), clientProperties);
+        const request = await clientServiceBase.registerFunction(
+            mockedContractId,
+            mockedName, mockedByteCode, clientProperties);
+        assert(mockSpyFunctionRegistrationRequest.calledOnce);
+        assert(mockSpySetFunctionId.calledWithExactly(mockedContractId));
+        assert(mockSpySetFunctionBinaryName.calledWithExactly(mockedName));
+        assert(mockSpySetFunctionByteCode.calledWithExactly(mockedByteCode));
         assert.instanceOf(request, Function);
       });
     });
@@ -167,10 +174,10 @@ describe('Class ClientServiceBase', () => {
     describe('registerContract', () => {
       it('should throw an error when contractBytes is not a Uint8Array',
           async () => {
-            const clientService = new ClientServiceBase(service, protobuf,
-                clientProperties);
+            const clientServiceBase = new ClientServiceBase(
+                service, protobuf, clientProperties);
             try {
-              await clientService.registerContract('contract1', 'foo',
+              await clientServiceBase.registerContract('contract1', 'foo',
                   'wrongType');
             } catch (e) {
               assert.instanceOf(e, IllegalArgumentError);
@@ -178,6 +185,10 @@ describe('Class ClientServiceBase', () => {
           },
       );
       it('should work as expected', async () => {
+        const mockedContractId = 12345;
+        const mockedName = 'foo';
+        const mockedByteCode = new Uint8Array([1, 2, 3]);
+        const mockedPropertiesJson = JSON.stringify(clientProperties);
         const mockedContractRegistrationRequest = {
           setContractId: function() {},
           setContractBinaryName: function() {},
@@ -192,10 +203,11 @@ describe('Class ClientServiceBase', () => {
             return mockedContractRegistrationRequest;
           },
         };
-        const clientService = new ClientServiceBase(service,
+        const clientServiceBase = new ClientServiceBase(service,
             mockedProtobuf, clientProperties);
-        genericEllipticSignatureSigner(clientService);
-        const mockSpyContractRegistrationRequest = sinon.spy(mockedProtobuf,
+        genericEllipticSignatureSigner(clientServiceBase);
+        const mockSpyContractRegistrationRequest = sinon.spy(
+            mockedProtobuf,
             'ContractRegistrationRequest');
         const mockSpySetContractBinaryName = sinon.spy(
             mockedContractRegistrationRequest,
@@ -218,22 +230,29 @@ describe('Class ClientServiceBase', () => {
         const mockSpySetSignature = sinon.spy(
             mockedContractRegistrationRequest,
             'setSignature');
-        const request = await clientService.registerContract('contractId',
-            'foo',
-            new Uint8Array([1, 2, 3]), clientProperties);
-        assert(mockSpySetContractId.calledOnce);
+        const request = await clientServiceBase.registerContract(
+            mockedContractId,
+            mockedName, mockedByteCode, clientProperties);
+        assert(
+            mockSpySetContractId.calledWithExactly(mockedContractId));
         assert(mockSpyContractRegistrationRequest.calledOnce);
-        assert(mockSpySetContractBinaryName.calledOnce);
-        assert(mockSpySetContractByteCode.calledOnce);
-        assert(mockSpySetContractProperties.calledOnce);
-        assert(mockSpySetCertHolderId.calledOnce);
-        assert(mockSpySetCertVersion.calledOnce);
+        assert(mockSpySetContractBinaryName.calledWithExactly(
+            mockedName));
+        assert(mockSpySetContractByteCode.calledWithExactly(
+            mockedByteCode));
+        assert(mockSpySetContractProperties.calledWithExactly(
+            mockedPropertiesJson));
+        assert(mockSpySetCertHolderId.calledWithExactly(
+            clientProperties['scalar.ledger.client.cert_holder_id']));
+        assert(mockSpySetCertVersion.calledWithExactly(
+            clientProperties['scalar.ledger.client.cert_version']));
         assert(mockSpySetSignature.calledOnce);
         assert.instanceOf(request, Function);
       });
     });
     describe('listContract', () => {
       it('should work as expected', async () => {
+        const mockedContractId = 12345;
         const mockedListContracts = {
           setCertHolderId: function() {},
           setCertVersion: function() {},
@@ -245,9 +264,10 @@ describe('Class ClientServiceBase', () => {
             return mockedListContracts;
           },
         };
-        const clientService = new ClientServiceBase(service, mockedProtobuf,
+        const clientServiceBase = new ClientServiceBase(service, mockedProtobuf,
             clientProperties);
-        const mockSpyContractsListingRequest = sinon.spy(mockedProtobuf,
+        const mockSpyContractsListingRequest = sinon.spy(
+            mockedProtobuf,
             'ContractsListingRequest');
         const mockSpySetCertHolderId = sinon.spy(mockedListContracts,
             'setCertHolderId');
@@ -257,17 +277,21 @@ describe('Class ClientServiceBase', () => {
             'setContractId');
         const mockSpySetSignature = sinon.spy(mockedListContracts,
             'setSignature');
-        genericEllipticSignatureSigner(clientService);
-        const request = await clientService.listContracts('contractId');
+        genericEllipticSignatureSigner(clientServiceBase);
+        const request = await clientServiceBase.listContracts(mockedContractId);
         assert(mockSpyContractsListingRequest.calledOnce);
-        assert(mockSpySetCertHolderId.calledOnce);
-        assert(mockSpySetCertVersion.calledOnce);
-        assert(mockSpySetContractId.calledOnce);
+        assert(mockSpySetCertHolderId.calledWithExactly(
+            clientProperties['scalar.ledger.client.cert_holder_id']));
+        assert(mockSpySetCertVersion.calledWithExactly(
+            clientProperties['scalar.ledger.client.cert_version']));
+        assert(
+            mockSpySetContractId.calledWithExactly(mockedContractId));
         assert(mockSpySetSignature.calledOnce);
         assert.instanceOf(request, Function);
       });
     });
     describe('validateLedger', () => {
+      const mockedAssetId = 'contractId';
       it('should work as expected', async () => {
         const mockedValidateLedger = {
           setAssetId: function() {},
@@ -280,9 +304,10 @@ describe('Class ClientServiceBase', () => {
             return mockedValidateLedger;
           },
         };
-        const clientService = new ClientServiceBase(service, mockedProtobuf,
+        const clientServiceBase = new ClientServiceBase(service, mockedProtobuf,
             clientProperties);
-        const mockSpyLedgerValidationRequest = sinon.spy(mockedProtobuf,
+        const mockSpyLedgerValidationRequest = sinon.spy(
+            mockedProtobuf,
             'LedgerValidationRequest');
         const mockSpySetAssetId = sinon.spy(mockedValidateLedger,
             'setAssetId');
@@ -292,17 +317,24 @@ describe('Class ClientServiceBase', () => {
             'setCertVersion');
         const mockSpySetSignature = sinon.spy(mockedValidateLedger,
             'setSignature');
-        genericEllipticSignatureSigner(clientService);
-        const request = await clientService.validateLedger('contractId');
+        genericEllipticSignatureSigner(clientServiceBase);
+        const request = await clientServiceBase.validateLedger(mockedAssetId);
         assert(mockSpyLedgerValidationRequest.calledOnce);
-        assert(mockSpySetAssetId.calledOnce);
-        assert(mockSpySetCertHolderId.calledOnce);
-        assert(mockSpySetCertVersion.calledOnce);
+        assert(mockSpySetAssetId.calledWithExactly(mockedAssetId));
+        assert(mockSpySetCertHolderId.calledWithExactly(
+            clientProperties['scalar.ledger.client.cert_holder_id']));
+        assert(mockSpySetCertVersion.calledWithExactly(
+            clientProperties['scalar.ledger.client.cert_version']));
         assert(mockSpySetSignature.calledOnce);
         assert.instanceOf(request, Function);
       });
     });
     describe('executeContract', () => {
+      const mockedContractId = 12345;
+      const mockedArgument = {'mocked': 'argument'};
+      const mockedFunctionArgument = 'mockedFunctionArgument';
+      const mockedFunctionArgumentJson = JSON.stringify(
+          mockedFunctionArgument);
       it('should work as expected', async () => {
         const mockedExecuteContract = {
           setContractId: function() {},
@@ -317,37 +349,48 @@ describe('Class ClientServiceBase', () => {
             return mockedExecuteContract;
           },
         };
-        const clientService = new ClientServiceBase(service, mockedProtobuf,
+        const clientServiceBase = new ClientServiceBase(service, mockedProtobuf,
             clientProperties);
-        const mockSpyContractExecutionRequest = sinon.spy(mockedProtobuf,
+        const mockSpyContractExecutionRequest = sinon.spy(
+            mockedProtobuf,
             'ContractExecutionRequest');
         const mockSpySetContractId = sinon.spy(mockedExecuteContract,
             'setContractId');
-        const mockSpySetContractArgument = sinon.spy(mockedExecuteContract,
+        const mockSpySetContractArgument = sinon.spy(
+            mockedExecuteContract,
             'setContractArgument');
-        const mockSpySetCertHolderId = sinon.spy(mockedExecuteContract,
+        const mockSpySetCertHolderId = sinon.spy(
+            mockedExecuteContract,
             'setCertHolderId');
         const mockSpySetCertVersion = sinon.spy(mockedExecuteContract,
             'setCertVersion');
-        const mockSpySetFunctionArgument = sinon.spy(mockedExecuteContract,
+        const mockSpySetFunctionArgument = sinon.spy(
+            mockedExecuteContract,
             'setFunctionArgument');
         const mockSpySetSignature = sinon.spy(mockedExecuteContract,
             'setSignature');
-        genericEllipticSignatureSigner(clientService);
-        const request = await clientService.executeContract('contractId',
-            {'mocked': 'argument'});
+        genericEllipticSignatureSigner(clientServiceBase);
+        const request = await clientServiceBase.executeContract(
+            mockedContractId,
+            mockedArgument, mockedFunctionArgument);
         assert(mockSpyContractExecutionRequest.calledOnce);
-        assert(mockSpySetContractId.calledOnce);
-        assert(mockSpySetContractArgument.calledOnce);
-        assert(mockSpySetCertHolderId.calledOnce);
-        assert(mockSpySetCertVersion.calledOnce);
+        assert(
+            mockSpySetContractId.calledWithExactly(mockedContractId));
+        assert(mockSpySetContractArgument.calledWith(
+            sinon.match(mockedArgument.mocked)));
+        assert(mockSpySetCertHolderId.calledWithExactly(
+            clientProperties['scalar.ledger.client.cert_holder_id']));
+        assert(mockSpySetCertVersion.calledWithExactly(
+            clientProperties['scalar.ledger.client.cert_version']));
         assert(mockSpySetSignature.calledOnce);
-        assert(mockSpySetFunctionArgument.calledOnce);
+        assert(mockSpySetFunctionArgument.calledWithExactly(
+            mockedFunctionArgumentJson));
         assert.instanceOf(request, Function);
       });
     });
     describe('sendRequest', () => {
       it('should reject on anonymous function name', async () => {
+        const mockedErrorMessage = 'Mocked error message';
         const mock = {
           setMessage: function() {},
           setStatus: function() {},
@@ -359,13 +402,18 @@ describe('Class ClientServiceBase', () => {
             return mock;
           },
         };
-        const clientService = new ClientServiceBase(service, mockedProtobuf,
-            clientProperties);
-        await clientService.sendRequest('registerCert', () => {
-          throw new Error();
+        const mockSpyLedgerServiceResponse = sinon.spy(mockedProtobuf,
+            'LedgerServiceResponse');
+        const clientServiceBase = new ClientServiceBase(
+            service, mockedProtobuf, clientProperties);
+        await clientServiceBase.sendRequest('registerCert', () => {
+          throw new Error(mockedErrorMessage);
         });
-        sinon.assert.calledOnce(mockSpySetMessage);
-        sinon.assert.calledOnce(mockSpySetStatus);
+        assert(mockSpyLedgerServiceResponse.calledOnce);
+        assert(
+            mockSpySetMessage.calledWithExactly(mockedErrorMessage));
+        assert(mockSpySetStatus.calledWithExactly(
+            StatusCode.RUNTIME_ERROR));
       });
     });
   });

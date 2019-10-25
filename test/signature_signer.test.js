@@ -24,7 +24,7 @@ describe('Class SignatureSigner', () => {
       }).to.throw('Failed to load private key');
     });
 
-    it('throws exception when it not is ASN.1 hex string', () => {
+    it('throws exception when it is not an ASN.1 hex string', () => {
       const signer = new JsrsasignSignatureSigner('mocked non ASN.1 string');
       expect(() => {
         signer.sign('content');
@@ -39,14 +39,12 @@ describe('Class SignatureSigner', () => {
   });
 
   describe('Class EllipticSignatureSigner', () => {
-    it('throws exception when pem file is not correct', () => {
+    it('throws exception when the pem file is not correct', () => {
       const signer = new SignatureSigner('incorrect pem'); // EllipticSignature is used by default
       expect(() => {
         signer.sign('content');
-      }).
-          to.
-          throw(
-              'Failed to sign the request unsupported PKCS#1/5 hexadecimal key');
+      }).to.throw(
+          'Failed to sign the request unsupported PKCS#1/5 hexadecimal key');
     });
     it('should work properly', () => {
       const pem = fs.readFileSync(__dirname + '/key.pem', 'utf-8');
