@@ -16,6 +16,6 @@
     "sinon": "^7.5.0"
   },
   "scripts": {
-    "test": "npx mocha test/"
+    "test": "mocha test/"
   }
 }

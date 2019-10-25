@@ -5,7 +5,6 @@ const {
   ContractRegistrationRequestBuilder,
   ContractsListingRequestBuilder,
   LedgerValidationRequestBuilder,
-  FunctionRegistrationRequestBuilder,
   ContractExecutionRequestBuilder,
 } = require('./request/builder');
 
