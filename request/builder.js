@@ -83,9 +83,11 @@ class FunctionRegistrationRequestBuilder {
   /**
    * @constructor
    * @param {FunctionRegistrationRequest} request
+   * @param {SignatureSigner} signer
    */
-  constructor(request) {
+  constructor(request, signer) {
     this.request = request;
+    this.signer = signer;
   }
 
   /**
@@ -130,6 +132,24 @@ class FunctionRegistrationRequestBuilder {
     request.setFunctionId(this.functionId);
     request.setFunctionBinaryName(this.functionBinaryName);
     request.setFunctionByteCode(this.functionByteCode);
+
+    const functionId = new TextEncoder('utf-8').encode(this.functionId);
+    const functionBinaryName = new TextEncoder('utf-8').encode(
+        this.functionBinaryName);
+    const functionByteCode = this.this.functionByteCode;
+
+    const buffer = new Uint8Array(
+        functionId.byteLength + functionBinaryName.byteLength +
+        functionByteCode.byteLength);
+
+    let offset = 0;
+    buffer.set(functionId, offset);
+    offset += functionId.byteLength;
+    buffer.set(functionBinaryName, offset);
+    offset += functionBinaryName.byteLength;
+    buffer.set(functionByteCode, offset);
+
+    request.setSignature(this.signer.sign(buffer));
     return request;
   }
 }
