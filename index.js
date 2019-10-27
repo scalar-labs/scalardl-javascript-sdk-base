@@ -20,7 +20,8 @@ const {SignatureSigner} = require('./signer');
  */
 class ClientServiceBase {
   /**
-   * @param service = { ledgerClient <object of ledgeClient>, ledgerPrivileged<object of ledgerPrivileged> } ledgerPrivileged LedgerPrivileged object to inject
+   * @param {Object} service contains the object of ledgeClient and
+   *  the object of ledgerPrivileged
    * @param {Protobuf} protobuf protobuf object to inject
    * @param {Object} properties JSON Object used for setting client properties
    */
