@@ -7,7 +7,7 @@ const {
 const sinon = require('sinon');
 const assert = require('chai').assert;
 const protobuf = {};
-const service = {
+const services = {
   'ledgerPrivileged': {},
   'ledgerClient': {},
 };
@@ -28,7 +28,7 @@ describe('Class ClientServiceBase', () => {
           'scalar.ledger.client.cert_holder_id': 'hold',
         };
         assert.throws(() => {
-          new ClientServiceBase(service, protobuf, clientProperties);
+          new ClientServiceBase(services, protobuf, clientProperties);
         }, IllegalArgumentError, 'private_key_pem');
       });
       it('when the certificate is missing', () => {
@@ -38,18 +38,17 @@ describe('Class ClientServiceBase', () => {
           'scalar.ledger.client.cert_holder_id': 'hold',
         };
         assert.throws(() => {
-          new ClientServiceBase(service, protobuf, clientProperties);
+          new ClientServiceBase(services, protobuf, clientProperties);
         }, IllegalArgumentError, 'cert_pem');
       });
       it('when holder id is missing', () => {
         const clientProperties = {
           'scalar.ledger.client.private_key_pem': 'key',
           'scalar.ledger.client.cert_pem': 'cert',
-          'scalar.ledger.client.server_host': 'host',
           // 'scalar.ledger.client.cert_holder_id': 'hold',
         };
         assert.throws(() => {
-          new ClientServiceBase(service, protobuf, clientProperties);
+          new ClientServiceBase(services, protobuf, clientProperties);
         }, IllegalArgumentError, 'cert_holder_id');
       });
     });
@@ -63,7 +62,7 @@ describe('Class ClientServiceBase', () => {
             'scalar.ledger.client.authorization.credential':
                 'mocked-credentials',
           };
-          const clientService = new ClientServiceBase(service,
+          const clientService = new ClientServiceBase(services,
               protobuf, clientProperties);
           assert.equal(clientService.privateKeyPem, 'key');
           assert.equal(clientService.certPem, 'cert');
@@ -99,7 +98,7 @@ describe('Class ClientServiceBase', () => {
           },
         };
         const clientServiceBase = new ClientServiceBase(
-            service, mockedProtobuf, clientProperties);
+            services, mockedProtobuf, clientProperties);
         genericEllipticSignatureSigner(clientServiceBase);
         const mockSpySetCertHolderId = sinon.spy(
             mockedCertificateRegistrationRequest,
@@ -125,7 +124,7 @@ describe('Class ClientServiceBase', () => {
     describe('registerFunction', () => {
       it('should throw an error when contractBytes is not a Uint8Array',
           async () => {
-            const clientServiceBase = new ClientServiceBase(service, protobuf,
+            const clientServiceBase = new ClientServiceBase(services, protobuf,
                 clientProperties);
             try {
               await clientServiceBase.registerFunction('contract1', 'foo',
@@ -149,7 +148,7 @@ describe('Class ClientServiceBase', () => {
             return mockedFunctionRegistrationRequest;
           },
         };
-        const clientServiceBase = new ClientServiceBase(service, mockedProtobuf,
+        const clientServiceBase = new ClientServiceBase(services, mockedProtobuf,
             clientProperties);
         genericEllipticSignatureSigner(clientServiceBase);
         const mockSpyFunctionRegistrationRequest = sinon.spy(mockedProtobuf,
@@ -175,7 +174,7 @@ describe('Class ClientServiceBase', () => {
       it('should throw an error when contractBytes is not a Uint8Array',
           async () => {
             const clientServiceBase = new ClientServiceBase(
-                service, protobuf, clientProperties);
+                services, protobuf, clientProperties);
             try {
               await clientServiceBase.registerContract('contract1', 'foo',
                   'wrongType');
@@ -203,7 +202,7 @@ describe('Class ClientServiceBase', () => {
             return mockedContractRegistrationRequest;
           },
         };
-        const clientServiceBase = new ClientServiceBase(service,
+        const clientServiceBase = new ClientServiceBase(services,
             mockedProtobuf, clientProperties);
         genericEllipticSignatureSigner(clientServiceBase);
         const mockSpyContractRegistrationRequest = sinon.spy(
@@ -264,7 +263,7 @@ describe('Class ClientServiceBase', () => {
             return mockedListContracts;
           },
         };
-        const clientServiceBase = new ClientServiceBase(service, mockedProtobuf,
+        const clientServiceBase = new ClientServiceBase(services, mockedProtobuf,
             clientProperties);
         const mockSpyContractsListingRequest = sinon.spy(
             mockedProtobuf,
@@ -304,7 +303,7 @@ describe('Class ClientServiceBase', () => {
             return mockedValidateLedger;
           },
         };
-        const clientServiceBase = new ClientServiceBase(service, mockedProtobuf,
+        const clientServiceBase = new ClientServiceBase(services, mockedProtobuf,
             clientProperties);
         const mockSpyLedgerValidationRequest = sinon.spy(
             mockedProtobuf,
@@ -349,7 +348,7 @@ describe('Class ClientServiceBase', () => {
             return mockedExecuteContract;
           },
         };
-        const clientServiceBase = new ClientServiceBase(service, mockedProtobuf,
+        const clientServiceBase = new ClientServiceBase(services, mockedProtobuf,
             clientProperties);
         const mockSpyContractExecutionRequest = sinon.spy(
             mockedProtobuf,
@@ -405,7 +404,7 @@ describe('Class ClientServiceBase', () => {
         const mockSpyLedgerServiceResponse = sinon.spy(mockedProtobuf,
             'LedgerServiceResponse');
         const clientServiceBase = new ClientServiceBase(
-            service, mockedProtobuf, clientProperties);
+            services, mockedProtobuf, clientProperties);
         await clientServiceBase.sendRequest('registerCert', () => {
           throw new Error(mockedErrorMessage);
         });
