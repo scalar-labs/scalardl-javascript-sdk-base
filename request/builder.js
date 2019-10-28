@@ -91,7 +91,7 @@ class FunctionRegistrationRequestBuilder {
   }
 
   /**
-   * Set the ID of the function
+   * Sets the ID of the function
    * @param {string} id
    * @return {FunctionRegistrationRequestBuilder}
    */
@@ -102,7 +102,7 @@ class FunctionRegistrationRequestBuilder {
   }
 
   /**
-   * Set the certificate version
+   * Sets the certificate version
    * @param {string} name
    * @return {FunctionRegistrationRequestBuilder}
    */
@@ -113,7 +113,7 @@ class FunctionRegistrationRequestBuilder {
   }
 
   /**
-   * Set the function byteCode
+   * Sets the function byteCode
    * @param {string} functionBytes
    * @return {FunctionRegistrationRequestBuilder}
    */
@@ -124,7 +124,7 @@ class FunctionRegistrationRequestBuilder {
   }
 
   /**
-   * Build the FunctionRegistrationRequest
+   * Builds the FunctionRegistrationRequest
    * @return {FunctionRegistrationRequest}
    */
   build() {
