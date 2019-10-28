@@ -105,16 +105,16 @@ class ClientServiceBase {
         withCertPem(this.certPem).
         build();
     return this.sendRequest('registerCert', () =>
-        new Promise((resolve, reject) => {
-          this.ledgerPrivileged.registerCertificate(request, this.metadata,
-              (err, response) => {
-                if (err) {
-                  reject(err);
-                } else {
-                  resolve(response);
-                }
-              });
-        }),
+      new Promise((resolve, reject) => {
+        this.ledgerPrivileged.registerCertificate(request, this.metadata,
+            (err, response) => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(response);
+              }
+            });
+      }),
     );
   }
 
@@ -177,16 +177,16 @@ class ClientServiceBase {
         withCertVersion(this.certVersion).
         build();
     return this.sendRequest('registerContract', () =>
-        new Promise((resolve, reject) => {
-          this.ledgerClient.registerContract(request, this.metadata,
-              (err, response) => {
-                if (err) {
-                  reject(err);
-                } else {
-                  resolve(response);
-                }
-              });
-        }));
+      new Promise((resolve, reject) => {
+        this.ledgerClient.registerContract(request, this.metadata,
+            (err, response) => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(response);
+              }
+            });
+      }));
   }
 
   /**
@@ -203,16 +203,16 @@ class ClientServiceBase {
         withContractId(contractId).
         build();
     return this.sendRequest('listContracts', () =>
-        new Promise((resolve, reject) => {
-          this.ledgerClient.listContracts(request,
-              this.metadata, (err, response) => {
-                if (err) {
-                  reject(err);
-                } else {
-                  resolve(response);
-                }
-              });
-        }));
+      new Promise((resolve, reject) => {
+        this.ledgerClient.listContracts(request,
+            this.metadata, (err, response) => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(response);
+              }
+            });
+      }));
   }
 
   /**
@@ -229,16 +229,16 @@ class ClientServiceBase {
         build();
 
     return this.sendRequest('validateLedger', () =>
-        new Promise((resolve, reject) => {
-          this.ledgerClient.validateLedger(request, this.metadata,
-              (err, response) => {
-                if (err) {
-                  reject(err);
-                } else {
-                  resolve(response);
-                }
-              });
-        }));
+      new Promise((resolve, reject) => {
+        this.ledgerClient.validateLedger(request, this.metadata,
+            (err, response) => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(response);
+              }
+            });
+      }));
   }
 
   /**
@@ -262,16 +262,16 @@ class ClientServiceBase {
         build();
 
     return this.sendRequest('executeContract', () =>
-        new Promise((resolve, reject) => {
-          this.ledgerClient.executeContract(request, this.metadata,
-              (err, response) => {
-                if (err) {
-                  reject(err);
-                } else {
-                  resolve(response);
-                }
-              });
-        }));
+      new Promise((resolve, reject) => {
+        this.ledgerClient.executeContract(request, this.metadata,
+            (err, response) => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(response);
+              }
+            });
+      }));
   }
 
   /**
