@@ -14,7 +14,6 @@ jobs:
         environment:
           MAX_HEAP_SIZE: 2048m
           HEAP_NEWSIZE: 512m
-          MOCHA_FILE: "$CIRCLE_TEST_REPORTS/test-results.xml"
 
     working_directory: ~/javascript-sdk-base
 
@@ -36,3 +35,11 @@ jobs:
       # run tests!
       - run:
           command: npm test
+          environment:
+            MOCHA_FILE: "~/mochawesome-report/mochawesome.html"
+          when: always
+
+      - store_test_results:
+          path: ~/mochawesome-report
+      - store_artifacts:
+          path: ~/mochawesome-report
