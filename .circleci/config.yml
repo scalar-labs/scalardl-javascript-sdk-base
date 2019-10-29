@@ -36,10 +36,10 @@ jobs:
       - run:
           command: npm test
           environment:
-            MOCHA_FILE: "~/mochawesome-report/mochawesome.html"
+            MOCHA_FILE: "~/javascript-sdk-base/mochawesome-report/mochawesome.html"
           when: always
 
       - store_test_results:
-          path: ~/mochawesome-report
+          path: ~/javascript-sdk-base/mochawesome-report
       - store_artifacts:
-          path: ~/mochawesome-report
+          path: ~/javascript-sdk-base/mochawesome-report
