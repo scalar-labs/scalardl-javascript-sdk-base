@@ -8,7 +8,7 @@ jobs:
     branches:
       only:
         - master
-        - /feature\/ci.*/
+        - /feature\/.*/
     docker:
       - image: circleci/node:10-browsers-legacy
         environment:

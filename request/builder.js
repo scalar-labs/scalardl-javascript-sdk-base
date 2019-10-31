@@ -77,6 +77,66 @@ class CertificateRegistrationRequestBuilder {
 }
 
 /**
+ * Used to build a FunctionRegistrationRequest.
+ */
+class FunctionRegistrationRequestBuilder {
+  /**
+   * @constructor
+   * @param {FunctionRegistrationRequest} request
+   * @param {SignatureSigner} signer
+   */
+  constructor(request, signer) {
+    this.request = request;
+    this.signer = signer;
+  }
+
+  /**
+   * Sets the ID of the function
+   * @param {string} id
+   * @return {FunctionRegistrationRequestBuilder}
+   */
+  withFunctionId(id) {
+    /** @const */
+    this.functionId = id;
+    return this;
+  }
+
+  /**
+   * Sets the certificate version
+   * @param {string} name
+   * @return {FunctionRegistrationRequestBuilder}
+   */
+  withFunctionBinaryName(name) {
+    /** @const */
+    this.functionBinaryName = name;
+    return this;
+  }
+
+  /**
+   * Sets the function byteCode
+   * @param {string} functionBytes
+   * @return {FunctionRegistrationRequestBuilder}
+   */
+  withFunctionByteCode(functionBytes) {
+    /** @const */
+    this.functionByteCode = functionBytes;
+    return this;
+  }
+
+  /**
+   * Builds the FunctionRegistrationRequest
+   * @return {FunctionRegistrationRequest}
+   */
+  build() {
+    const request = this.request;
+    request.setFunctionId(this.functionId);
+    request.setFunctionBinaryName(this.functionBinaryName);
+    request.setFunctionByteCode(this.functionByteCode);
+    return request;
+  }
+}
+
+/**
  * Used for building a ContractRegistrationRequest
  */
 class ContractRegistrationRequestBuilder {
@@ -470,6 +530,7 @@ class ContractExecutionRequestBuilder {
 
 module.exports = {
   CertificateRegistrationRequestBuilder,
+  FunctionRegistrationRequestBuilder,
   ContractRegistrationRequestBuilder,
   ContractsListingRequestBuilder,
   LedgerValidationRequestBuilder,
