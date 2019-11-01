@@ -106,7 +106,7 @@ class ClientServiceBase {
         build();
     return this.sendRequest('registerCert', () =>
         new Promise((resolve, reject) => {
-          this.ledgerPrivileged.registerCertificate(request, this.metadata,
+          this.ledgerPrivileged.registerCert(request, this.metadata,
               (err, response) => {
                 if (err) {
                   reject(err);
@@ -286,6 +286,7 @@ class ClientServiceBase {
       let response;
       switch (funcName) {
         case 'registerCert':
+        case 'registerFunction':
         case 'registerContract':
         case 'listContracts':
           response = new this.protobuf.LedgerServiceResponse();
