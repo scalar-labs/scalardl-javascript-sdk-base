@@ -136,18 +136,17 @@ class ClientServiceBase {
         this.signer).withFunctionId(id).
         withFunctionBinaryName(name).
         withFunctionByteCode(functionBytes).build();
-    return this.sendRequest('registerFunction', () => {
-      new Promise((resolve, reject) => {
-        this.ledgerPrivileged.registerFunction(request, this.metadata,
-            (err, response) => {
-              if (err) {
-                reject(err);
-              } else {
-                resolve(response);
-              }
-            });
-      });
-    });
+    return this.sendRequest('registerFunction', () =>
+        new Promise((resolve, reject) => {
+          this.ledgerPrivileged.registerFunction(request, this.metadata,
+              (err, response) => {
+                if (err) {
+                  reject(err);
+                } else {
+                  resolve(response);
+                }
+              });
+        }));
   };
 
   /**
