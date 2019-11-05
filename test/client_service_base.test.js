@@ -148,7 +148,8 @@ describe('Class ClientServiceBase', () => {
             return mockedFunctionRegistrationRequest;
           },
         };
-        const clientServiceBase = new ClientServiceBase(services, mockedProtobuf,
+        const clientServiceBase = new ClientServiceBase(services,
+            mockedProtobuf,
             clientProperties);
         genericEllipticSignatureSigner(clientServiceBase);
         const mockSpyFunctionRegistrationRequest = sinon.spy(mockedProtobuf,
@@ -263,7 +264,8 @@ describe('Class ClientServiceBase', () => {
             return mockedListContracts;
           },
         };
-        const clientServiceBase = new ClientServiceBase(services, mockedProtobuf,
+        const clientServiceBase = new ClientServiceBase(services,
+            mockedProtobuf,
             clientProperties);
         const mockSpyContractsListingRequest = sinon.spy(
             mockedProtobuf,
@@ -303,7 +305,8 @@ describe('Class ClientServiceBase', () => {
             return mockedValidateLedger;
           },
         };
-        const clientServiceBase = new ClientServiceBase(services, mockedProtobuf,
+        const clientServiceBase = new ClientServiceBase(services,
+            mockedProtobuf,
             clientProperties);
         const mockSpyLedgerValidationRequest = sinon.spy(
             mockedProtobuf,
@@ -348,7 +351,8 @@ describe('Class ClientServiceBase', () => {
             return mockedExecuteContract;
           },
         };
-        const clientServiceBase = new ClientServiceBase(services, mockedProtobuf,
+        const clientServiceBase = new ClientServiceBase(services,
+            mockedProtobuf,
             clientProperties);
         const mockSpyContractExecutionRequest = sinon.spy(
             mockedProtobuf,

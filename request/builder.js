@@ -83,11 +83,9 @@ class FunctionRegistrationRequestBuilder {
   /**
    * @constructor
    * @param {FunctionRegistrationRequest} request
-   * @param {SignatureSigner} signer
    */
-  constructor(request, signer) {
+  constructor(request) {
     this.request = request;
-    this.signer = signer;
   }
 
   /**

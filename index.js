@@ -106,7 +106,7 @@ class ClientServiceBase {
         build();
     return this.sendRequest('registerCert', () =>
         new Promise((resolve, reject) => {
-          this.ledgerPrivileged.registerCertificate(request, this.metadata,
+          this.ledgerPrivileged.registerCert(request, this.metadata,
               (err, response) => {
                 if (err) {
                   reject(err);
@@ -136,18 +136,17 @@ class ClientServiceBase {
         this.signer).withFunctionId(id).
         withFunctionBinaryName(name).
         withFunctionByteCode(functionBytes).build();
-    return this.sendRequest('registerFunction', () => {
-      new Promise((resolve, reject) => {
-        this.ledgerPrivileged.registerFunction(request, this.metadata,
-            (err, response) => {
-              if (err) {
-                reject(err);
-              } else {
-                resolve(response);
-              }
-            });
-      });
-    });
+    return this.sendRequest('registerFunction', () =>
+        new Promise((resolve, reject) => {
+          this.ledgerPrivileged.registerFunction(request, this.metadata,
+              (err, response) => {
+                if (err) {
+                  reject(err);
+                } else {
+                  resolve(response);
+                }
+              });
+        }));
   };
 
   /**
@@ -286,6 +285,7 @@ class ClientServiceBase {
       let response;
       switch (funcName) {
         case 'registerCert':
+        case 'registerFunction':
         case 'registerContract':
         case 'listContracts':
           response = new this.protobuf.LedgerServiceResponse();
