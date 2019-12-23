@@ -98,12 +98,13 @@ class ClientServiceBase {
    * @return {Promise<ClientServiceResponse>}
    */
   async registerCertificate() {
-    const request = new CertificateRegistrationRequestBuilder(
+    const builder = new CertificateRegistrationRequestBuilder(
         new this.protobuf.CertificateRegistrationRequest(),
     ).withCertHolderId(this.certHolderId).
         withCertVersion(this.certVersion).
-        withCertPem(this.certPem).
-        build();
+        withCertPem(this.certPem);
+
+    const request = await builder.build();
     return this.sendRequest('registerCert', () =>
       new Promise((resolve, reject) => {
         this.ledgerPrivileged.registerCert(request, this.metadata,
@@ -131,11 +132,13 @@ class ClientServiceBase {
       );
     }
 
-    const request = new FunctionRegistrationRequestBuilder(
+    const builder = new FunctionRegistrationRequestBuilder(
         new this.protobuf.FunctionRegistrationRequest(),
         this.signer).withFunctionId(id).
         withFunctionBinaryName(name).
-        withFunctionByteCode(functionBytes).build();
+        withFunctionByteCode(functionBytes);
+
+    const request = await builder.build();
     return this.sendRequest('registerFunction', () =>
       new Promise((resolve, reject) => {
         this.ledgerPrivileged.registerFunction(request, this.metadata,
@@ -166,15 +169,16 @@ class ClientServiceBase {
     }
 
     const propertiesJson = JSON.stringify(properties);
-    const request = new ContractRegistrationRequestBuilder(
+    const builder = new ContractRegistrationRequestBuilder(
         new this.protobuf.ContractRegistrationRequest(),
         this.signer).withContractId(id).
         withContractBinaryName(name).
         withContractByteCode(contractBytes).
         withContractProperties(propertiesJson).
         withCertHolderId(this.certHolderId).
-        withCertVersion(this.certVersion).
-        build();
+        withCertVersion(this.certVersion);
+
+    const request = await builder.build();
     return this.sendRequest('registerContract', () =>
       new Promise((resolve, reject) => {
         this.ledgerClient.registerContract(request, this.metadata,
@@ -195,12 +199,12 @@ class ClientServiceBase {
    * @return {Promise<ClientServiceResponse>}
    */
   async listContracts(contractId) {
-    const request = new ContractsListingRequestBuilder(
+    const builder = new ContractsListingRequestBuilder(
         new this.protobuf.ContractsListingRequest(),
         this.signer).withCertHolderId(this.certHolderId).
         withCertVersion(this.certVersion).
-        withContractId(contractId).
-        build();
+        withContractId(contractId);
+    const request = await builder.build();
     return this.sendRequest('listContracts', () =>
       new Promise((resolve, reject) => {
         this.ledgerClient.listContracts(request,
@@ -220,12 +224,13 @@ class ClientServiceBase {
    * @return {Promise<ClientServiceResponse>}
    */
   async validateLedger(assetId) {
-    const request = new LedgerValidationRequestBuilder(
+    const builder = new LedgerValidationRequestBuilder(
         new this.protobuf.LedgerValidationRequest(), this.signer).withAssetId(
         assetId).
         withCertHolderId(this.certHolderId).
-        withCertVersion(this.certVersion).
-        build();
+        withCertVersion(this.certVersion);
+
+    const request = await builder.build();
 
     return this.sendRequest('validateLedger', () =>
       new Promise((resolve, reject) => {
@@ -251,14 +256,15 @@ class ClientServiceBase {
     const argumentJson = JSON.stringify(argument);
     const functionArgumentJson = JSON.stringify(functionArgument);
 
-    const request = new ContractExecutionRequestBuilder(
+    const builder = new ContractExecutionRequestBuilder(
         new this.protobuf.ContractExecutionRequest(),
         this.signer).withContractId(contractId).
         withContractArgument(argumentJson).
         withFunctionArgument(functionArgumentJson).
         withCertHolderId(this.certHolderId).
-        withCertVersion(this.certVersion).
-        build();
+        withCertVersion(this.certVersion);
+
+    const request = await builder.build();
 
     return this.sendRequest('executeContract', () =>
       new Promise((resolve, reject) => {

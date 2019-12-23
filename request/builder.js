@@ -67,7 +67,7 @@ class CertificateRegistrationRequestBuilder {
    * Builds the CertificateRegistrationRequest
    * @return {CertificateRegistrationRequest}
    */
-  build() {
+  async build() {
     const request = this.request;
     request.setCertHolderId(this.certHolderId);
     request.setCertVersion(this.certVersion);
@@ -125,7 +125,7 @@ class FunctionRegistrationRequestBuilder {
    * Builds the FunctionRegistrationRequest
    * @return {FunctionRegistrationRequest}
    */
-  build() {
+  async build() {
     const request = this.request;
     request.setFunctionId(this.functionId);
     request.setFunctionBinaryName(this.functionBinaryName);
@@ -218,7 +218,7 @@ class ContractRegistrationRequestBuilder {
    * Builds the ContractRegistrationRequest
    * @return {ContractRegistrationRequest}
    */
-  build() {
+  async build() {
     const request = this.request;
     request.setContractId(this.contractId);
     request.setContractBinaryName(this.contractBinaryName);
@@ -256,7 +256,7 @@ class ContractRegistrationRequestBuilder {
     offset += certHolderId.byteLength;
     buffer.set(certVersion, offset);
 
-    request.setSignature(this.signer.sign(buffer));
+    request.setSignature(await this.signer.sign(buffer));
 
     return request;
   }
@@ -313,7 +313,7 @@ class ContractsListingRequestBuilder {
    * Builds the ContractsListingRequest
    * @return {ContractsListingRequest}
    */
-  build() {
+  async build() {
     const request = this.request;
     request.setCertHolderId(this.certHolderId);
     request.setCertVersion(this.certVersion);
@@ -336,7 +336,7 @@ class ContractsListingRequestBuilder {
     offset += certHolderId.byteLength;
     buffer.set(certVersion, offset);
 
-    request.setSignature(this.signer.sign(buffer));
+    request.setSignature(await this.signer.sign(buffer));
 
     return request;
   }
@@ -393,7 +393,7 @@ class LedgerValidationRequestBuilder {
    * Builds a LedgerValidationRequest
    * @return {LedgerValidationRequest}
    */
-  build() {
+  async build() {
     const request = this.request;
     request.setAssetId(this.assetId);
     request.setCertHolderId(this.certHolderId);
@@ -414,7 +414,7 @@ class LedgerValidationRequestBuilder {
     offset += certHolderId.byteLength;
     buffer.set(certVersion, offset);
 
-    request.setSignature(this.signer.sign(buffer));
+    request.setSignature(await this.signer.sign(buffer));
 
     return request;
   }
@@ -492,7 +492,7 @@ class ContractExecutionRequestBuilder {
    * Builds the ContractExecutionRequest
    * @return {ContractExecutionRequest}
    */
-  build() {
+  async build() {
     const request = this.request;
     request.setContractId(this.contractId);
     request.setContractArgument(this.contractArgument);
@@ -520,7 +520,7 @@ class ContractExecutionRequestBuilder {
     offset += certHolderId.byteLength;
     buffer.set(certVersion, offset);
 
-    request.setSignature(this.signer.sign(buffer));
+    request.setSignature(await this.signer.sign(buffer));
 
     return request;
   }

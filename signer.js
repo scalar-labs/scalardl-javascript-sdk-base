@@ -17,7 +17,7 @@ class SignatureSigner {
    * This method must be implemented for all signer class
    * @param {Uint8Array} content
    */
-  sign(content) {
+  async sign(content) {
     throw new Error(`sign is not implemented`);
   }
 
@@ -48,14 +48,14 @@ class JsrsasignSignatureSigner extends SignatureSigner {
    * @param {Uint8Array} content
    * @return {Uint8Array}
    */
-  sign(content) {
+  async sign(content) {
     const hex = jsrsasign.ArrayBuffertohex(content.buffer);
     const ecdsa = new jsrsasign.KJUR.crypto.ECDSA();
     try {
       const base64 = this.getBase64PemString();
       ecdsa.readPKCS5PrvKeyHex(jsrsasign.b64utohex(base64));
     } catch (err) {
-      throw new Error(`Failed to load private key ${err}`);
+      throw new Error(`Failed to load private key`);
     }
 
     try {
@@ -67,7 +67,7 @@ class JsrsasignSignatureSigner extends SignatureSigner {
 
       return new Uint8Array(jsrsasign.hextoArrayBuffer(signature.sign()));
     } catch (err) {
-      throw new Error(`Failed to sign the request ${err}`);
+      throw new Error(`Failed to sign the request`);
     }
   }
 }
@@ -88,7 +88,7 @@ class EllipticSignatureSigner extends SignatureSigner {
    * @param {Uint8Array} content
    * @return {Uint8Array}
    */
-  sign(content) {
+  async sign(content) {
     try {
       const base64 = this.getBase64PemString();
       const {prvKeyHex} = jsrsasign.KEYUTIL.getKey(
@@ -102,7 +102,7 @@ class EllipticSignatureSigner extends SignatureSigner {
       const signature = ecdsa.sign(Buffer.from(digest, 'hex'), signKey);
       return new Uint8Array(signature.toDER());
     } catch (err) {
-      throw new Error(`Failed to sign the request ${err}`);
+      throw new Error(`Failed to sign the request`);
     }
   }
 }
@@ -132,9 +132,20 @@ class WebCryptoSigner {
       hash: 'SHA-256',
     };
     const data = content;
-    const key = await this._key(this.pkcs8);
-    const signature = await window.crypto.subtle.sign(algorithm, key, data);
-    return this._P1363ToDer(new Uint8Array(signature));
+    let key;
+
+    try {
+      key = await this._key(this.pkcs8);
+    } catch (_) {
+      throw new Error('Failed to sign the request');
+    }
+
+    try {
+      const signature = await window.crypto.subtle.sign(algorithm, key, data);
+      return this._P1363ToDer(new Uint8Array(signature));
+    } catch (_) {
+      throw new Error(`Failed to sign the request`);
+    }
   }
 
   /**
