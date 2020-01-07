@@ -137,8 +137,7 @@ class ClientServiceBase {
     }
 
     const builder = new FunctionRegistrationRequestBuilder(
-        new this.protobuf.FunctionRegistrationRequest(),
-        this.signer).withFunctionId(id).
+        new this.protobuf.FunctionRegistrationRequest()).withFunctionId(id).
         withFunctionBinaryName(name).
         withFunctionByteCode(functionBytes);
 
