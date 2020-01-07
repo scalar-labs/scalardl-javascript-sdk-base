@@ -49,7 +49,7 @@ class ClientServiceBase {
         'scalar.ledger.client.cert_holder_id');
     /** @const */
     this.credential =
-        properties['scalar.ledger.client.authorization.credential'];
+      properties['scalar.ledger.client.authorization.credential'];
     /** @const */
     this.certVersion = properties['scalar.ledger.client.cert_version'];
 
