@@ -1,5 +1,5 @@
 const jsrsasign = require('jsrsasign');
-
+const keyutil = require('js-crypto-key-utils');
 
 /**
  * The signer based on Web Crypto API
@@ -62,6 +62,24 @@ class WebCryptoSigner {
   /**
    * @param {Uint8Array} sig
    * @return {Uint8Array}
+   *
+   * This function refer to the SDK of token.io (https://developer.token.io)
+   *
+   * IEEE P1363: bytes array of [
+   *   r,
+   *   s
+   * ]
+   *
+   * ASN.1 DER: bytes array of [
+   *   0x30 (DER sequence tag),
+   *   (length of the bytes after this byte),
+   *   0x02 (DER integer tag),
+   *   (length of the bytes of r),
+   *   r,
+   *   0x02 (DER integer tag),
+   *   (length of the bytes of s),
+   *   s
+   * ]
    */
   _P1363ToDer(sig) {
     const signature = Array

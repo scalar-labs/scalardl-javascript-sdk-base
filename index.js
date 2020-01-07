@@ -60,7 +60,7 @@ class ClientServiceBase {
     }
 
     /** @const */
-    if (typeof process === 'object') { // Node.js environment
+    if (typeof window === 'undefined') { // Node.js environment
       this.signer = new EllipticSigner(this.privateKeyPem);
     } else {
       this.signer = new WebCryptoSigner(this.privateKeyPem);
