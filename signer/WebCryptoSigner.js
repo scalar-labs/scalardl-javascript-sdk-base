@@ -114,7 +114,7 @@ class WebCryptoSigner {
     if (shouldSBePadded) {
       der[offset++] = 0x00;
     }
-    for (let i = 32; i < p1363.length; i++) { // r
+    for (let i = 32; i < p1363.length; i++) { // s
       der[offset++] = p1363[i];
     }
     return der;
