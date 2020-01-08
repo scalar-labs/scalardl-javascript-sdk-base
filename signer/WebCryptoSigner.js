@@ -63,8 +63,9 @@ class WebCryptoSigner {
    * @param {Uint8Array} sig
    * @return {Uint8Array}
    *
-   * This function refer to the SDK of token.io (https://developer.token.io)
-   * It tries to convert signature formatted in IEEE P1363 to ASN.1 DER
+   * This function is taken from the SDK of token.io (https://github.com/tokenio/sdk-js)
+   *
+   * It converts signature formatted in IEEE P1363 to ASN.1 DER
    *
    * IEEE P1363: bytes array of [
    *   r,
@@ -76,9 +77,11 @@ class WebCryptoSigner {
    *   (length of the bytes after this byte),
    *   0x02 (DER integer tag),
    *   (length of the bytes of r),
+   *   (padding, if necessary)
    *   r,
    *   0x02 (DER integer tag),
    *   (length of the bytes of s),
+   *   (padding, if necessary)
    *   s
    * ]
    */
