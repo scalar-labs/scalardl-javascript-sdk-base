@@ -60,10 +60,12 @@ class WebCryptoSigner {
   }
 
   /**
-   * @param {Uint8Array} p1363
+   * @param {Uint8Array} sig
    * @return {Uint8Array}
    *
-   * This function converts signature from P1363 format to ASN.1 DER format
+   * This function refer to the SDK of token.io (https://developer.token.io)
+   * It tries to convert signature formatted in IEEE P1363 to ASN.1 DER
+   *
    * IEEE P1363: bytes array of [
    *   r,
    *   s
@@ -80,44 +82,23 @@ class WebCryptoSigner {
    *   s
    * ]
    */
-  _P1363ToDer(p1363) {
-    if (p1363.length != 64) {
-      throw new Error('Input error');
-    }
-    const shouldRBePadded = (p1363[0] > 128);
-    const shouldSBePadded = (p1363[32] > 128);
-
-    // 3 bytes for DER tags, 3 bytes for length fields
-    // 32 bytes for r, and 32 bytes for s
-    let len = 3 + 3 + 32 + 32;
-    if (shouldRBePadded) {
-      len++;
-    }
-    if (shouldSBePadded) {
-      len++;
-    }
-    const der = new Uint8Array(len);
-    let offset = 0;
-
-    der[offset++] = 0x30; // DER sequence tag
-    der[offset++] = len - 2;
-    der[offset++] = 0x02; // DER integer tag
-    der[offset++] = (shouldRBePadded) ? 0x21 : 0x20;
-    if (shouldRBePadded) {
-      der[offset++] = 0x00;
-    }
-    for (let i = 0; i < 32; i++) { // r
-      der[offset++] = p1363[i];
-    }
-    der[offset++] = 0x02; // DER integer tag
-    der[offset++] = (shouldSBePadded) ? 0x21 : 0x20;
-    if (shouldSBePadded) {
-      der[offset++] = 0x00;
-    }
-    for (let i = 32; i < p1363.length; i++) { // s
-      der[offset++] = p1363[i];
-    }
-    return der;
+  _P1363ToDer(sig) {
+    const signature = Array
+        .from(sig, (x) => ('00' + x.toString(16)).slice(-2))
+        .join('');
+    let r = signature.substr(0, signature.length / 2);
+    let s = signature.substr(signature.length / 2);
+    r = r.replace(/^(00)+/, '');
+    s = s.replace(/^(00)+/, '');
+    if ((parseInt(r, 16) & '0x80') > 0) r = `00${r}`;
+    if ((parseInt(s, 16) & '0x80') > 0) s = `00${s}`;
+    const rString = `02${(r.length / 2).toString(16).padStart(2, '0')}${r}`;
+    const sString = `02${(s.length / 2).toString(16).padStart(2, '0')}${s}`;
+    const derSig = `30${((rString.length + sString.length) / 2)
+        .toString(16).padStart(2, '0')}${rString}${sString}`;
+    return new Uint8Array( derSig.match(/[\da-f]{2}/gi).map(
+        (h) => parseInt(h, 16))
+    );
   }
 
   /**
