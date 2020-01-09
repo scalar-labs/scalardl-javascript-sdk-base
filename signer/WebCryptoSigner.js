@@ -60,8 +60,8 @@ class WebCryptoSigner {
   }
 
   /**
-   * @param {Uint8Array} sig
-   * @return {Uint8Array}
+   * @param {Uint8Array} sig - P1363 signature
+   * @return {Uint8Array} DER signature
    *
    * This function is taken from the SDK of token.io (https://github.com/tokenio/sdk-js)
    *
@@ -70,7 +70,7 @@ class WebCryptoSigner {
    * purpose with or without fee is hereby granted, provided that the above
    * copyright notice and this permission notice appear in all copies.
    *
-   * It converts signature formatted in IEEE P1363 to ASN.1 DER
+   * Converts an ECDSA signature from P1363 to DER format
    *
    * IEEE P1363: bytes array of [
    *   r,
