@@ -65,6 +65,11 @@ class WebCryptoSigner {
    *
    * This function is taken from the SDK of token.io (https://github.com/tokenio/sdk-js)
    *
+   * Copyright (c) 2020, Token, Inc. (https://token.io)
+   * Permission to use, copy, modify, and distribute this software for any
+   * purpose with or without fee is hereby granted, provided that the above
+   * copyright notice and this permission notice appear in all copies.
+   *
    * It converts signature formatted in IEEE P1363 to ASN.1 DER
    *
    * IEEE P1363: bytes array of [
