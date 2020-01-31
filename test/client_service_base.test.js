@@ -533,7 +533,7 @@ describe('Class ClientServiceBase', () => {
           assert.equal(e.message, status.message);
         }
       });
-      it('should rethrow error on client side error', async () => {
+      it('should rethrow error when there is no error status', async () => {
         const clientServiceBase = new ClientServiceBase(
             services, protobuf, clientProperties);
         environmentStub = sinon.stub(clientServiceBase, 'isNodeJsRuntime_')
@@ -546,7 +546,7 @@ describe('Class ClientServiceBase', () => {
           });
         } catch (e) {
           assert.equal(e.constructor.name, 'ClientError');
-          assert.equal(e.statusCode, StatusCode.CLIENT_RUNTIME_ERROR);
+          assert.equal(e.statusCode, StatusCode.UNKNOWN_TRANSACTION_STATUS);
           assert.equal(e.message, errorStub.message);
         }
       });

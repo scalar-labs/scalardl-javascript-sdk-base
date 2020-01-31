@@ -320,7 +320,7 @@ class ClientServiceBase {
       if (status) {
         throw new ClientError(status.code, status.message);
       } else {
-        throw new ClientError(StatusCode.CLIENT_RUNTIME_ERROR, e.message);
+        throw new ClientError(StatusCode.UNKNOWN_TRANSACTION_STATUS, e.message);
       }
     }
   }
@@ -337,21 +337,19 @@ class ClientServiceBase {
       return;
     }
     let binaryStatus;
-    if (this.isNodeJsRuntime_()) { // Node.js environment
+    if (this.isNodeJsRuntime_()) {
       const statusMetadata = error.metadata.get(
           ClientServiceBase.binaryStatusKey);
-      if (!Array.isArray(statusMetadata) && statusMetadata.length !== 1) {
-        return;
+      if (Array.isArray(statusMetadata) && statusMetadata.length === 1) {
+        binaryStatus = statusMetadata[0];
       }
-      binaryStatus = statusMetadata[0];
-    } else { // Web environment
+    } else { // Web runtime
       binaryStatus = error.metadata[ClientServiceBase.binaryStatusKey];
-      if (!binaryStatus) {
-        return;
-      }
     }
-    return this.protobuf.Status.deserializeBinary(binaryStatus)
-        .toObject();
+    if (binaryStatus) {
+      return this.protobuf.Status.deserializeBinary(binaryStatus)
+          .toObject();
+    }
   }
 
   /**
