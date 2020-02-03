@@ -13,7 +13,7 @@
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "eslint": "^5.16.0",
-    "eslint-config-google": "^0c.13.0",
+    "eslint-config-google": "^0.13.0",
     "mocha": "^6.1.4",
     "mochawesome": "^4.1.0",
     "sinon": "^7.5.0"
