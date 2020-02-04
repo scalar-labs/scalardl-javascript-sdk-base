@@ -1,9 +1,12 @@
 const {
-  ClientServiceBase, StatusCode,
+  ClientServiceBase,
+  StatusCode,
+  ClientException,
 } = require('..');
 const {
   IllegalArgumentError,
 } = require('../illegal_argument_error');
+
 const sinon = require('sinon');
 const assert = require('chai').assert;
 const protobuf = {};
@@ -504,7 +507,7 @@ describe('Class ClientServiceBase', () => {
           });
         } catch (e) {
           assert.equal(e.constructor.name, 'ClientException');
-          assert.equal(e.statusCode, status.code);
+          assert.equal(e.getStatusCode(), status.code);
           assert.equal(e.message, status.message);
         }
       });
@@ -532,7 +535,7 @@ describe('Class ClientServiceBase', () => {
           });
         } catch (e) {
           assert.equal(e.constructor.name, 'ClientException');
-          assert.equal(e.statusCode, status.code);
+          assert.equal(e.getStatusCode(), status.code);
           assert.equal(e.message, status.message);
         }
       });
@@ -549,7 +552,10 @@ describe('Class ClientServiceBase', () => {
           });
         } catch (e) {
           assert.equal(e.constructor.name, 'ClientException');
-          assert.equal(e.statusCode, StatusCode.UNKNOWN_TRANSACTION_STATUS);
+          assert.equal(
+              e.getStatusCode(),
+              StatusCode.UNKNOWN_TRANSACTION_STATUS,
+          );
           assert.equal(e.message, errorStub.message);
         }
       });
