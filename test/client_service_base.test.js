@@ -1,7 +1,7 @@
 const {
   ClientServiceBase,
   StatusCode,
-  ClientException,
+  ClientError,
 } = require('..');
 
 const sinon = require('sinon');
@@ -32,7 +32,7 @@ describe('Class ClientServiceBase', () => {
         // act assert
         assert.throws(() => {
           new ClientServiceBase(services, protobuf, clientProperties);
-        }, ClientException, 'private_key_pem');
+        }, ClientError, 'private_key_pem');
       });
       it('when the certificate is missing', () => {
         // prepare
@@ -45,7 +45,7 @@ describe('Class ClientServiceBase', () => {
         // act assert
         assert.throws(() => {
           new ClientServiceBase(services, protobuf, clientProperties);
-        }, ClientException, 'cert_pem');
+        }, ClientError, 'cert_pem');
       });
       it('when holder id is missing', () => {
         // prepare
@@ -58,7 +58,7 @@ describe('Class ClientServiceBase', () => {
         // act assert
         assert.throws(() => {
           new ClientServiceBase(services, protobuf, clientProperties);
-        }, ClientException, 'cert_holder_id');
+        }, ClientError, 'cert_holder_id');
       });
     });
     it('should properly load the attribute according to the given property',
@@ -159,7 +159,7 @@ describe('Class ClientServiceBase', () => {
               await clientServiceBase.registerFunction('contract1', 'foo',
                   'wrongType');
             } catch (e) {
-              assert.instanceOf(e, ClientException);
+              assert.instanceOf(e, ClientError);
             }
           },
       );
@@ -220,7 +220,7 @@ describe('Class ClientServiceBase', () => {
               await clientServiceBase.registerContract('contract1', 'foo',
                   'wrongType');
             } catch (e) {
-              assert.instanceOf(e, ClientException);
+              assert.instanceOf(e, ClientError);
             }
           },
       );
@@ -503,7 +503,7 @@ describe('Class ClientServiceBase', () => {
             throw errorStub;
           });
         } catch (e) {
-          assert.equal(e.constructor.name, 'ClientException');
+          assert.equal(e.constructor.name, 'ClientError');
           assert.equal(e.getStatusCode(), status.code);
           assert.equal(e.message, status.message);
         }
@@ -531,7 +531,7 @@ describe('Class ClientServiceBase', () => {
             throw errorStub;
           });
         } catch (e) {
-          assert.equal(e.constructor.name, 'ClientException');
+          assert.equal(e.constructor.name, 'ClientError');
           assert.equal(e.getStatusCode(), status.code);
           assert.equal(e.message, status.message);
         }
@@ -548,7 +548,7 @@ describe('Class ClientServiceBase', () => {
             throw errorStub;
           });
         } catch (e) {
-          assert.equal(e.constructor.name, 'ClientException');
+          assert.equal(e.constructor.name, 'ClientError');
           assert.equal(
               e.getStatusCode(),
               StatusCode.UNKNOWN_TRANSACTION_STATUS,

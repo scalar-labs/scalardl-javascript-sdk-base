@@ -2,7 +2,7 @@
  * Generic error thrown by the SDK.
  * @extends {Error}
  */
-class ClientException extends Error {
+class ClientError extends Error {
   /**
    * @override
    * @param {StatusCode} code error status code
@@ -11,9 +11,9 @@ class ClientException extends Error {
   constructor(code, ...args) {
     super(...args);
     if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, ClientException);
+      Error.captureStackTrace(this, ClientError);
     }
-    this.name = 'ClientException';
+    this.name = 'ClientError';
 
     /**
      * @type {StatusCode}
@@ -30,5 +30,5 @@ class ClientException extends Error {
 }
 
 module.exports = {
-  ClientException,
+  ClientError,
 };

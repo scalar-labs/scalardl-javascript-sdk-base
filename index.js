@@ -1,5 +1,5 @@
 const {StatusCode} = require('./status_code');
-const {ClientException} = require('./client_exception');
+const {ClientError} = require('./client_error');
 const {
   ContractRegistrationRequestBuilder,
   ContractsListingRequestBuilder,
@@ -34,7 +34,7 @@ class ClientServiceBase {
     /** @const */
     this.tlsEnabled = properties['scalar.ledger.client.tls.enabled'];
     if (this.tlsEnabled !== undefined && typeof this.tlsEnabled !== 'boolean') {
-      throw new ClientException(
+      throw new ClientError(
           StatusCode.CLIENT_IO_ERROR,
           'property \'scalar.ledger.client.tls.enabled\' is not a boolean',
       );
@@ -102,7 +102,7 @@ class ClientServiceBase {
   _getRequiredProperty(properties, name) {
     const value = properties[name];
     if (!value) {
-      throw new ClientException(
+      throw new ClientError(
           StatusCode.CLIENT_IO_ERROR,
           `property '${name}' is required`,
       );
@@ -112,7 +112,7 @@ class ClientServiceBase {
 
   /**
    * @return {Promise<void>}
-   * @throws {ClientException}
+   * @throws {ClientError}
    */
   async registerCertificate() {
     const builder = new CertificateRegistrationRequestBuilder(
@@ -144,11 +144,11 @@ class ClientServiceBase {
    * @param {string} name of the function
    * @param {Uint8Array} functionBytes of the function
    * @return {Promise<void>}
-   * @throws {ClientException}
+   * @throws {ClientError}
    */
   async registerFunction(id, name, functionBytes) {
     if (!(functionBytes instanceof Uint8Array)) {
-      throw new ClientException(
+      throw new ClientError(
           StatusCode.CLIENT_IO_ERROR,
           'parameter functionBytes is not a \'Uint8Array\'',
       );
@@ -186,11 +186,11 @@ class ClientServiceBase {
    * @param {Object}  [properties]
    *  JSON Object used for setting client properties
    * @return {Promise<void>}
-   * @throws {ClientException}
+   * @throws {ClientError}
    */
   async registerContract(id, name, contractBytes, properties) {
     if (!(contractBytes instanceof Uint8Array)) {
-      throw new ClientException(
+      throw new ClientError(
           StatusCode.CLIENT_IO_ERROR,
           'parameter contractBytes is not a \'Uint8Array\'',
       );
@@ -230,7 +230,7 @@ class ClientServiceBase {
    * @param {string} [contractId]
    *  to verify if a specific contractId is registered
    * @return {Promise<Object>}
-   * @throws {ClientException}
+   * @throws {ClientError}
    */
   async listContracts(contractId) {
     const builder = new ContractsListingRequestBuilder(
@@ -262,7 +262,7 @@ class ClientServiceBase {
    * Validate the integrity of an asset
    * @param {number} [assetId]
    * @return {Promise<LedgerValidationResponse>}
-   * @throws {ClientException}
+   * @throws {ClientError}
    */
   async validateLedger(assetId) {
     const builder = new LedgerValidationRequestBuilder(
@@ -295,7 +295,7 @@ class ClientServiceBase {
    * @param {Object} argument
    * @param {Object} [functionArgument=undefined]
    * @return {Promise<ContractExecutionResponse|void|*>}
-   * @throws {ClientException}
+   * @throws {ClientError}
    */
   async executeContract(contractId, argument, functionArgument) {
     argument['nonce'] = new Date().getTime().toString();
@@ -334,7 +334,7 @@ class ClientServiceBase {
   /**
    * @param {Promise} func
    * @return {Promise}
-   * @throws {ClientException}
+   * @throws {ClientError}
    */
   async sendRequest(func) {
     try {
@@ -342,9 +342,9 @@ class ClientServiceBase {
     } catch (e) {
       const status = this._parseStatusFromError(e);
       if (status) {
-        throw new ClientException(status.code, status.message);
+        throw new ClientError(status.code, status.message);
       } else {
-        throw new ClientException(
+        throw new ClientError(
             StatusCode.UNKNOWN_TRANSACTION_STATUS,
             e.message,
         );
@@ -390,6 +390,6 @@ class ClientServiceBase {
 
 module.exports = {
   ClientServiceBase,
-  ClientException,
+  ClientError,
   StatusCode,
 };
