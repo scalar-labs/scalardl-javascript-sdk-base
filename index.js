@@ -116,7 +116,7 @@ class ClientServiceBase {
    */
   async registerCertificate() {
     const builder = new CertificateRegistrationRequestBuilder(
-        new this.protobuf.CertificateRegistrationRequest()
+        new this.protobuf.CertificateRegistrationRequest(),
     ).withCertHolderId(this.certHolderId)
         .withCertVersion(this.certVersion)
         .withCertPem(this.certPem);
@@ -155,7 +155,7 @@ class ClientServiceBase {
     }
 
     const builder = new FunctionRegistrationRequestBuilder(
-        new this.protobuf.FunctionRegistrationRequest()
+        new this.protobuf.FunctionRegistrationRequest(),
     ).withFunctionId(id)
         .withFunctionBinaryName(name)
         .withFunctionByteCode(functionBytes);
@@ -199,7 +199,7 @@ class ClientServiceBase {
     const propertiesJson = JSON.stringify(properties);
     const builder = new ContractRegistrationRequestBuilder(
         new this.protobuf.ContractRegistrationRequest(),
-        this.signer
+        this.signer,
     ).withContractId(id)
         .withContractBinaryName(name)
         .withContractByteCode(contractBytes)
@@ -235,7 +235,7 @@ class ClientServiceBase {
   async listContracts(contractId) {
     const builder = new ContractsListingRequestBuilder(
         new this.protobuf.ContractsListingRequest(),
-        this.signer
+        this.signer,
     ).withCertHolderId(this.certHolderId)
         .withCertVersion(this.certVersion)
         .withContractId(contractId);
