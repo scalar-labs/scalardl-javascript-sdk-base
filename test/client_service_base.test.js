@@ -91,7 +91,10 @@ describe('Class ClientServiceBase', () => {
       sinon.restore();
     });
 
-    // Mock for the signer library
+    /**
+     * Mock for the signer library
+     * @param {ClientServiceBase} service
+     */
     function genericEllipticSignatureSigner(service) {
       sinon.replace(service.signer, 'sign',
           sinon.fake.returns(function() {

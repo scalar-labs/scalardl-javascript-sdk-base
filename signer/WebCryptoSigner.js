@@ -50,11 +50,11 @@ class WebCryptoSigner {
         .replace('-----END EC PRIVATE KEY-----', '')
         .replace(/\n/g, '');
     const k = jsrsasign.KEYUTIL.getKey(
-        jsrsasign.b64utohex(pkcs1), null, 'pkcs5prv'
+        jsrsasign.b64utohex(pkcs1), null, 'pkcs5prv',
     );
     const kk = new keyutil.Key('oct',
         new Uint8Array(jsrsasign.hextoArrayBuffer(k.prvKeyHex)),
-        {namedCurve: 'P-256'}
+        {namedCurve: 'P-256'},
     );
     return await kk.export('pem');
   }
@@ -105,7 +105,7 @@ class WebCryptoSigner {
     const derSig = `30${((rString.length + sString.length) / 2)
         .toString(16).padStart(2, '0')}${rString}${sString}`;
     return new Uint8Array( derSig.match(/[\da-f]{2}/gi).map(
-        (h) => parseInt(h, 16))
+        (h) => parseInt(h, 16)),
     );
   }
 
@@ -118,7 +118,7 @@ class WebCryptoSigner {
         .replace('-----END PRIVATE KEY-----', '')
         .replace(/\n/g, '');
     const keyInArrayBuffer = jsrsasign.hextoArrayBuffer(
-        jsrsasign.b64utohex(pkcs8)
+        jsrsasign.b64utohex(pkcs8),
     );
     return window.crypto.subtle.importKey(
         'pkcs8',

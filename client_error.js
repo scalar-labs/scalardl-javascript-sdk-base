@@ -1,4 +1,3 @@
-const {StatusCode} = require('./status_code');
 /**
  * Generic error thrown by the SDK.
  * @extends {Error}
@@ -21,7 +20,6 @@ class ClientError extends Error {
     this.statusCode = statusCode;
   }
 }
-
 
 module.exports = {
   ClientError,

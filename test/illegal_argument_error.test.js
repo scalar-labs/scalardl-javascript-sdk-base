@@ -12,7 +12,7 @@ describe('Class IllegalArgumentError', () => {
     it('has a particular name called IllegalArgumentError', () => {
       expect(new IllegalArgumentError('message')).to.have.property(
           'name',
-          'IllegalArgumentError'
+          'IllegalArgumentError',
       );
     });
     it('sets the correct message', () => {
