@@ -39,13 +39,13 @@ class ClientServiceBase {
           'property \'scalar.ledger.client.tls.enabled\' is not a boolean');
     }
     /** @const */
-    this.privateKeyPem = this.getRequiredProperty_(properties,
+    this.privateKeyPem = this._getRequiredProperty(properties,
         'scalar.ledger.client.private_key_pem');
     /** @const */
-    this.certPem = this.getRequiredProperty_(properties,
+    this.certPem = this._getRequiredProperty(properties,
         'scalar.ledger.client.cert_pem');
     /** @const */
-    this.certHolderId = this.getRequiredProperty_(properties,
+    this.certHolderId = this._getRequiredProperty(properties,
         'scalar.ledger.client.cert_holder_id');
     /** @const */
     this.credential =
@@ -60,7 +60,7 @@ class ClientServiceBase {
     }
 
     /** @const */
-    if (this.isNodeJsRuntime_()) {
+    if (this._isNodeJsRuntime()) {
       this.signer = new EllipticSigner(this.privateKeyPem);
     } else {
       this.signer = new WebCryptoSigner(this.privateKeyPem);
@@ -98,7 +98,7 @@ class ClientServiceBase {
    * @param {string} name the name of the property to get
    * @return {Object} The client property specified in the @name parameter
    */
-  getRequiredProperty_(properties, name) {
+  _getRequiredProperty(properties, name) {
     const value = properties[name];
     if (!value) {
       throw new IllegalArgumentError(`property '${name}' is required`);
@@ -334,7 +334,7 @@ class ClientServiceBase {
     try {
       return await func();
     } catch (e) {
-      const status = this.parseStatusFromError_(e);
+      const status = this._parseStatusFromError(e);
       if (status) {
         throw new ClientError(status.code, status.message);
       } else {
@@ -350,12 +350,12 @@ class ClientServiceBase {
    * parsed from the error
    * @private
    */
-  parseStatusFromError_(error) {
+  _parseStatusFromError(error) {
     if (!error.metadata) {
       return;
     }
     let binaryStatus;
-    if (this.isNodeJsRuntime_()) {
+    if (this._isNodeJsRuntime()) {
       const statusMetadata = error.metadata.get(
           ClientServiceBase.binaryStatusKey);
       if (Array.isArray(statusMetadata) && statusMetadata.length === 1) {
@@ -374,7 +374,7 @@ class ClientServiceBase {
    * @return {boolean} true if the runtime is Node.js
    * @private
    */
-  isNodeJsRuntime_() {
+  _isNodeJsRuntime() {
     return typeof window === 'undefined';
   }
 }

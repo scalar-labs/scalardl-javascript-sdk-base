@@ -485,7 +485,7 @@ describe('Class ClientServiceBase', () => {
         const protobuf = {'Status': GrpcStatus};
         const clientServiceBase = new ClientServiceBase(
             services, protobuf, clientProperties);
-        environmentStub = sinon.stub(clientServiceBase, 'isNodeJsRuntime_')
+        environmentStub = sinon.stub(clientServiceBase, '_isNodeJsRuntime')
             .returns(true);
         const binaryStatus = [status];
         const errorStub = new Error();
@@ -520,7 +520,7 @@ describe('Class ClientServiceBase', () => {
         const protobuf = {'Status': GrpcStatus};
         const clientServiceBase = new ClientServiceBase(
             services, protobuf, clientProperties);
-        environmentStub = sinon.stub(clientServiceBase, 'isNodeJsRuntime_')
+        environmentStub = sinon.stub(clientServiceBase, '_isNodeJsRuntime')
             .returns(false);
         const metadata = {};
         metadata[ClientServiceBase.binaryStatusKey] = status;
@@ -539,7 +539,7 @@ describe('Class ClientServiceBase', () => {
       it('should rethrow error when there is no error status', async () => {
         const clientServiceBase = new ClientServiceBase(
             services, protobuf, clientProperties);
-        environmentStub = sinon.stub(clientServiceBase, 'isNodeJsRuntime_')
+        environmentStub = sinon.stub(clientServiceBase, '_isNodeJsRuntime')
             .returns(false);
         const errorStub = new Error('bar message');
         errorStub.metadata = {};
