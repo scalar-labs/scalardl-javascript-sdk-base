@@ -389,27 +389,6 @@ class ClientServiceBase {
   }
 
   /**
-   * @param {Promise} func
-   * @return {Promise}
-   * @throws {ClientError}
-   */
-  async sendRequest(func) {
-    try {
-      return await func();
-    } catch (e) {
-      const status = this._parseStatusFromError(e);
-      if (status) {
-        throw new ClientError(status.code, status.message);
-      } else {
-        throw new ClientError(
-            StatusCode.UNKNOWN_TRANSACTION_STATUS,
-            e.message,
-        );
-      }
-    }
-  }
-
-  /**
    * Extract the status from the error
    * @param {Error} error
    * @return {Status|void} return a status or undefined if the status cannot be

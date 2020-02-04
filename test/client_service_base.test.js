@@ -99,9 +99,11 @@ describe('Class ClientServiceBase', () => {
       sinon.replace(service.signer, 'sign',
           sinon.fake.returns(function() {
           }));
-      sinon.replace(service, 'sendRequest',
-          sinon.fake.returns(function() {
-          }));
+      sinon.replace(
+          service,
+          '_executePromise',
+          sinon.fake.returns(function() {}),
+      );
     }
 
     describe('registerCertificate', () => {
@@ -602,9 +604,10 @@ describe('Class ClientServiceBase', () => {
         const errorStub = new Error('bar message');
         errorStub.metadata = metadata;
         try {
-          await clientServiceBase.sendRequest(() => {
+          const promise = new Promise((resove, reject) => {
             throw errorStub;
           });
+          await clientServiceBase._executePromise(promise);
         } catch (e) {
           assert.equal(e.constructor.name, 'ClientError');
           assert.equal(e.getStatusCode(), status.code);
