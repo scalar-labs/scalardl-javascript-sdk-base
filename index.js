@@ -1,5 +1,5 @@
 const {StatusCode} = require('./status_code');
-const {ClientError} = require('./client_error');
+const {ClientException} = require('./client_exception');
 const {
   ContractRegistrationRequestBuilder,
   ContractsListingRequestBuilder,
@@ -108,7 +108,7 @@ class ClientServiceBase {
 
   /**
    * @return {Promise<void>}
-   * @throws {ClientError}
+   * @throws {ClientException}
    */
   async registerCertificate() {
     const builder = new CertificateRegistrationRequestBuilder(
@@ -140,7 +140,7 @@ class ClientServiceBase {
    * @param {string} name of the function
    * @param {Uint8Array} functionBytes of the function
    * @return {Promise<void>}
-   * @throws {ClientError}
+   * @throws {ClientException}
    */
   async registerFunction(id, name, functionBytes) {
     if (!(functionBytes instanceof Uint8Array)) {
@@ -181,7 +181,7 @@ class ClientServiceBase {
    * @param {Object}  [properties]
    *  JSON Object used for setting client properties
    * @return {Promise<void>}
-   * @throws {ClientError}
+   * @throws {ClientException}
    */
   async registerContract(id, name, contractBytes, properties) {
     if (!(contractBytes instanceof Uint8Array)) {
@@ -224,7 +224,7 @@ class ClientServiceBase {
    * @param {string} [contractId]
    *  to verify if a specific contractId is registered
    * @return {Promise<Object>}
-   * @throws {ClientError}
+   * @throws {ClientException}
    */
   async listContracts(contractId) {
     const builder = new ContractsListingRequestBuilder(
@@ -256,7 +256,7 @@ class ClientServiceBase {
    * Validate the integrity of an asset
    * @param {number} [assetId]
    * @return {Promise<LedgerValidationResponse>}
-   * @throws {ClientError}
+   * @throws {ClientException}
    */
   async validateLedger(assetId) {
     const builder = new LedgerValidationRequestBuilder(
@@ -289,7 +289,7 @@ class ClientServiceBase {
    * @param {Object} argument
    * @param {Object} [functionArgument=undefined]
    * @return {Promise<ContractExecutionResponse|void|*>}
-   * @throws {ClientError}
+   * @throws {ClientException}
    */
   async executeContract(contractId, argument, functionArgument) {
     argument['nonce'] = new Date().getTime().toString();
@@ -328,7 +328,7 @@ class ClientServiceBase {
   /**
    * @param {Promise} func
    * @return {Promise}
-   * @throws {ClientError}
+   * @throws {ClientException}
    */
   async sendRequest(func) {
     try {
@@ -336,9 +336,12 @@ class ClientServiceBase {
     } catch (e) {
       const status = this._parseStatusFromError(e);
       if (status) {
-        throw new ClientError(status.code, status.message);
+        throw new ClientException(status.code, status.message);
       } else {
-        throw new ClientError(StatusCode.UNKNOWN_TRANSACTION_STATUS, e.message);
+        throw new ClientException(
+            StatusCode.UNKNOWN_TRANSACTION_STATUS,
+            e.message,
+        );
       }
     }
   }
@@ -381,5 +384,6 @@ class ClientServiceBase {
 
 module.exports = {
   ClientServiceBase,
+  ClientException,
   StatusCode,
 };

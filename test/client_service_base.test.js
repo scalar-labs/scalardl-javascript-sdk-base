@@ -503,7 +503,7 @@ describe('Class ClientServiceBase', () => {
             throw errorStub;
           });
         } catch (e) {
-          assert.equal(e.constructor.name, 'ClientError');
+          assert.equal(e.constructor.name, 'ClientException');
           assert.equal(e.statusCode, status.code);
           assert.equal(e.message, status.message);
         }
@@ -531,7 +531,7 @@ describe('Class ClientServiceBase', () => {
             throw errorStub;
           });
         } catch (e) {
-          assert.equal(e.constructor.name, 'ClientError');
+          assert.equal(e.constructor.name, 'ClientException');
           assert.equal(e.statusCode, status.code);
           assert.equal(e.message, status.message);
         }
@@ -548,7 +548,7 @@ describe('Class ClientServiceBase', () => {
             throw errorStub;
           });
         } catch (e) {
-          assert.equal(e.constructor.name, 'ClientError');
+          assert.equal(e.constructor.name, 'ClientException');
           assert.equal(e.statusCode, StatusCode.UNKNOWN_TRANSACTION_STATUS);
           assert.equal(e.message, errorStub.message);
         }
