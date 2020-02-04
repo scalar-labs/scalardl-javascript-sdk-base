@@ -3,9 +3,6 @@ const {
   StatusCode,
   ClientException,
 } = require('..');
-const {
-  IllegalArgumentError,
-} = require('../illegal_argument_error');
 
 const sinon = require('sinon');
 const assert = require('chai').assert;
@@ -35,7 +32,7 @@ describe('Class ClientServiceBase', () => {
         // act assert
         assert.throws(() => {
           new ClientServiceBase(services, protobuf, clientProperties);
-        }, IllegalArgumentError, 'private_key_pem');
+        }, ClientException, 'private_key_pem');
       });
       it('when the certificate is missing', () => {
         // prepare
@@ -48,7 +45,7 @@ describe('Class ClientServiceBase', () => {
         // act assert
         assert.throws(() => {
           new ClientServiceBase(services, protobuf, clientProperties);
-        }, IllegalArgumentError, 'cert_pem');
+        }, ClientException, 'cert_pem');
       });
       it('when holder id is missing', () => {
         // prepare
@@ -61,7 +58,7 @@ describe('Class ClientServiceBase', () => {
         // act assert
         assert.throws(() => {
           new ClientServiceBase(services, protobuf, clientProperties);
-        }, IllegalArgumentError, 'cert_holder_id');
+        }, ClientException, 'cert_holder_id');
       });
     });
     it('should properly load the attribute according to the given property',
@@ -162,7 +159,7 @@ describe('Class ClientServiceBase', () => {
               await clientServiceBase.registerFunction('contract1', 'foo',
                   'wrongType');
             } catch (e) {
-              assert.instanceOf(e, IllegalArgumentError);
+              assert.instanceOf(e, ClientException);
             }
           },
       );
@@ -223,7 +220,7 @@ describe('Class ClientServiceBase', () => {
               await clientServiceBase.registerContract('contract1', 'foo',
                   'wrongType');
             } catch (e) {
-              assert.instanceOf(e, IllegalArgumentError);
+              assert.instanceOf(e, ClientException);
             }
           },
       );

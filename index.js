@@ -9,7 +9,6 @@ const {
   ContractExecutionRequestBuilder,
 } = require('./request/builder');
 
-const {IllegalArgumentError} = require('./illegal_argument_error');
 const {EllipticSigner, WebCryptoSigner} = require('./signer');
 
 /**
@@ -35,8 +34,10 @@ class ClientServiceBase {
     /** @const */
     this.tlsEnabled = properties['scalar.ledger.client.tls.enabled'];
     if (this.tlsEnabled !== undefined && typeof this.tlsEnabled !== 'boolean') {
-      throw new IllegalArgumentError(
-          'property \'scalar.ledger.client.tls.enabled\' is not a boolean');
+      throw new ClientException(
+          StatusCode.CLIENT_IO_ERROR,
+          'property \'scalar.ledger.client.tls.enabled\' is not a boolean',
+      );
     }
     /** @const */
     this.privateKeyPem = this._getRequiredProperty(properties,
@@ -101,7 +102,10 @@ class ClientServiceBase {
   _getRequiredProperty(properties, name) {
     const value = properties[name];
     if (!value) {
-      throw new IllegalArgumentError(`property '${name}' is required`);
+      throw new ClientException(
+          StatusCode.CLIENT_IO_ERROR,
+          `property '${name}' is required`,
+      );
     }
     return value;
   }
@@ -144,7 +148,8 @@ class ClientServiceBase {
    */
   async registerFunction(id, name, functionBytes) {
     if (!(functionBytes instanceof Uint8Array)) {
-      throw new IllegalArgumentError(
+      throw new ClientException(
+          StatusCode.CLIENT_IO_ERROR,
           'parameter functionBytes is not a \'Uint8Array\'',
       );
     }
@@ -185,7 +190,8 @@ class ClientServiceBase {
    */
   async registerContract(id, name, contractBytes, properties) {
     if (!(contractBytes instanceof Uint8Array)) {
-      throw new IllegalArgumentError(
+      throw new ClientException(
+          StatusCode.CLIENT_IO_ERROR,
           'parameter contractBytes is not a \'Uint8Array\'',
       );
     }
