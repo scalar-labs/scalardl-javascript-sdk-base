@@ -136,7 +136,7 @@ class ClientServiceBase {
       );
     });
 
-    return this.sendRequest(() => promise);
+    return this._executePromise(promise);
   }
 
   /**
@@ -175,7 +175,7 @@ class ClientServiceBase {
       );
     });
 
-    return this.sendRequest(() => promise);
+    return this._executePromise(promise);
   };
 
   /**
@@ -207,7 +207,16 @@ class ClientServiceBase {
         .withCertHolderId(this.certHolderId)
         .withCertVersion(this.certVersion);
 
-    const request = await builder.build();
+    let request;
+    try {
+      request = await builder.build();
+    } catch (e) {
+      throw new ClientError(
+          StatusCode.RUNTIME_ERROR,
+          e.message,
+      );
+    }
+
     const promise = new Promise((resolve, reject) => {
       this.ledgerClient.registerContract(
           request,
@@ -222,7 +231,7 @@ class ClientServiceBase {
       );
     });
 
-    return this.sendRequest(() => promise);
+    return this._executePromise(promise);
   }
 
   /**
@@ -240,7 +249,16 @@ class ClientServiceBase {
         .withCertVersion(this.certVersion)
         .withContractId(contractId);
 
-    const request = await builder.build();
+    let request;
+    try {
+      request = await builder.build();
+    } catch (e) {
+      throw new ClientError(
+          StatusCode.RUNTIME_ERROR,
+          e.message,
+      );
+    }
+
     const promise = new Promise((resolve, reject) => {
       this.ledgerClient.listContracts(
           request,
@@ -255,7 +273,7 @@ class ClientServiceBase {
       );
     });
 
-    return this.sendRequest(() => promise);
+    return this._executePromise(promise);
   }
 
   /**
@@ -272,7 +290,16 @@ class ClientServiceBase {
         .withCertHolderId(this.certHolderId)
         .withCertVersion(this.certVersion);
 
-    const request = await builder.build();
+    let request;
+    try {
+      request = await builder.build();
+    } catch (e) {
+      throw new ClientError(
+          StatusCode.RUNTIME_ERROR,
+          e.message,
+      );
+    }
+
     const promise = new Promise((resolve, reject) => {
       this.ledgerClient.validateLedger(
           request,
@@ -287,7 +314,7 @@ class ClientServiceBase {
       );
     });
 
-    return this.sendRequest(() => promise);
+    return this._executePromise(promise);
   }
 
   /**
@@ -311,7 +338,16 @@ class ClientServiceBase {
         .withCertHolderId(this.certHolderId)
         .withCertVersion(this.certVersion);
 
-    const request = await builder.build();
+    let request;
+    try {
+      request = await builder.build();
+    } catch (e) {
+      throw new ClientError(
+          StatusCode.RUNTIME_ERROR,
+          e.message,
+      );
+    }
+
     const promise = new Promise((resolve, reject) => {
       this.ledgerClient.executeContract(
           request,
@@ -328,7 +364,28 @@ class ClientServiceBase {
       );
     });
 
-    return this.sendRequest(() => promise);
+    return this._executePromise(promise);
+  }
+
+  /**
+   * @param {Promise} promise
+   * @return {Promise}
+   * @throws {ClientError}
+   */
+  async _executePromise(promise) {
+    try {
+      return await promise;
+    } catch (e) {
+      const status = this._parseStatusFromError(e);
+      if (status) {
+        throw new ClientError(status.code, status.message);
+      } else {
+        throw new ClientError(
+            StatusCode.UNKNOWN_TRANSACTION_STATUS,
+            e.message,
+        );
+      }
+    }
   }
 
   /**

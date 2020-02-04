@@ -216,6 +216,7 @@ class ContractRegistrationRequestBuilder {
 
   /**
    * Builds the ContractRegistrationRequest
+   * @throws {Error}
    * @return {ContractRegistrationRequest}
    */
   async build() {
@@ -311,6 +312,7 @@ class ContractsListingRequestBuilder {
 
   /**
    * Builds the ContractsListingRequest
+   * @throws {Error}
    * @return {ContractsListingRequest}
    */
   async build() {
@@ -391,6 +393,7 @@ class LedgerValidationRequestBuilder {
 
   /**
    * Builds a LedgerValidationRequest
+   * @throws {Error}
    * @return {LedgerValidationRequest}
    */
   async build() {
@@ -490,6 +493,7 @@ class ContractExecutionRequestBuilder {
 
   /**
    * Builds the ContractExecutionRequest
+   * @throws {Error}
    * @return {ContractExecutionRequest}
    */
   async build() {
