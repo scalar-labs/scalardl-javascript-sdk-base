@@ -99,11 +99,6 @@ describe('Class ClientServiceBase', () => {
       sinon.replace(service.signer, 'sign',
           sinon.fake.returns(function() {
           }));
-      sinon.replace(
-          service,
-          '_executePromise',
-          sinon.fake.returns(function() {}),
-      );
     }
 
     describe('registerCertificate', () => {
