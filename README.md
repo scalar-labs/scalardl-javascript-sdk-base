@@ -23,7 +23,7 @@ The version conforms to the rules of [semantic versioning](https://semver.org/).
 
 ### Upgrade scalardl-javascript-sdk-base in Web and Node.js SDK
 
-We have to update the package.json by the upgrading scalardl-javascript-sdk-base. To upgrade *scalardl-javascript-sdk-base*, go to the root folders of *scalardl-web-client* and *scalardl-node-client-sdk* which contain the  package.json file, and use this command:
+We need to update the package.json by upgrading scalardl-javascript-sdk-base. To upgrade *scalardl-javascript-sdk-base*, go to the root folders of *scalardl-web-client-sdk* and *scalardl-node-client-sdk* which contain the  package.json file, and use this command:
 
 ```
 npm upgrade @scalar-labs/scalardl-javascript-sdk-base
