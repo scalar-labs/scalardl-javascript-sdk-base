@@ -16,20 +16,20 @@ The files *scalardl-web-client-sdk* and *scalardl-node-client-sdk* are based on 
 After modifying the implementation of scalardl-javascript-sdk-base, we have to upgrade the version field in the  package.json. It looks like this:
 
 ```
-"version": "1.3.1",
+"version": "2.2.0",
 ```
 
 The version conforms to the rules of [semantic versioning](https://semver.org/). After the package.json is upgraded with a new version, push the package to the NPM registry with `npm publish`.
 
 ### Upgrade scalardl-javascript-sdk-base in Web and Node.js SDK
 
-We have to update the package.json by the upgrading scalardl-javascript-sdk-base. [Yarn](https://yarnpkg.com/lang/en/docs/install/#mac-stable) is the tool used to manage NPM packages. To upgrade *scalardl-javascript-sdk-base*, go to the root folders of *scalardl-web-client* and *scalardl-node-client-sdk* which contain the  package.json file, and use this command:
+We need to update the package.json by upgrading scalardl-javascript-sdk-base. To upgrade *scalardl-javascript-sdk-base*, go to the root folders of *scalardl-web-client-sdk* and *scalardl-node-client-sdk* which contain the  package.json file, and use this command:
 
 ```
-yarn upgrade @scalar-labs/scalardl-javascript-sdk-base
+npm upgrade @scalar-labs/scalardl-javascript-sdk-base
 ```
 
-This command will update the `package.json` and `yarn.lock` files.
+This command will update the `package.json` and `package-lock.json` files.
 
 ## How to regenerate static files for scalardl-web-client-sdk
 

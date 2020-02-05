@@ -1,5 +1,5 @@
 const {StatusCode} = require('./status_code');
-
+const {ClientError} = require('./client_error');
 const {
   ContractRegistrationRequestBuilder,
   ContractsListingRequestBuilder,
@@ -9,7 +9,6 @@ const {
   ContractExecutionRequestBuilder,
 } = require('./request/builder');
 
-const {IllegalArgumentError} = require('./illegal_argument_error');
 const {EllipticSigner, WebCryptoSigner} = require('./signer');
 
 /**
@@ -35,17 +34,19 @@ class ClientServiceBase {
     /** @const */
     this.tlsEnabled = properties['scalar.ledger.client.tls.enabled'];
     if (this.tlsEnabled !== undefined && typeof this.tlsEnabled !== 'boolean') {
-      throw new IllegalArgumentError(
-          'property \'scalar.ledger.client.tls.enabled\' is not a boolean');
+      throw new ClientError(
+          StatusCode.CLIENT_IO_ERROR,
+          'property \'scalar.ledger.client.tls.enabled\' is not a boolean',
+      );
     }
     /** @const */
-    this.privateKeyPem = this.getRequiredProperty_(properties,
+    this.privateKeyPem = this._getRequiredProperty(properties,
         'scalar.ledger.client.private_key_pem');
     /** @const */
-    this.certPem = this.getRequiredProperty_(properties,
+    this.certPem = this._getRequiredProperty(properties,
         'scalar.ledger.client.cert_pem');
     /** @const */
-    this.certHolderId = this.getRequiredProperty_(properties,
+    this.certHolderId = this._getRequiredProperty(properties,
         'scalar.ledger.client.cert_holder_id');
     /** @const */
     this.credential =
@@ -60,7 +61,7 @@ class ClientServiceBase {
     }
 
     /** @const */
-    if (typeof window === 'undefined') { // Node.js environment
+    if (this._isNodeJsRuntime()) {
       this.signer = new EllipticSigner(this.privateKeyPem);
     } else {
       this.signer = new WebCryptoSigner(this.privateKeyPem);
@@ -86,73 +87,95 @@ class ClientServiceBase {
   }
 
   /**
+   * Name of binary status
+   * @return {string}
+   */
+  static get binaryStatusKey() {
+    return 'rpc.status-bin';
+  }
+
+  /**
    * @param {Object} properties JSON Object used for setting client properties
    * @param {string} name the name of the property to get
    * @return {Object} The client property specified in the @name parameter
    */
-  getRequiredProperty_(properties, name) {
+  _getRequiredProperty(properties, name) {
     const value = properties[name];
     if (!value) {
-      throw new IllegalArgumentError(`property '${name}' is required`);
+      throw new ClientError(
+          StatusCode.CLIENT_IO_ERROR,
+          `property '${name}' is required`,
+      );
     }
     return value;
   }
 
   /**
-   * @return {Promise<ClientServiceResponse>}
+   * @return {Promise<void>}
+   * @throws {ClientError}
    */
   async registerCertificate() {
     const builder = new CertificateRegistrationRequestBuilder(
         new this.protobuf.CertificateRegistrationRequest(),
-    ).withCertHolderId(this.certHolderId).
-        withCertVersion(this.certVersion).
-        withCertPem(this.certPem);
+    ).withCertHolderId(this.certHolderId)
+        .withCertVersion(this.certVersion)
+        .withCertPem(this.certPem);
 
     const request = await builder.build();
-    return this.sendRequest('registerCert', () =>
-      new Promise((resolve, reject) => {
-        this.ledgerPrivileged.registerCert(request, this.metadata,
-            (err, response) => {
-              if (err) {
-                reject(err);
-              } else {
-                resolve(response);
-              }
-            });
-      }),
-    );
+    const promise = new Promise((resolve, reject) => {
+      this.ledgerPrivileged.registerCert(
+          request,
+          this.metadata,
+          (err, _) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve();
+            }
+          },
+      );
+    });
+
+    return this._executePromise(promise);
   }
 
   /**
    * @param {number} id of the function
    * @param {string} name of the function
    * @param {Uint8Array} functionBytes of the function
-   * @return {Promise<ClientServiceResponse>}
+   * @return {Promise<void>}
+   * @throws {ClientError}
    */
   async registerFunction(id, name, functionBytes) {
     if (!(functionBytes instanceof Uint8Array)) {
-      throw new IllegalArgumentError(
+      throw new ClientError(
+          StatusCode.CLIENT_IO_ERROR,
           'parameter functionBytes is not a \'Uint8Array\'',
       );
     }
 
     const builder = new FunctionRegistrationRequestBuilder(
-        new this.protobuf.FunctionRegistrationRequest()).withFunctionId(id).
-        withFunctionBinaryName(name).
-        withFunctionByteCode(functionBytes);
+        new this.protobuf.FunctionRegistrationRequest(),
+    ).withFunctionId(id)
+        .withFunctionBinaryName(name)
+        .withFunctionByteCode(functionBytes);
 
     const request = await builder.build();
-    return this.sendRequest('registerFunction', () =>
-      new Promise((resolve, reject) => {
-        this.ledgerPrivileged.registerFunction(request, this.metadata,
-            (err, response) => {
-              if (err) {
-                reject(err);
-              } else {
-                resolve(response);
-              }
-            });
-      }));
+    const promise = new Promise((resolve, reject) => {
+      this.ledgerPrivileged.registerFunction(
+          request,
+          this.metadata,
+          (err, _) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve();
+            }
+          },
+      );
+    });
+
+    return this._executePromise(promise);
   };
 
   /**
@@ -162,11 +185,13 @@ class ClientServiceBase {
    * @param {Uint8Array} contractBytes
    * @param {Object}  [properties]
    *  JSON Object used for setting client properties
-   * @return {Promise<ClientServiceResponse>}
+   * @return {Promise<void>}
+   * @throws {ClientError}
    */
   async registerContract(id, name, contractBytes, properties) {
     if (!(contractBytes instanceof Uint8Array)) {
-      throw new IllegalArgumentError(
+      throw new ClientError(
+          StatusCode.CLIENT_IO_ERROR,
           'parameter contractBytes is not a \'Uint8Array\'',
       );
     }
@@ -174,85 +199,130 @@ class ClientServiceBase {
     const propertiesJson = JSON.stringify(properties);
     const builder = new ContractRegistrationRequestBuilder(
         new this.protobuf.ContractRegistrationRequest(),
-        this.signer).withContractId(id).
-        withContractBinaryName(name).
-        withContractByteCode(contractBytes).
-        withContractProperties(propertiesJson).
-        withCertHolderId(this.certHolderId).
-        withCertVersion(this.certVersion);
+        this.signer,
+    ).withContractId(id)
+        .withContractBinaryName(name)
+        .withContractByteCode(contractBytes)
+        .withContractProperties(propertiesJson)
+        .withCertHolderId(this.certHolderId)
+        .withCertVersion(this.certVersion);
 
-    const request = await builder.build();
-    return this.sendRequest('registerContract', () =>
-      new Promise((resolve, reject) => {
-        this.ledgerClient.registerContract(request, this.metadata,
-            (err, response) => {
-              if (err) {
-                reject(err);
-              } else {
-                resolve(response);
-              }
-            });
-      }));
+    let request;
+    try {
+      request = await builder.build();
+    } catch (e) {
+      throw new ClientError(
+          StatusCode.RUNTIME_ERROR,
+          e.message,
+      );
+    }
+
+    const promise = new Promise((resolve, reject) => {
+      this.ledgerClient.registerContract(
+          request,
+          this.metadata,
+          (err, _) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve();
+            }
+          },
+      );
+    });
+
+    return this._executePromise(promise);
   }
 
   /**
    * List the registered contract for the current user
    * @param {string} [contractId]
    *  to verify if a specific contractId is registered
-   * @return {Promise<ClientServiceResponse>}
+   * @return {Promise<Object>}
+   * @throws {ClientError}
    */
   async listContracts(contractId) {
     const builder = new ContractsListingRequestBuilder(
         new this.protobuf.ContractsListingRequest(),
-        this.signer).withCertHolderId(this.certHolderId).
-        withCertVersion(this.certVersion).
-        withContractId(contractId);
-    const request = await builder.build();
-    return this.sendRequest('listContracts', () =>
-      new Promise((resolve, reject) => {
-        this.ledgerClient.listContracts(request,
-            this.metadata, (err, response) => {
-              if (err) {
-                reject(err);
-              } else {
-                resolve(response);
-              }
-            });
-      }));
+        this.signer,
+    ).withCertHolderId(this.certHolderId)
+        .withCertVersion(this.certVersion)
+        .withContractId(contractId);
+
+    let request;
+    try {
+      request = await builder.build();
+    } catch (e) {
+      throw new ClientError(
+          StatusCode.RUNTIME_ERROR,
+          e.message,
+      );
+    }
+
+    const promise = new Promise((resolve, reject) => {
+      this.ledgerClient.listContracts(
+          request,
+          this.metadata,
+          (err, response) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(JSON.parse(response.toObject().json));
+            }
+          },
+      );
+    });
+
+    return this._executePromise(promise);
   }
 
   /**
    * Validate the integrity of an asset
    * @param {number} [assetId]
-   * @return {Promise<ClientServiceResponse>}
+   * @return {Promise<LedgerValidationResponse>}
+   * @throws {ClientError}
    */
   async validateLedger(assetId) {
     const builder = new LedgerValidationRequestBuilder(
-        new this.protobuf.LedgerValidationRequest(), this.signer).withAssetId(
-        assetId).
-        withCertHolderId(this.certHolderId).
-        withCertVersion(this.certVersion);
+        new this.protobuf.LedgerValidationRequest(),
+        this.signer,
+    ).withAssetId(assetId)
+        .withCertHolderId(this.certHolderId)
+        .withCertVersion(this.certVersion);
 
-    const request = await builder.build();
+    let request;
+    try {
+      request = await builder.build();
+    } catch (e) {
+      throw new ClientError(
+          StatusCode.RUNTIME_ERROR,
+          e.message,
+      );
+    }
 
-    return this.sendRequest('validateLedger', () =>
-      new Promise((resolve, reject) => {
-        this.ledgerClient.validateLedger(request, this.metadata,
-            (err, response) => {
-              if (err) {
-                reject(err);
-              } else {
-                resolve(response);
-              }
-            });
-      }));
+    const promise = new Promise((resolve, reject) => {
+      this.ledgerClient.validateLedger(
+          request,
+          this.metadata,
+          (err, response) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(response.toObject());
+            }
+          },
+      );
+    });
+
+    return this._executePromise(promise);
   }
 
   /**
    * @param {number} contractId
    * @param {Object} argument
    * @param {Object} [functionArgument=undefined]
-   * @return {Promise<ClientServiceResponse|void|*>}
+   * @return {Promise<ContractExecutionResponse|void|*>}
+   * @throws {ClientError}
    */
   async executeContract(contractId, argument, functionArgument) {
     argument['nonce'] = new Date().getTime().toString();
@@ -261,59 +331,101 @@ class ClientServiceBase {
 
     const builder = new ContractExecutionRequestBuilder(
         new this.protobuf.ContractExecutionRequest(),
-        this.signer).withContractId(contractId).
-        withContractArgument(argumentJson).
-        withFunctionArgument(functionArgumentJson).
-        withCertHolderId(this.certHolderId).
-        withCertVersion(this.certVersion);
+        this.signer,
+    ).withContractId(contractId)
+        .withContractArgument(argumentJson)
+        .withFunctionArgument(functionArgumentJson)
+        .withCertHolderId(this.certHolderId)
+        .withCertVersion(this.certVersion);
 
-    const request = await builder.build();
+    let request;
+    try {
+      request = await builder.build();
+    } catch (e) {
+      throw new ClientError(
+          StatusCode.RUNTIME_ERROR,
+          e.message,
+      );
+    }
 
-    return this.sendRequest('executeContract', () =>
-      new Promise((resolve, reject) => {
-        this.ledgerClient.executeContract(request, this.metadata,
-            (err, response) => {
-              if (err) {
-                reject(err);
-              } else {
-                resolve(response);
-              }
-            });
-      }));
+    const promise = new Promise((resolve, reject) => {
+      this.ledgerClient.executeContract(
+          request,
+          this.metadata,
+          (err, response) => {
+            if (err) {
+              reject(err);
+            } else {
+              const jsonResponse = response.toObject();
+              jsonResponse.result = JSON.parse(jsonResponse.result);
+              resolve(jsonResponse);
+            }
+          },
+      );
+    });
+
+    return this._executePromise(promise);
   }
 
   /**
-   * @param {string} funcName
-   * @param {Promise} func
+   * @param {Promise} promise
    * @return {Promise}
+   * @throws {ClientError}
    */
-  async sendRequest(funcName, func) {
+  async _executePromise(promise) {
     try {
-      return await func();
+      return await promise;
     } catch (e) {
-      let response;
-      switch (funcName) {
-        case 'registerCert':
-        case 'registerFunction':
-        case 'registerContract':
-        case 'listContracts':
-          response = new this.protobuf.LedgerServiceResponse();
-          break;
-        case 'validateLedger':
-          response = new this.protobuf.LedgerValidationResponse();
-          break;
-        case 'executeContract':
-          response = new this.protobuf.ContractExecutionResponse();
-          break;
+      const status = this._parseStatusFromError(e);
+      if (status) {
+        throw new ClientError(status.code, status.message);
+      } else {
+        throw new ClientError(
+            StatusCode.UNKNOWN_TRANSACTION_STATUS,
+            e.message,
+        );
       }
-      response.setMessage(e.message);
-      response.setStatus(StatusCode.RUNTIME_ERROR);
-      return response;
     }
+  }
+
+  /**
+   * Extract the status from the error
+   * @param {Error} error
+   * @return {Status|void} return a status or undefined if the status cannot be
+   * parsed from the error
+   * @private
+   */
+  _parseStatusFromError(error) {
+    if (!error.metadata) {
+      return;
+    }
+    let binaryStatus;
+    if (this._isNodeJsRuntime()) {
+      const statusMetadata = error.metadata.get(
+          ClientServiceBase.binaryStatusKey);
+      if (Array.isArray(statusMetadata) && statusMetadata.length === 1) {
+        binaryStatus = statusMetadata[0];
+      }
+    } else { // Web runtime
+      binaryStatus = error.metadata[ClientServiceBase.binaryStatusKey];
+    }
+    if (binaryStatus) {
+      return this.protobuf.Status.deserializeBinary(binaryStatus).toObject();
+    }
+  }
+
+  /**
+   *
+   * @return {boolean} true if the runtime is Node.js
+   * @private
+   */
+  _isNodeJsRuntime() {
+    return typeof window === 'undefined';
   }
 }
 
 module.exports = {
   ClientServiceBase,
+  ClientError,
   StatusCode,
 };

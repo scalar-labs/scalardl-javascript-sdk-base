@@ -44,7 +44,7 @@ describe('The Signature Signers', () => {
       const signer = new EllipticSigner('incorrect pem');
 
       await expect(signer.sign('content')).to.be.rejectedWith(
-          'Failed to sign the request'
+          'Failed to sign the request',
       );
     });
     it('should work properly', async () => {
