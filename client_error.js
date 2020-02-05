@@ -20,13 +20,6 @@ class ClientError extends Error {
      */
     this.code = code;
   }
-
-  /**
-   * @return {StatusCode}
-   */
-  getStatusCode() {
-    return this.code;
-  }
 }
 
 module.exports = {

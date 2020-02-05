@@ -576,7 +576,7 @@ describe('Class ClientServiceBase', () => {
           await clientServiceBase._executePromise(promise);
         } catch (e) {
           assert.equal(e.constructor.name, 'ClientError');
-          assert.equal(e.getStatusCode(), status.code);
+          assert.equal(e.code, status.code);
           assert.equal(e.message, status.message);
         }
       });
@@ -605,7 +605,7 @@ describe('Class ClientServiceBase', () => {
           await clientServiceBase._executePromise(promise);
         } catch (e) {
           assert.equal(e.constructor.name, 'ClientError');
-          assert.equal(e.getStatusCode(), status.code);
+          assert.equal(e.code, status.code);
           assert.equal(e.message, status.message);
         }
       });
@@ -624,7 +624,7 @@ describe('Class ClientServiceBase', () => {
         } catch (e) {
           assert.equal(e.constructor.name, 'ClientError');
           assert.equal(
-              e.getStatusCode(),
+              e.code,
               StatusCode.UNKNOWN_TRANSACTION_STATUS,
           );
           assert.equal(e.message, errorStub.message);
