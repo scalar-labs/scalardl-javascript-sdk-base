@@ -28,31 +28,31 @@ class ClientServiceBase {
     /** @const */
     this.properties = properties;
     /** @const */
-    this.serverHost = properties['scalar.ledger.client.server_host'];
+    this.serverHost = properties['scalar.dl.client.server.host'];
     /** @const */
-    this.serverPort = properties['scalar.ledger.client.server_port'];
+    this.serverPort = properties['scalar.dl.client.server.port'];
     /** @const */
-    this.tlsEnabled = properties['scalar.ledger.client.tls.enabled'];
+    this.tlsEnabled = properties['scalar.dl.client.tls.enabled'];
     if (this.tlsEnabled !== undefined && typeof this.tlsEnabled !== 'boolean') {
       throw new ClientError(
           StatusCode.CLIENT_IO_ERROR,
-          'property \'scalar.ledger.client.tls.enabled\' is not a boolean',
+          'property \'scalar.dl.client.tls.enabled\' is not a boolean',
       );
     }
     /** @const */
     this.privateKeyPem = this._getRequiredProperty(properties,
-        'scalar.ledger.client.private_key_pem');
+        'scalar.dl.client.private_key_pem');
     /** @const */
     this.certPem = this._getRequiredProperty(properties,
-        'scalar.ledger.client.cert_pem');
+        'scalar.dl.client.cert_pem');
     /** @const */
     this.certHolderId = this._getRequiredProperty(properties,
-        'scalar.ledger.client.cert_holder_id');
+        'scalar.dl.client.cert_holder_id');
     /** @const */
     this.credential =
-      properties['scalar.ledger.client.authorization.credential'];
+      properties['scalar.dl.client.authorization.credential'];
     /** @const */
-    this.certVersion = properties['scalar.ledger.client.cert_version'];
+    this.certVersion = properties['scalar.dl.client.cert_version'];
 
     /** @const */
     this.metadata = {};
