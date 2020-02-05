@@ -157,7 +157,7 @@ describe('Class ClientServiceBase', () => {
             clientProperties['scalar.ledger.client.cert_version']));
         assert(mockSpySetCertPem.calledWithExactly(
             clientProperties['scalar.ledger.client.cert_pem']));
-        assert.instanceOf(response, Object);
+        assert.isUndefined(response);
       });
     });
 
@@ -229,7 +229,7 @@ describe('Class ClientServiceBase', () => {
         assert(mockSpySetFunctionId.calledWithExactly(mockedContractId));
         assert(mockSpySetFunctionBinaryName.calledWithExactly(mockedName));
         assert(mockSpySetFunctionByteCode.calledWithExactly(mockedByteCode));
-        assert.instanceOf(response, Object);
+        assert.isUndefined(response);
       });
     });
 
@@ -337,7 +337,7 @@ describe('Class ClientServiceBase', () => {
         assert(mockSpySetCertVersion.calledWithExactly(
             clientProperties['scalar.ledger.client.cert_version']));
         assert(mockSpySetSignature.calledOnce);
-        assert.instanceOf(response, Object);
+        assert.isUndefined(response);
       });
     });
     describe('listContract', () => {

@@ -126,11 +126,11 @@ class ClientServiceBase {
       this.ledgerPrivileged.registerCert(
           request,
           this.metadata,
-          (err, response) => {
+          (err, _) => {
             if (err) {
               reject(err);
             } else {
-              resolve(response.toObject());
+              resolve();
             }
           },
       );
@@ -165,11 +165,11 @@ class ClientServiceBase {
       this.ledgerPrivileged.registerFunction(
           request,
           this.metadata,
-          (err, response) => {
+          (err, _) => {
             if (err) {
               reject(err);
             } else {
-              resolve(response.toObject());
+              resolve();
             }
           },
       );
@@ -221,11 +221,11 @@ class ClientServiceBase {
       this.ledgerClient.registerContract(
           request,
           this.metadata,
-          (err, response) => {
+          (err, _) => {
             if (err) {
               reject(err);
             } else {
-              resolve(response.toObject());
+              resolve();
             }
           },
       );
