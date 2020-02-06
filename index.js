@@ -9,6 +9,7 @@ const {
   ContractExecutionRequestBuilder,
 } = require('./request/builder');
 const {ContractExecutionResult} = require('./contract_execution_result');
+const {LedgerValidationResult} = require('./ledger_validation_result');
 const {EllipticSigner, WebCryptoSigner} = require('./signer');
 
 /**
@@ -308,7 +309,13 @@ class ClientServiceBase {
             if (err) {
               reject(err);
             } else {
-              resolve(response.toObject());
+              const proof = response.getProof();
+              const ledgerValidationResult = new LedgerValidationResult(
+                  response.getStatusCode(),
+                  proof ? proof.toObject() : {},
+              );
+
+              resolve(ledgerValidationResult);
             }
           },
       );
@@ -437,4 +444,5 @@ module.exports = {
   ClientError,
   StatusCode,
   ContractExecutionResult,
+  LedgerValidationResult,
 };

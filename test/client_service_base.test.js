@@ -3,6 +3,7 @@ const {
   StatusCode,
   ClientError,
   ContractExecutionResult,
+  LedgerValidationResult,
 } = require('..');
 
 const sinon = require('sinon');
@@ -424,7 +425,8 @@ describe('Class ClientServiceBase', () => {
               ledgerClient: {
                 validateLedger: (_, __, callback) => {
                   const mockedResponse = {
-                    toObject: () => ({}),
+                    getStatusCode: () => 0,
+                    getProof: () => null,
                   };
                   callback(null, mockedResponse);
                 },
@@ -457,7 +459,7 @@ describe('Class ClientServiceBase', () => {
         assert(mockSpySetCertVersion.calledWithExactly(
             clientProperties['scalar.dl.client.cert_version']));
         assert(mockSpySetSignature.calledOnce);
-        assert.instanceOf(response, Object);
+        assert.instanceOf(response, LedgerValidationResult);
       });
     });
     describe('executeContract', () => {
