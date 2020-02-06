@@ -2,6 +2,7 @@ const {
   ClientServiceBase,
   StatusCode,
   ClientError,
+  ContractExecutionResult,
 } = require('..');
 
 const sinon = require('sinon');
@@ -492,9 +493,8 @@ describe('Class ClientServiceBase', () => {
               ledgerClient: {
                 executeContract: (_, __, callback) => {
                   const mockedResponse = {
-                    toObject: () => ({
-                      result: '{}',
-                    }),
+                    getResult: () => '',
+                    getProofsList: () => [],
                   };
                   callback(null, mockedResponse);
                 },
@@ -540,7 +540,8 @@ describe('Class ClientServiceBase', () => {
         assert(mockSpySetSignature.calledOnce);
         assert(mockSpySetFunctionArgument.calledWithExactly(
             mockedFunctionArgumentJson));
-        assert.instanceOf(response, Object);
+
+        assert.instanceOf(response, ContractExecutionResult);
       });
     });
     describe('_executePromise', () => {

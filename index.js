@@ -8,7 +8,7 @@ const {
   FunctionRegistrationRequestBuilder,
   ContractExecutionRequestBuilder,
 } = require('./request/builder');
-
+const {ContractExecutionResult} = require('./contract_execution_result');
 const {EllipticSigner, WebCryptoSigner} = require('./signer');
 
 /**
@@ -356,9 +356,17 @@ class ClientServiceBase {
             if (err) {
               reject(err);
             } else {
-              const jsonResponse = response.toObject();
-              jsonResponse.result = JSON.parse(jsonResponse.result);
-              resolve(jsonResponse);
+              const resultInString = response.getResult();
+              const resultInObject = (resultInString)
+                ? JSON.parse(resultInString)
+                : {};
+
+              const contractExecutionResult = new ContractExecutionResult(
+                  resultInObject,
+                  response.getProofsList().map((proof) => proof.toObject()),
+              );
+
+              resolve(contractExecutionResult);
             }
           },
       );
@@ -428,4 +436,5 @@ module.exports = {
   ClientServiceBase,
   ClientError,
   StatusCode,
+  ContractExecutionResult,
 };
