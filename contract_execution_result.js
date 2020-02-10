@@ -1,3 +1,5 @@
+const {AssetProof} = require('./asset_proof.js');
+
 /**
  * To handle ContractExecutionResponse
  */
@@ -9,6 +11,24 @@ class ContractExecutionResult {
   constructor(result, proofs) {
     this.result = result;
     this.proofs = proofs;
+  }
+
+  /**
+   * @param {gRPCContractExecutionResponse} response
+   * @return {ContractExecutionResult}
+   */
+  static fromGRPCContractExecutionResponse(response) {
+    const resultInString = response.getResult();
+    const resultInObject = (resultInString)
+      ? JSON.parse(resultInString)
+      : {};
+
+    return new ContractExecutionResult(
+        resultInObject,
+        response.getProofsList().map(
+            (proof) => AssetProof.fromGRPCAssetProof(proof),
+        ),
+    );
   }
 
   /**

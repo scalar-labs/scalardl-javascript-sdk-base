@@ -310,12 +310,11 @@ class ClientServiceBase {
             if (err) {
               reject(err);
             } else {
-              const ledgerValidationResult = new LedgerValidationResult(
-                  response.getStatusCode(),
-                  AssetProof.fromGRPCAssetProof(response.getProof()),
+              resolve(
+                  LedgerValidationResult.fromGRPCLedgerValidationResponse(
+                      response,
+                  ),
               );
-
-              resolve(ledgerValidationResult);
             }
           },
       );
@@ -363,19 +362,9 @@ class ClientServiceBase {
             if (err) {
               reject(err);
             } else {
-              const resultInString = response.getResult();
-              const resultInObject = (resultInString)
-                ? JSON.parse(resultInString)
-                : {};
-
-              const contractExecutionResult = new ContractExecutionResult(
-                  resultInObject,
-                  response.getProofsList().map(
-                      (proof) => AssetProof.fromGRPCAssetProof(proof),
-                  ),
-              );
-
-              resolve(contractExecutionResult);
+              resolve(ContractExecutionResult.fromGRPCContractExecutionResponse(
+                  response,
+              ));
             }
           },
       );
