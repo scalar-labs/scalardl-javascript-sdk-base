@@ -10,6 +10,7 @@ const {
 } = require('./request/builder');
 const {ContractExecutionResult} = require('./contract_execution_result');
 const {LedgerValidationResult} = require('./ledger_validation_result');
+const {AssetProof} = require('./asset_proof');
 const {EllipticSigner, WebCryptoSigner} = require('./signer');
 
 /**
@@ -309,10 +310,9 @@ class ClientServiceBase {
             if (err) {
               reject(err);
             } else {
-              const proof = response.getProof();
               const ledgerValidationResult = new LedgerValidationResult(
                   response.getStatusCode(),
-                  proof ? proof.toObject() : {},
+                  AssetProof.fromGRPCAssetProof(response.getProof()),
               );
 
               resolve(ledgerValidationResult);
@@ -370,7 +370,9 @@ class ClientServiceBase {
 
               const contractExecutionResult = new ContractExecutionResult(
                   resultInObject,
-                  response.getProofsList().map((proof) => proof.toObject()),
+                  response.getProofsList().map(
+                      (proof) => AssetProof.fromGRPCAssetProof(proof),
+                  ),
               );
 
               resolve(contractExecutionResult);
@@ -445,4 +447,5 @@ module.exports = {
   StatusCode,
   ContractExecutionResult,
   LedgerValidationResult,
+  AssetProof,
 };

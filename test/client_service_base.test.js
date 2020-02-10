@@ -424,9 +424,16 @@ describe('Class ClientServiceBase', () => {
             {
               ledgerClient: {
                 validateLedger: (_, __, callback) => {
+                  const mockProof = {
+                    getAssetId: () => 'asset-id',
+                    getAge: () => 1,
+                    getHash_asU8: () => null,
+                    getNonce: () => 'nonce',
+                    getSignature_asU8: () => null,
+                  };
                   const mockedResponse = {
                     getStatusCode: () => 0,
-                    getProof: () => null,
+                    getProof: () => mockProof,
                   };
                   callback(null, mockedResponse);
                 },
@@ -494,9 +501,16 @@ describe('Class ClientServiceBase', () => {
             {
               ledgerClient: {
                 executeContract: (_, __, callback) => {
+                  const mockProof = {
+                    getAssetId: () => 'asset-id',
+                    getAge: () => 1,
+                    getHash_asU8: () => null,
+                    getNonce: () => 'nonce',
+                    getSignature_asU8: () => null,
+                  };
                   const mockedResponse = {
                     getResult: () => '',
-                    getProofsList: () => [],
+                    getProofsList: () => [mockProof],
                   };
                   callback(null, mockedResponse);
                 },
