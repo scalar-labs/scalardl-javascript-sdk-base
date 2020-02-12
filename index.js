@@ -312,7 +312,7 @@ class ClientServiceBase {
               reject(err);
             } else {
               resolve(
-                  LedgerValidationResult.fromGRPCLedgerValidationResponse(
+                  LedgerValidationResult.fromGrpcLedgerValidationResponse(
                       response,
                   ),
               );
@@ -363,7 +363,7 @@ class ClientServiceBase {
             if (err) {
               reject(err);
             } else {
-              resolve(ContractExecutionResult.fromGRPCContractExecutionResponse(
+              resolve(ContractExecutionResult.fromGrpcContractExecutionResponse(
                   response,
               ));
             }
