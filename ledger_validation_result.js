@@ -20,7 +20,7 @@ class LedgerValidationResult {
   static fromGRPCLedgerValidationResponse(response) {
     return new LedgerValidationResult(
         response.getStatusCode(),
-        AssetProof.fromGRPCAssetProof(response.getProof()),
+        AssetProof.fromGrpcAssetProof(response.getProof()),
     );
   }
 
@@ -42,4 +42,3 @@ class LedgerValidationResult {
 module.exports = {
   LedgerValidationResult,
 };
-
