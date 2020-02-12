@@ -21,7 +21,7 @@ class AssetProof {
    * @param {gRPCAssestProof} proof
    * @return {AssetProof}
    */
-  static fromGRPCAssetProof(proof) {
+  static fromGrpcAssetProof(proof) {
     return new AssetProof(
         proof.getAssetId(),
         proof.getAge(),
