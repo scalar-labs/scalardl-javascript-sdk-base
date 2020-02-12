@@ -18,7 +18,7 @@ class AssetProof {
   }
 
   /**
-   * @param {gRPCAssestProof} proof
+   * @param {proto.rpc.AssetProof} proof
    * @return {AssetProof}
    */
   static fromGrpcAssetProof(proof) {
