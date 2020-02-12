@@ -26,7 +26,7 @@ class ContractExecutionResult {
     return new ContractExecutionResult(
         resultInObject,
         response.getProofsList().map(
-            (proof) => AssetProof.fromGRPCAssetProof(proof),
+            (proof) => AssetProof.fromGrpcAssetProof(proof),
         ),
     );
   }
