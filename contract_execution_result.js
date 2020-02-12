@@ -17,7 +17,7 @@ class ContractExecutionResult {
    * @param {gRPCContractExecutionResponse} response
    * @return {ContractExecutionResult}
    */
-  static fromGRPCContractExecutionResponse(response) {
+  static fromGrpcContractExecutionResponse(response) {
     const resultInString = response.getResult();
     const resultInObject = (resultInString)
       ? JSON.parse(resultInString)
