@@ -14,7 +14,7 @@ class LedgerValidationResult {
   }
 
   /**
-   * @param {LedgerValidationResponse} response
+   * @param {proto.rpc.LedgerValidationResponse} response
    * @return {LedgerValidationResult}
    */
   static fromGrpcLedgerValidationResponse(response) {

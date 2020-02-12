@@ -14,7 +14,7 @@ class ContractExecutionResult {
   }
 
   /**
-   * @param {gRPCContractExecutionResponse} response
+   * @param {proto.rpc.ContractExecutionResponse} response
    * @return {ContractExecutionResult}
    */
   static fromGrpcContractExecutionResponse(response) {
