@@ -1,5 +1,5 @@
 /**
- * AssetProof class
+ * @public
  */
 class AssetProof {
   /**

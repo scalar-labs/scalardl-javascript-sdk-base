@@ -18,6 +18,7 @@ const {EllipticSigner, WebCryptoSigner} = require('./signer');
  * and contracts, listing contracts, validating the ledger, and executing
  * contracts.
  * @class
+ * @public
  */
 class ClientServiceBase {
   /**

@@ -1,7 +1,7 @@
 const {AssetProof} = require('./asset_proof.js');
 
 /**
- * To handle ContractExecutionResponse
+ * @public
  */
 class ContractExecutionResult {
   /**

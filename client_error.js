@@ -1,6 +1,7 @@
 /**
  * Generic error thrown by the SDK.
  * @extends {Error}
+ * @public
  */
 class ClientError extends Error {
   /**

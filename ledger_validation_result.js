@@ -1,7 +1,7 @@
 const {AssetProof} = require('./asset_proof');
 
 /**
- * To handle LedgerValidationResponse
+ * @public
  */
 class LedgerValidationResult {
   /**
