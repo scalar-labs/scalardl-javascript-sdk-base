@@ -17,7 +17,7 @@ class LedgerValidationResult {
    * @param {LedgerValidationResponse} response
    * @return {LedgerValidationResult}
    */
-  static fromGRPCLedgerValidationResponse(response) {
+  static fromGrpcLedgerValidationResponse(response) {
     return new LedgerValidationResult(
         response.getStatusCode(),
         AssetProof.fromGrpcAssetProof(response.getProof()),
