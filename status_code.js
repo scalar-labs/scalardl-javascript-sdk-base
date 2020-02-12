@@ -1,6 +1,7 @@
 /**
  * A type used for various http status codes
  * @enum {number}
+ * @public
  */
 const StatusCode = {
   OK: 200,

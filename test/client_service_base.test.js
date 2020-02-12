@@ -2,6 +2,8 @@ const {
   ClientServiceBase,
   StatusCode,
   ClientError,
+  ContractExecutionResult,
+  LedgerValidationResult,
 } = require('..');
 
 const sinon = require('sinon');
@@ -12,10 +14,10 @@ const services = {
   'ledgerClient': {},
 };
 const clientProperties = {
-  'scalar.ledger.client.private_key_pem': 'key',
-  'scalar.ledger.client.cert_pem': 'cert',
-  'scalar.ledger.client.cert_holder_id': 'hold',
-  'scalar.ledger.client.cert_version': '1.0',
+  'scalar.dl.client.private_key_pem': 'key',
+  'scalar.dl.client.cert_pem': 'cert',
+  'scalar.dl.client.cert_holder_id': 'hold',
+  'scalar.dl.client.cert_version': '1.0',
 };
 
 describe('Class ClientServiceBase', () => {
@@ -24,9 +26,9 @@ describe('Class ClientServiceBase', () => {
       it('when the private key is missing', () => {
         // prepare
         const clientProperties = {
-          // "scalar.ledger.client.private_key_pem": "key",
-          'scalar.ledger.client.cert_pem': 'cert',
-          'scalar.ledger.client.cert_holder_id': 'hold',
+          // "scalar.dl.client.private_key_pem": "key",
+          'scalar.dl.client.cert_pem': 'cert',
+          'scalar.dl.client.cert_holder_id': 'hold',
         };
 
         // act assert
@@ -37,9 +39,9 @@ describe('Class ClientServiceBase', () => {
       it('when the certificate is missing', () => {
         // prepare
         const clientProperties = {
-          'scalar.ledger.client.private_key_pem': 'key',
-          // 'scalar.ledger.client.cert_pem': 'cert',
-          'scalar.ledger.client.cert_holder_id': 'hold',
+          'scalar.dl.client.private_key_pem': 'key',
+          // 'scalar.dl.client.cert_pem': 'cert',
+          'scalar.dl.client.cert_holder_id': 'hold',
         };
 
         // act assert
@@ -50,9 +52,9 @@ describe('Class ClientServiceBase', () => {
       it('when holder id is missing', () => {
         // prepare
         const clientProperties = {
-          'scalar.ledger.client.private_key_pem': 'key',
-          'scalar.ledger.client.cert_pem': 'cert',
-          // 'scalar.ledger.client.cert_holder_id': 'hold',
+          'scalar.dl.client.private_key_pem': 'key',
+          'scalar.dl.client.cert_pem': 'cert',
+          // 'scalar.dl.client.cert_holder_id': 'hold',
         };
 
         // act assert
@@ -65,11 +67,11 @@ describe('Class ClientServiceBase', () => {
         () => {
         // prepare
           const clientProperties = {
-            'scalar.ledger.client.private_key_pem': 'key',
-            'scalar.ledger.client.cert_pem': 'cert',
-            'scalar.ledger.client.cert_holder_id': 'hold',
-            'scalar.ledger.client.cert_version': '1.0',
-            'scalar.ledger.client.authorization.credential':
+            'scalar.dl.client.private_key_pem': 'key',
+            'scalar.dl.client.cert_pem': 'cert',
+            'scalar.dl.client.cert_holder_id': 'hold',
+            'scalar.dl.client.cert_version': '1.0',
+            'scalar.dl.client.authorization.credential':
             'mocked-credentials',
           };
 
@@ -147,11 +149,11 @@ describe('Class ClientServiceBase', () => {
 
         // assert
         assert(mockSpySetCertHolderId.calledWithExactly(
-            clientProperties['scalar.ledger.client.cert_holder_id']));
+            clientProperties['scalar.dl.client.cert_holder_id']));
         assert(mockSpySetCertVersion.calledWithExactly(
-            clientProperties['scalar.ledger.client.cert_version']));
+            clientProperties['scalar.dl.client.cert_version']));
         assert(mockSpySetCertPem.calledWithExactly(
-            clientProperties['scalar.ledger.client.cert_pem']));
+            clientProperties['scalar.dl.client.cert_pem']));
         assert.isUndefined(response);
       });
     });
@@ -328,9 +330,9 @@ describe('Class ClientServiceBase', () => {
         assert(mockSpySetContractProperties.calledWithExactly(
             mockedPropertiesJson));
         assert(mockSpySetCertHolderId.calledWithExactly(
-            clientProperties['scalar.ledger.client.cert_holder_id']));
+            clientProperties['scalar.dl.client.cert_holder_id']));
         assert(mockSpySetCertVersion.calledWithExactly(
-            clientProperties['scalar.ledger.client.cert_version']));
+            clientProperties['scalar.dl.client.cert_version']));
         assert(mockSpySetSignature.calledOnce);
         assert.isUndefined(response);
       });
@@ -390,9 +392,9 @@ describe('Class ClientServiceBase', () => {
         // assert
         assert(mockSpyContractsListingRequest.calledOnce);
         assert(mockSpySetCertHolderId.calledWithExactly(
-            clientProperties['scalar.ledger.client.cert_holder_id']));
+            clientProperties['scalar.dl.client.cert_holder_id']));
         assert(mockSpySetCertVersion.calledWithExactly(
-            clientProperties['scalar.ledger.client.cert_version']));
+            clientProperties['scalar.dl.client.cert_version']));
         assert(
             mockSpySetContractId.calledWithExactly(mockedContractId));
         assert(mockSpySetSignature.calledOnce);
@@ -422,8 +424,16 @@ describe('Class ClientServiceBase', () => {
             {
               ledgerClient: {
                 validateLedger: (_, __, callback) => {
+                  const mockProof = {
+                    getAssetId: () => 'asset-id',
+                    getAge: () => 1,
+                    getHash_asU8: () => null,
+                    getNonce: () => 'nonce',
+                    getSignature_asU8: () => null,
+                  };
                   const mockedResponse = {
-                    toObject: () => ({}),
+                    getStatusCode: () => 0,
+                    getProof: () => mockProof,
                   };
                   callback(null, mockedResponse);
                 },
@@ -452,11 +462,11 @@ describe('Class ClientServiceBase', () => {
         assert(mockSpyLedgerValidationRequest.calledOnce);
         assert(mockSpySetAssetId.calledWithExactly(mockedAssetId));
         assert(mockSpySetCertHolderId.calledWithExactly(
-            clientProperties['scalar.ledger.client.cert_holder_id']));
+            clientProperties['scalar.dl.client.cert_holder_id']));
         assert(mockSpySetCertVersion.calledWithExactly(
-            clientProperties['scalar.ledger.client.cert_version']));
+            clientProperties['scalar.dl.client.cert_version']));
         assert(mockSpySetSignature.calledOnce);
-        assert.instanceOf(response, Object);
+        assert.instanceOf(response, LedgerValidationResult);
       });
     });
     describe('executeContract', () => {
@@ -491,10 +501,16 @@ describe('Class ClientServiceBase', () => {
             {
               ledgerClient: {
                 executeContract: (_, __, callback) => {
+                  const mockProof = {
+                    getAssetId: () => 'asset-id',
+                    getAge: () => 1,
+                    getHash_asU8: () => null,
+                    getNonce: () => 'nonce',
+                    getSignature_asU8: () => null,
+                  };
                   const mockedResponse = {
-                    toObject: () => ({
-                      result: '{}',
-                    }),
+                    getResult: () => '',
+                    getProofsList: () => [mockProof],
                   };
                   callback(null, mockedResponse);
                 },
@@ -534,13 +550,14 @@ describe('Class ClientServiceBase', () => {
         assert(mockSpySetContractArgument.calledWith(
             sinon.match(mockedArgument.mocked)));
         assert(mockSpySetCertHolderId.calledWithExactly(
-            clientProperties['scalar.ledger.client.cert_holder_id']));
+            clientProperties['scalar.dl.client.cert_holder_id']));
         assert(mockSpySetCertVersion.calledWithExactly(
-            clientProperties['scalar.ledger.client.cert_version']));
+            clientProperties['scalar.dl.client.cert_version']));
         assert(mockSpySetSignature.calledOnce);
         assert(mockSpySetFunctionArgument.calledWithExactly(
             mockedFunctionArgumentJson));
-        assert.instanceOf(response, Object);
+
+        assert.instanceOf(response, ContractExecutionResult);
       });
     });
     describe('_executePromise', () => {
