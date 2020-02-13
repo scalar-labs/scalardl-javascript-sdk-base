@@ -20,7 +20,9 @@ class LedgerValidationResult {
   static fromGrpcLedgerValidationResponse(response) {
     return new LedgerValidationResult(
         response.getStatusCode(),
-        AssetProof.fromGrpcAssetProof(response.getProof()),
+        response.getProof()
+          ? AssetProof.fromGrpcAssetProof(response.getProof())
+          : null,
     );
   }
 
