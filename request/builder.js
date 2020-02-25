@@ -537,4 +537,5 @@ module.exports = {
   ContractsListingRequestBuilder,
   LedgerValidationRequestBuilder,
   ContractExecutionRequestBuilder,
+  TextEncoder,
 };
