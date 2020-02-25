@@ -438,10 +438,4 @@ module.exports = {
   ContractExecutionResult,
   LedgerValidationResult,
   AssetProof,
-  CertificateRegistrationRequestBuilder,
-  FunctionRegistrationRequestBuilder,
-  ContractRegistrationRequestBuilder,
-  ContractsListingRequestBuilder,
-  LedgerValidationRequestBuilder,
-  ContractExecutionRequestBuilder,
 };
