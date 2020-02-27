@@ -98,10 +98,10 @@ describe('Class GrpcMessageGetter', () => {
 
     /**
      * Mock for the signer library
-     * @param {GrpcMessageGetter} getter
+     * @param {GrpcMessageGetter} grpcMessageGetter
      */
-    function genericEllipticSignatureSigner(getter) {
-      sinon.replace(getter.signer, 'sign',
+    function genericEllipticSignatureSigner(grpcMessageGetter) {
+      sinon.replace(grpcMessageGetter.signer, 'sign',
           sinon.fake.returns(mockedReturns));
     }
 
