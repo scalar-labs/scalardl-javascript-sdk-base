@@ -1,7 +1,7 @@
 const {
   ClientError,
 } = require('..');
-const {GRPCMessageGetter} = require('../grpc_message_getter');
+const {GrpcMessageGetter} = require('../grpc_message_getter');
 const {TextEncoder} = require('../request/builder');
 
 const sinon = require('sinon');
@@ -14,7 +14,7 @@ const clientProperties = {
   'scalar.dl.client.cert_version': '1.0',
 };
 
-describe('Class GRPCMessageGetter', () => {
+describe('Class GrpcMessageGetter', () => {
   describe('The constructor', () => {
     describe('should throw an error', () => {
       it('when the private key is missing', () => {
@@ -27,7 +27,7 @@ describe('Class GRPCMessageGetter', () => {
 
         // act assert
         assert.throws(() => {
-          new GRPCMessageGetter(clientProperties);
+          new GrpcMessageGetter(clientProperties);
         }, ClientError, 'private_key_pem');
       });
       it('when the certificate is missing', () => {
@@ -40,7 +40,7 @@ describe('Class GRPCMessageGetter', () => {
 
         // act assert
         assert.throws(() => {
-          new GRPCMessageGetter(clientProperties);
+          new GrpcMessageGetter(clientProperties);
         }, ClientError, 'cert_pem');
       });
       it('when holder id is missing', () => {
@@ -53,7 +53,7 @@ describe('Class GRPCMessageGetter', () => {
 
         // act assert
         assert.throws(() => {
-          new GRPCMessageGetter(clientProperties);
+          new GrpcMessageGetter(clientProperties);
         }, ClientError, 'cert_holder_id');
       });
     });
@@ -68,18 +68,18 @@ describe('Class GRPCMessageGetter', () => {
           };
 
           // act
-          const gRPCMessageGetter = new GRPCMessageGetter(clientProperties);
+          const grpcMessageGetter = new GrpcMessageGetter(clientProperties);
 
           // assert
-          assert.equal(gRPCMessageGetter.privateKeyPem, 'key');
-          assert.equal(gRPCMessageGetter.certPem, 'cert');
-          assert.equal(gRPCMessageGetter.certHolderId, 'hold');
-          assert.equal(gRPCMessageGetter.certVersion, '1.0');
+          assert.equal(grpcMessageGetter.privateKeyPem, 'key');
+          assert.equal(grpcMessageGetter.certPem, 'cert');
+          assert.equal(grpcMessageGetter.certHolderId, 'hold');
+          assert.equal(grpcMessageGetter.certVersion, '1.0');
         });
   });
   describe('The method', () => {
     const mockedReturns = 'mockedReturns';
-    let gRPCMessageGetter;
+    let grpcMessageGetter;
 
     afterEach(function () {
       sinon.restore();
@@ -93,12 +93,12 @@ describe('Class GRPCMessageGetter', () => {
         'scalar.dl.client.cert_version': '1.0',
       };
 
-      gRPCMessageGetter = new GRPCMessageGetter(clientProperties)
+      grpcMessageGetter = new GrpcMessageGetter(clientProperties)
     });
 
     /**
      * Mock for the signer library
-     * @param {GRPCMessageGetter} getter
+     * @param {GrpcMessageGetter} getter
      */
     function genericEllipticSignatureSigner(getter) {
       sinon.replace(getter.signer, 'sign',
@@ -156,7 +156,7 @@ describe('Class GRPCMessageGetter', () => {
         const mockedBuffer = genericBufferArrayGenerator(mockedProperties);
 
         // act
-        const binaryArray = await gRPCMessageGetter.getCertificateRegistrationRequest();
+        const binaryArray = await grpcMessageGetter.getCertificateRegistrationRequest();
 
         // assert
         assert.deepEqual(binaryArray, mockedBuffer);
@@ -178,7 +178,7 @@ describe('Class GRPCMessageGetter', () => {
         const mockedBuffer = genericBufferArrayGenerator(mockedProperties);
 
         // act
-        const binaryArray = await gRPCMessageGetter.getFunctionRegistrationRequest(
+        const binaryArray = await grpcMessageGetter.getFunctionRegistrationRequest(
             mockedFunctionId, mockedFunctionBinaryName, mockedFunctionBytes);
 
         // assert
@@ -209,10 +209,10 @@ describe('Class GRPCMessageGetter', () => {
         };
         const mockedBuffer = genericBufferArrayGenerator(mockedProperties);
 
-        genericEllipticSignatureSigner(gRPCMessageGetter);
+        genericEllipticSignatureSigner(grpcMessageGetter);
 
         // act
-        const binaryArray = await gRPCMessageGetter.getContractRegistrationRequest(
+        const binaryArray = await grpcMessageGetter.getContractRegistrationRequest(
             mockedContractId, mockedContractBinaryName, mockedContractBytesCode,
             mockedContractProperties);
 
@@ -235,10 +235,10 @@ describe('Class GRPCMessageGetter', () => {
         };
         const mockedBuffer = genericBufferArrayGenerator(mockedProperties);
 
-        genericEllipticSignatureSigner(gRPCMessageGetter);
+        genericEllipticSignatureSigner(grpcMessageGetter);
 
         // act
-        const binaryArray = await gRPCMessageGetter.getContractListingRequest(
+        const binaryArray = await grpcMessageGetter.getContractListingRequest(
             mockedContractId);
 
         // assert
@@ -271,10 +271,10 @@ describe('Class GRPCMessageGetter', () => {
         };
         const mockedBuffer = genericBufferArrayGenerator(mockedProperties);
 
-        genericEllipticSignatureSigner(gRPCMessageGetter);
+        genericEllipticSignatureSigner(grpcMessageGetter);
 
         // act
-        const binaryArray = await gRPCMessageGetter.getContractExecutionRequest(
+        const binaryArray = await grpcMessageGetter.getContractExecutionRequest(
             mockedContractId, mockedContractArgument, mockedFunctionArgument);
 
         // assert
@@ -296,10 +296,10 @@ describe('Class GRPCMessageGetter', () => {
         };
         const mockedBuffer = genericBufferArrayGenerator(mockedProperties);
 
-        genericEllipticSignatureSigner(gRPCMessageGetter);
+        genericEllipticSignatureSigner(grpcMessageGetter);
 
         // act
-        const binaryArray = await gRPCMessageGetter.getLedgerValidationRequest(
+        const binaryArray = await grpcMessageGetter.getLedgerValidationRequest(
             mockedAssetId);
 
         // assert

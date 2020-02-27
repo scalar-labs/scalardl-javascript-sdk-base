@@ -3,7 +3,7 @@ const {EllipticSigner, WebCryptoSigner} = require('./signer');
 const {TextEncoder} = require('./request/builder');
 const {StatusCode} = require('./status_code');
 
-class GRPCMessageGetter {
+class GrpcMessageGetter {
   /**
    * @param {Object} properties
    */
@@ -71,7 +71,7 @@ class GRPCMessageGetter {
   }
 
   /**
-   * @param {number} functionId of the function
+   * @param {string} functionId of the function
    * @param {string} functionBinaryName of the function
    * @param {Uint8Array} functionBytes of the function
    * @return {Uint8Array}
@@ -85,7 +85,7 @@ class GRPCMessageGetter {
       );
     }
     const functionIdEncoded = new TextEncoder('utf-8').encode(
-        functionId.toString());
+        functionId);
     const functionBinaryNameEncoded = new TextEncoder('utf-8').encode(
         functionBinaryName);
 
@@ -104,7 +104,7 @@ class GRPCMessageGetter {
   }
 
   /**
-   * @param {number} contractId of the function
+   * @param {string} contractId of the function
    * @param {string} contractBinaryName of the function
    * @param {Uint8Array} contractBytesCode of the function
    * @param {object} properties of the function
@@ -120,7 +120,7 @@ class GRPCMessageGetter {
     }
 
     const contractIdEncoded = new TextEncoder('utf-8').encode(
-        contractId.toString());
+        contractId);
     const contractBinaryNameEncoded = new TextEncoder('utf-8').encode(
         contractBinaryName);
     const contractPropertiesEncoded = new TextEncoder('utf-8').encode(
@@ -162,6 +162,7 @@ class GRPCMessageGetter {
   }
 
   /**
+   * @param {string} contractId of the function
    * @return {Uint8Array}
    */
   async getContractListingRequest(contractId) {
@@ -195,7 +196,7 @@ class GRPCMessageGetter {
   }
 
   /**
-   * @param {number} contractId
+   * @param {string} contractId
    * @param {Object} contractArgument
    * @param {Object} [functionArgument=undefined]
    * @return {Uint8Array}
@@ -203,7 +204,7 @@ class GRPCMessageGetter {
   async getContractExecutionRequest(contractId, contractArgument,
       functionArgument) {
     const contractIdEncoded = new TextEncoder('utf-8').encode(
-        contractId.toString());
+        contractId);
     const contractArgumentEncoded = new TextEncoder('utf-8').encode(
         JSON.stringify(contractArgument));
     const contractCertHolderIdEncoded = new TextEncoder('utf-8').encode(
@@ -243,12 +244,12 @@ class GRPCMessageGetter {
   }
 
   /**
-   * @param {number} [assetId]
+   * @param {string} [assetId]
    * @return {Uint8Array}
    */
   async getLedgerValidationRequest(assetId) {
     const assetIdEncoded = new TextEncoder('utf-8').encode(
-        assetId.toString());
+        assetId);
     const contractCertHolderIdEncoded = new TextEncoder('utf-8').encode(
         this.certHolderId);
     const contractCertVersionEncoded = new TextEncoder('utf-8').encode(
@@ -288,5 +289,5 @@ class GRPCMessageGetter {
 }
 
 module.exports = {
-  GRPCMessageGetter,
+  GrpcMessageGetter,
 };
