@@ -79,21 +79,16 @@ describe('Class GrpcMessageGetter', () => {
   });
   describe('The method', () => {
     const mockedReturns = 'mockedReturns';
+    const clientProperties = {
+      'scalar.dl.client.private_key_pem': 'key',
+      'scalar.dl.client.cert_pem': 'cert',
+      'scalar.dl.client.cert_holder_id': 'hold',
+      'scalar.dl.client.cert_version': '1.0',
+    };
     let grpcMessageGetter;
 
     afterEach(function () {
       sinon.restore();
-    });
-
-    beforeEach(function () {
-      const clientProperties = {
-        'scalar.dl.client.private_key_pem': 'key',
-        'scalar.dl.client.cert_pem': 'cert',
-        'scalar.dl.client.cert_holder_id': 'hold',
-        'scalar.dl.client.cert_version': '1.0',
-      };
-
-      grpcMessageGetter = new GrpcMessageGetter(clientProperties)
     });
 
     /**
@@ -115,7 +110,13 @@ describe('Class GrpcMessageGetter', () => {
 
       Object.values(properties).forEach((value) => {
         if (value.constructor === String) {
-          value = new TextEncoder('utf-8').encode(value);
+          if (value !== clientProperties['scalar.dl.client.cert_version']) {
+            value = new TextEncoder('utf-8').encode(value);
+          } else {
+            const view = new DataView(new ArrayBuffer(4));
+            view.setUint32(0, value);
+            value = new Uint8Array(view.buffer);
+          }
         } else if (value.constructor === Number) {
           value = new TextEncoder('utf-8').encode(value.toString());
         } else if (value.constructor === Object) {
@@ -154,6 +155,21 @@ describe('Class GrpcMessageGetter', () => {
           mockedCertPem: clientProperties['scalar.dl.client.cert_pem'],
         };
         const mockedBuffer = genericBufferArrayGenerator(mockedProperties);
+        const mockedCertificateRegistrationRequest = {
+          setCertHolderId: function () {
+          },
+          setCertVersion: function () {
+          },
+          setCertPem: function () {
+          },
+        };
+        const mockedProtobuf = {
+          CertificateRegistrationRequest: function () {
+            return mockedCertificateRegistrationRequest;
+          },
+        };
+        const grpcMessageGetter = new GrpcMessageGetter(clientProperties,
+            mockedProtobuf);
 
         // act
         const binaryArray = await grpcMessageGetter.getCertificateRegistrationRequest();
@@ -166,7 +182,7 @@ describe('Class GrpcMessageGetter', () => {
     describe('getFunctionRegistrationRequest', () => {
       it('should work as expected', async () => {
         // prepare
-        const mockedFunctionId = 1234;
+        const mockedFunctionId = "mockedFunctionId";
         const mockedFunctionBinaryName = 'mockedFunctionBinaryName';
         const mockedFunctionBytes = new Uint8Array([1, 2, 3]);
         const mockedProperties = {
@@ -174,7 +190,21 @@ describe('Class GrpcMessageGetter', () => {
           mockedFunctionBinaryName: mockedFunctionBinaryName,
           mockedFunctionBytes: mockedFunctionBytes,
         };
-
+        const mockedFunctionRegistrationRequest = {
+          setFunctionId: function () {
+          },
+          setFunctionBinaryName: function () {
+          },
+          setFunctionByteCode: function () {
+          },
+        };
+        const mockedProtobuf = {
+          FunctionRegistrationRequest: function () {
+            return mockedFunctionRegistrationRequest;
+          },
+        };
+        const grpcMessageGetter = new GrpcMessageGetter(clientProperties,
+            mockedProtobuf);
         const mockedBuffer = genericBufferArrayGenerator(mockedProperties);
 
         // act
@@ -189,7 +219,7 @@ describe('Class GrpcMessageGetter', () => {
     describe('getContractRegistrationRequest', () => {
       it('should work as expected', async () => {
         // prepare
-        const mockedContractId = 1234;
+        const mockedContractId = "mockedContractId";
         const mockedContractBinaryName = 'mockedFunctionBinaryName';
         const mockedContractBytesCode = new Uint8Array([1, 2, 3]);
         const mockedContractProperties = {
@@ -208,7 +238,29 @@ describe('Class GrpcMessageGetter', () => {
           mockedSignature: mockedSignature,
         };
         const mockedBuffer = genericBufferArrayGenerator(mockedProperties);
-
+        const mockedContractRegistrationRequest = {
+          setContractId: function () {
+          },
+          setContractBinaryName: function () {
+          },
+          setContractByteCode: function () {
+          },
+          setContractProperties: function () {
+          },
+          setCertHolderId: function () {
+          },
+          setCertVersion: function () {
+          },
+          setSignature: function () {
+          },
+        };
+        const mockedProtobuf = {
+          ContractRegistrationRequest: function () {
+            return mockedContractRegistrationRequest;
+          },
+        };
+        const grpcMessageGetter = new GrpcMessageGetter(clientProperties,
+            mockedProtobuf);
         genericEllipticSignatureSigner(grpcMessageGetter);
 
         // act
@@ -224,7 +276,7 @@ describe('Class GrpcMessageGetter', () => {
     describe('getContractListingRequest', () => {
       it('should work as expected', async () => {
         // prepare
-        const mockedContractId = 1234;
+        const mockedContractId = "mockedContractId";
         const mockedSignature = new EllipticSigner(
             clientProperties['scalar.dl.client.private_key_pem']);
         const mockedProperties = {
@@ -233,6 +285,23 @@ describe('Class GrpcMessageGetter', () => {
           mockedContractId: mockedContractId,
           mockedSignature: mockedSignature,
         };
+        const mockedListContracts = {
+          setCertHolderId: function () {
+          },
+          setCertVersion: function () {
+          },
+          setContractId: function () {
+          },
+          setSignature: function () {
+          },
+        };
+        const mockedProtobuf = {
+          ContractsListingRequest: function () {
+            return mockedListContracts;
+          },
+        };
+        const grpcMessageGetter = new GrpcMessageGetter(clientProperties,
+            mockedProtobuf);
         const mockedBuffer = genericBufferArrayGenerator(mockedProperties);
 
         genericEllipticSignatureSigner(grpcMessageGetter);
@@ -249,7 +318,7 @@ describe('Class GrpcMessageGetter', () => {
     describe('getContractExecutionRequest', () => {
       it('should work as expected', async () => {
         // prepare
-        const mockedContractId = 1234;
+        const mockedContractId = "mockedContractId";
         const mockedContractArgument = {
           A: 'a',
           B: 'b'
@@ -267,10 +336,29 @@ describe('Class GrpcMessageGetter', () => {
           certVersion: clientProperties['scalar.dl.client.cert_version'],
           mockedFunctionArgument: mockedFunctionArgument,
           mockedSignature: mockedSignature,
-
         };
         const mockedBuffer = genericBufferArrayGenerator(mockedProperties);
-
+        const mockedExecuteContract = {
+          setContractId: function () {
+          },
+          setContractArgument: function () {
+          },
+          setCertHolderId: function () {
+          },
+          setCertVersion: function () {
+          },
+          setFunctionArgument: function () {
+          },
+          setSignature: function () {
+          },
+        };
+        const mockedProtobuf = {
+          ContractExecutionRequest: function () {
+            return mockedExecuteContract;
+          },
+        };
+        const grpcMessageGetter = new GrpcMessageGetter(clientProperties,
+            mockedProtobuf);
         genericEllipticSignatureSigner(grpcMessageGetter);
 
         // act
@@ -285,7 +373,7 @@ describe('Class GrpcMessageGetter', () => {
     describe('getLedgerValidationRequest', () => {
       it('should work as expected', async () => {
         // prepare
-        const mockedAssetId = 1234;
+        const mockedAssetId = "mockedAssetId";
         const mockedSignature = new EllipticSigner(
             clientProperties['scalar.dl.client.private_key_pem']);
         const mockedProperties = {
@@ -295,7 +383,23 @@ describe('Class GrpcMessageGetter', () => {
           mockedSignature: mockedSignature,
         };
         const mockedBuffer = genericBufferArrayGenerator(mockedProperties);
-
+        const mockedValidateLedger = {
+          setAssetId: function () {
+          },
+          setCertHolderId: function () {
+          },
+          setCertVersion: function () {
+          },
+          setSignature: function () {
+          },
+        };
+        const mockedProtobuf = {
+          LedgerValidationRequest: function () {
+            return mockedValidateLedger;
+          },
+        };
+        const grpcMessageGetter = new GrpcMessageGetter(clientProperties,
+            mockedProtobuf);
         genericEllipticSignatureSigner(grpcMessageGetter);
 
         // act
