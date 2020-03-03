@@ -20,7 +20,7 @@ const clientProperties = {
   'scalar.dl.client.cert_version': 1,
 };
 
-describe('Class GRPCMessageGetter', () => {
+describe('Class ClientServiceBase', () => {
   describe('The constructor', () => {
     describe('should throw an error', () => {
       it('when the private key is missing', () => {
