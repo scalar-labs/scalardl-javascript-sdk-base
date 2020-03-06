@@ -116,14 +116,12 @@ class CertificateRegistrationRequestBuilder {
     offset += contractArgumentEncoded.byteLength;
     buffer.set(contractCertPemEncoded, offset);
 
-    this.byteArray = buffer;
-
     return request;
   }
 
   async getByteArray() {
-    await this.build();
-    return this.byteArray;
+    const request = await this.build();
+    return request.serializeBinary();
   }
 }
 
@@ -204,14 +202,12 @@ class FunctionRegistrationRequestBuilder {
     offset += functionBinaryNameEncoded.byteLength;
     buffer.set(this.functionByteCode, offset);
 
-    this.byteArray = buffer;
-
     return request;
   }
 
   async getByteArray() {
-    await this.build();
-    return this.byteArray;
+    const request = await this.build();
+    return request.serializeBinary();
   }
 }
 
@@ -345,25 +341,15 @@ class ContractRegistrationRequestBuilder {
     buffer.set(certHolderId, offset);
     offset += certHolderId.byteLength;
     buffer.set(certVersion, offset);
-    offset += certVersion.byteLength;
 
-    const signedBuffer = await this.signer.sign(buffer);
-    const signatureEncoded = new TextEncoder('utf-8').encode(signedBuffer);
-
-    request.setSignature(signedBuffer);
-
-    const resizedBuffer = new Uint8Array(offset + signatureEncoded.byteLength);
-    resizedBuffer.set(buffer);
-    resizedBuffer.set(signatureEncoded, offset);
-
-    this.byteArray = resizedBuffer;
+    request.setSignature(await this.signer.sign(buffer));
 
     return request;
   }
 
   async getByteArray() {
-    await this.build();
-    return this.byteArray;
+    const request = await this.build();
+    return request.serializeBinary();
   }
 }
 
@@ -446,25 +432,15 @@ class ContractsListingRequestBuilder {
     buffer.set(certVersion, offset);
     offset += certVersion.byteLength;
     buffer.set(contractIdEncoded, offset);
-    offset += contractIdEncoded.byteLength;
 
-    const signedBuffer = await this.signer.sign(buffer);
-    const signatureEncoded = new TextEncoder('utf-8').encode(signedBuffer);
-
-    request.setSignature(signedBuffer);
-
-    const resizedBuffer = new Uint8Array(offset + signatureEncoded.byteLength);
-    resizedBuffer.set(buffer);
-    resizedBuffer.set(signatureEncoded, offset);
-
-    this.byteArray = resizedBuffer;
+    request.setSignature(await this.signer.sign(buffer));
 
     return request;
   }
 
   async getByteArray() {
-    await this.build();
-    return this.byteArray;
+    const request = await this.build();
+    return request.serializeBinary();
   }
 }
 
@@ -545,25 +521,15 @@ class LedgerValidationRequestBuilder {
     buffer.set(certHolderId, offset);
     offset += certHolderId.byteLength;
     buffer.set(certVersion, offset);
-    offset += certVersion.byteLength;
 
-    const signedBuffer = await this.signer.sign(buffer);
-    const signatureEncoded = new TextEncoder('utf-8').encode(signedBuffer);
-
-    request.setSignature(signedBuffer);
-
-    const resizedBuffer = new Uint8Array(offset + signatureEncoded.byteLength);
-    resizedBuffer.set(buffer);
-    resizedBuffer.set(signatureEncoded, offset);
-
-    this.byteArray = resizedBuffer;
+    request.setSignature(await this.signer.sign(buffer));
 
     return request;
   }
 
   async getByteArray() {
-    await this.build();
-    return this.byteArray;
+    const request = await this.build();
+    return request.serializeBinary();
   }
 }
 
@@ -684,25 +650,15 @@ class ContractExecutionRequestBuilder {
     buffer.set(contractCertVersionEncoded, offset);
     offset += contractCertVersionEncoded.byteLength;
     buffer.set(functionArgumentEncoded, offset);
-    offset += functionArgumentEncoded.byteLength;
 
-    const signedBuffer = await this.signer.sign(buffer);
-    const signatureEncoded = new TextEncoder('utf-8').encode(signedBuffer);
-
-    request.setSignature(signedBuffer);
-
-    const resizedBuffer = new Uint8Array(offset + signatureEncoded.byteLength);
-    resizedBuffer.set(buffer);
-    resizedBuffer.set(signatureEncoded, offset);
-
-    this.byteArray = resizedBuffer;
+    request.setSignature(await this.signer.sign(buffer));
 
     return request;
   }
 
   async getByteArray() {
-    await this.build();
-    return this.byteArray;
+    const request = await this.build();
+    return request.serializeBinary();
   }
 }
 
@@ -713,5 +669,4 @@ module.exports = {
   ContractsListingRequestBuilder,
   LedgerValidationRequestBuilder,
   ContractExecutionRequestBuilder,
-  TextEncoder,
 };
