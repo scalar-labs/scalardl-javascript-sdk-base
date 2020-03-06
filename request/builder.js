@@ -73,26 +73,6 @@ class CertificateRegistrationRequestBuilder {
     request.setCertVersion(this.certVersion);
     request.setCertPem(this.certPem);
 
-    const contractCertHolderIdEncoded = new TextEncoder('utf-8').encode(
-        this.certHolderId);
-    const view = new DataView(new ArrayBuffer(4));
-    view.setUint32(0, this.certVersion);
-    const contractArgumentEncoded = new Uint8Array(view.buffer);
-    const contractCertPemEncoded = new TextEncoder('utf-8').encode(
-        this.certPem);
-
-    const buffer = new Uint8Array(
-        contractCertHolderIdEncoded.byteLength
-        + contractArgumentEncoded.byteLength
-        + contractCertPemEncoded.byteLength);
-
-    let offset = 0;
-    buffer.set(contractCertHolderIdEncoded, offset);
-    offset += contractCertHolderIdEncoded.byteLength;
-    buffer.set(contractArgumentEncoded, offset);
-    offset += contractArgumentEncoded.byteLength;
-    buffer.set(contractCertPemEncoded, offset);
-
     return request;
   }
 
@@ -156,22 +136,6 @@ class FunctionRegistrationRequestBuilder {
     request.setFunctionId(this.functionId);
     request.setFunctionBinaryName(this.functionBinaryName);
     request.setFunctionByteCode(this.functionByteCode);
-
-    const functionIdEncoded = new TextEncoder('utf-8').encode(
-        this.functionId);
-    const functionBinaryNameEncoded = new TextEncoder('utf-8').encode(
-        this.functionBinaryName);
-
-    const buffer = new Uint8Array(
-        functionIdEncoded.byteLength + functionBinaryNameEncoded.byteLength
-        + this.functionByteCode.byteLength);
-
-    let offset = 0;
-    buffer.set(functionIdEncoded, offset);
-    offset += functionIdEncoded.byteLength;
-    buffer.set(functionBinaryNameEncoded, offset);
-    offset += functionBinaryNameEncoded.byteLength;
-    buffer.set(this.functionByteCode, offset);
 
     return request;
   }
