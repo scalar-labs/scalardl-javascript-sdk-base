@@ -95,7 +95,6 @@ class CertificateRegistrationRequestBuilder {
     request.setCertHolderId(this.certHolderId);
     request.setCertVersion(this.certVersion);
     request.setCertPem(this.certPem);
-
     return request;
   }
 }
@@ -160,7 +159,6 @@ class FunctionRegistrationRequestBuilder {
     request.setFunctionId(this.functionId);
     request.setFunctionBinaryName(this.functionBinaryName);
     request.setFunctionByteCode(this.functionByteCode);
-
     return request;
   }
 }
