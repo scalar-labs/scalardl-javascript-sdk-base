@@ -53,7 +53,7 @@ class ClientServiceBase {
         'scalar.dl.client.cert_holder_id');
     /** @const */
     this.credential =
-        properties['scalar.dl.client.authorization.credential'];
+      properties['scalar.dl.client.authorization.credential'];
     /** @const */
     this.certVersion = properties['scalar.dl.client.cert_version'];
 
@@ -121,8 +121,8 @@ class ClientServiceBase {
     const builder = new CertificateRegistrationRequestBuilder(
         new this.protobuf.CertificateRegistrationRequest(),
     ).withCertHolderId(this.certHolderId)
-    .withCertVersion(this.certVersion)
-    .withCertPem(this.certPem);
+        .withCertVersion(this.certVersion)
+        .withCertPem(this.certPem);
 
     const request = await builder.build();
     const promise = new Promise((resolve, reject) => {
@@ -160,8 +160,8 @@ class ClientServiceBase {
     const builder = new FunctionRegistrationRequestBuilder(
         new this.protobuf.FunctionRegistrationRequest(),
     ).withFunctionId(id)
-    .withFunctionBinaryName(name)
-    .withFunctionByteCode(functionBytes);
+        .withFunctionBinaryName(name)
+        .withFunctionByteCode(functionBytes);
 
     const request = await builder.build();
     const promise = new Promise((resolve, reject) => {
@@ -180,6 +180,7 @@ class ClientServiceBase {
 
     return this._executePromise(promise);
   };
+
 
   /**
    * @param {number} id of the contract
@@ -204,11 +205,11 @@ class ClientServiceBase {
         new this.protobuf.ContractRegistrationRequest(),
         this.signer,
     ).withContractId(id)
-    .withContractBinaryName(name)
-    .withContractByteCode(contractBytes)
-    .withContractProperties(propertiesJson)
-    .withCertHolderId(this.certHolderId)
-    .withCertVersion(this.certVersion);
+        .withContractBinaryName(name)
+        .withContractByteCode(contractBytes)
+        .withContractProperties(propertiesJson)
+        .withCertHolderId(this.certHolderId)
+        .withCertVersion(this.certVersion);
 
     let request;
     try {
@@ -249,8 +250,8 @@ class ClientServiceBase {
         new this.protobuf.ContractsListingRequest(),
         this.signer,
     ).withCertHolderId(this.certHolderId)
-    .withCertVersion(this.certVersion)
-    .withContractId(contractId);
+        .withCertVersion(this.certVersion)
+        .withContractId(contractId);
 
     let request;
     try {
@@ -290,8 +291,8 @@ class ClientServiceBase {
         new this.protobuf.LedgerValidationRequest(),
         this.signer,
     ).withAssetId(assetId)
-    .withCertHolderId(this.certHolderId)
-    .withCertVersion(this.certVersion);
+        .withCertHolderId(this.certHolderId)
+        .withCertVersion(this.certVersion);
 
     let request;
     try {
@@ -340,10 +341,10 @@ class ClientServiceBase {
         new this.protobuf.ContractExecutionRequest(),
         this.signer,
     ).withContractId(contractId)
-    .withContractArgument(argumentJson)
-    .withFunctionArgument(functionArgumentJson)
-    .withCertHolderId(this.certHolderId)
-    .withCertVersion(this.certVersion);
+        .withContractArgument(argumentJson)
+        .withFunctionArgument(functionArgumentJson)
+        .withCertHolderId(this.certHolderId)
+        .withCertVersion(this.certVersion);
 
     let request;
     try {
