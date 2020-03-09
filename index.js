@@ -181,7 +181,6 @@ class ClientServiceBase {
     return this._executePromise(promise);
   };
 
-
   /**
    * @param {number} id of the contract
    * @param {string} name  the canonical name of the contract class.
