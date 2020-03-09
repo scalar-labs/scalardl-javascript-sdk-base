@@ -555,6 +555,7 @@ class ContractExecutionRequestBuilder {
     request.setContractArgument(this.contractArgument);
     request.setCertHolderId(this.certHolderId);
     request.setCertVersion(this.certVersion);
+    request.setFunctionArgument(this.functionArgument);
 
     const contractId = new TextEncoder('utf-8').encode(this.contractId);
     const contractArgument = new TextEncoder('utf-8').encode(
