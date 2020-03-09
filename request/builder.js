@@ -98,11 +98,6 @@ class CertificateRegistrationRequestBuilder {
 
     return request;
   }
-
-  async getByteArray() {
-    const request = await this.build();
-    return request.serializeBinary();
-  }
 }
 
 /**
@@ -167,11 +162,6 @@ class FunctionRegistrationRequestBuilder {
     request.setFunctionByteCode(this.functionByteCode);
 
     return request;
-  }
-
-  async getByteArray() {
-    const request = await this.build();
-    return request.serializeBinary();
   }
 }
 
@@ -310,11 +300,6 @@ class ContractRegistrationRequestBuilder {
 
     return request;
   }
-
-  async getByteArray() {
-    const request = await this.build();
-    return request.serializeBinary();
-  }
 }
 
 /**
@@ -387,8 +372,7 @@ class ContractsListingRequestBuilder {
     const contractIdEncoded = new TextEncoder('utf-8').encode(this.contractId);
 
     const buffer = new Uint8Array(
-        contractIdEncoded.byteLength + certVersion.byteLength
-        + certHolderId.byteLength);
+      certHolderId.byteLength + certVersion.byteLength + contractIdEncoded.byteLength);
     let offset = 0;
 
     buffer.set(certHolderId, offset);
@@ -400,11 +384,6 @@ class ContractsListingRequestBuilder {
     request.setSignature(await this.signer.sign(buffer));
 
     return request;
-  }
-
-  async getByteArray() {
-    const request = await this.build();
-    return request.serializeBinary();
   }
 }
 
@@ -489,11 +468,6 @@ class LedgerValidationRequestBuilder {
     request.setSignature(await this.signer.sign(buffer));
 
     return request;
-  }
-
-  async getByteArray() {
-    const request = await this.build();
-    return request.serializeBinary();
   }
 }
 
@@ -585,44 +559,33 @@ class ContractExecutionRequestBuilder {
     request.setCertVersion(this.certVersion);
     request.setFunctionArgument(this.functionArgument);
 
-    const contractIdEncoded = new TextEncoder('utf-8').encode(
-        this.contractId);
-    const contractArgumentEncoded = new TextEncoder('utf-8').encode(
+    const contractId = new TextEncoder('utf-8').encode(this.contractId);
+    const contractArgument = new TextEncoder('utf-8').encode(
         this.contractArgument);
-    const contractCertHolderIdEncoded = new TextEncoder('utf-8').encode(
-        this.certHolderId);
+    const certHolderId = new TextEncoder('utf-8').encode(this.certHolderId);
     const view = new DataView(new ArrayBuffer(4));
     view.setUint32(0, this.certVersion);
-    const contractCertVersionEncoded = new Uint8Array(view.buffer);
+    const certVersion = new Uint8Array(view.buffer);
     const functionArgumentEncoded = new TextEncoder('utf-8').encode(
         this.functionArgument);
     const buffer = new Uint8Array(
-        contractIdEncoded.byteLength
-        + contractArgumentEncoded.byteLength
-        + contractCertHolderIdEncoded.byteLength
-        + contractCertVersionEncoded.byteLength
-        + functionArgumentEncoded.byteLength);
-
+        contractId.byteLength + contractArgument.byteLength +
+        certHolderId.byteLength + certVersion.byteLength + functionArgumentEncoded.byteLength);
     let offset = 0;
 
-    buffer.set(contractIdEncoded, offset);
-    offset += contractIdEncoded.byteLength;
-    buffer.set(contractArgumentEncoded, offset);
-    offset += contractArgumentEncoded.byteLength;
-    buffer.set(contractCertHolderIdEncoded, offset);
-    offset += contractCertHolderIdEncoded.byteLength;
-    buffer.set(contractCertVersionEncoded, offset);
-    offset += contractCertVersionEncoded.byteLength;
+    buffer.set(contractId, offset);
+    offset += contractId.byteLength;
+    buffer.set(contractArgument, offset);
+    offset += contractArgument.byteLength;
+    buffer.set(certHolderId, offset);
+    offset += certHolderId.byteLength;
+    buffer.set(certVersion, offset);
+    offset += certVersion.byteLength;
     buffer.set(functionArgumentEncoded, offset);
 
     request.setSignature(await this.signer.sign(buffer));
 
     return request;
-  }
-
-  async getByteArray() {
-    const request = await this.build();
-    return request.serializeBinary();
   }
 }
 

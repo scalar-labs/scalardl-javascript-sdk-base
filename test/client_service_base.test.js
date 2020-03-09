@@ -65,14 +65,14 @@ describe('Class ClientServiceBase', () => {
     });
     it('should properly load the attribute according to the given property',
         () => {
-          // prepare
+        // prepare
           const clientProperties = {
             'scalar.dl.client.private_key_pem': 'key',
             'scalar.dl.client.cert_pem': 'cert',
             'scalar.dl.client.cert_holder_id': 'hold',
             'scalar.dl.client.cert_version': '1.0',
             'scalar.dl.client.authorization.credential':
-                'mocked-credentials',
+            'mocked-credentials',
           };
 
           // act
@@ -89,7 +89,7 @@ describe('Class ClientServiceBase', () => {
         });
   });
   describe('The method', () => {
-    afterEach(function () {
+    afterEach(function() {
       sinon.restore();
     });
 
@@ -99,7 +99,7 @@ describe('Class ClientServiceBase', () => {
      */
     function genericEllipticSignatureSigner(service) {
       sinon.replace(service.signer, 'sign',
-          sinon.fake.returns(function () {
+          sinon.fake.returns(function() {
           }));
     }
 
@@ -107,15 +107,15 @@ describe('Class ClientServiceBase', () => {
       it('should work as expected', async () => {
         // prepare
         const mockedCertificateRegistrationRequest = {
-          setCertHolderId: function () {
+          setCertHolderId: function() {
           },
-          setCertVersion: function () {
+          setCertVersion: function() {
           },
-          setCertPem: function () {
+          setCertPem: function() {
           },
         };
         const mockedProtobuf = {
-          CertificateRegistrationRequest: function () {
+          CertificateRegistrationRequest: function() {
             return mockedCertificateRegistrationRequest;
           },
         };
@@ -161,7 +161,7 @@ describe('Class ClientServiceBase', () => {
     describe('registerFunction', () => {
       it('should throw an error when contractBytes is not a Uint8Array',
           async () => {
-            // prepare
+          // prepare
             const clientServiceBase = new ClientServiceBase(services, protobuf,
                 clientProperties);
 
@@ -180,15 +180,15 @@ describe('Class ClientServiceBase', () => {
         const mockedName = 'foo';
         const mockedByteCode = new Uint8Array([1, 2, 3]);
         const mockedFunctionRegistrationRequest = {
-          setFunctionId: function () {
+          setFunctionId: function() {
           },
-          setFunctionBinaryName: function () {
+          setFunctionBinaryName: function() {
           },
-          setFunctionByteCode: function () {
+          setFunctionByteCode: function() {
           },
         };
         const mockedProtobuf = {
-          FunctionRegistrationRequest: function () {
+          FunctionRegistrationRequest: function() {
             return mockedFunctionRegistrationRequest;
           },
         };
@@ -233,7 +233,7 @@ describe('Class ClientServiceBase', () => {
     describe('registerContract', () => {
       it('should throw an error when contractBytes is not a Uint8Array',
           async () => {
-            // prepare
+          // prepare
             const clientServiceBase = new ClientServiceBase(
                 services, protobuf, clientProperties);
 
@@ -253,23 +253,23 @@ describe('Class ClientServiceBase', () => {
         const mockedByteCode = new Uint8Array([1, 2, 3]);
         const mockedPropertiesJson = JSON.stringify(clientProperties);
         const mockedContractRegistrationRequest = {
-          setContractId: function () {
+          setContractId: function() {
           },
-          setContractBinaryName: function () {
+          setContractBinaryName: function() {
           },
-          setContractByteCode: function () {
+          setContractByteCode: function() {
           },
-          setContractProperties: function () {
+          setContractProperties: function() {
           },
-          setCertHolderId: function () {
+          setCertHolderId: function() {
           },
-          setCertVersion: function () {
+          setCertVersion: function() {
           },
-          setSignature: function () {
+          setSignature: function() {
           },
         };
         const mockedProtobuf = {
-          ContractRegistrationRequest: function () {
+          ContractRegistrationRequest: function() {
             return mockedContractRegistrationRequest;
           },
         };
@@ -342,17 +342,17 @@ describe('Class ClientServiceBase', () => {
         // prepare
         const mockedContractId = '12345';
         const mockedListContracts = {
-          setCertHolderId: function () {
+          setCertHolderId: function() {
           },
-          setCertVersion: function () {
+          setCertVersion: function() {
           },
-          setContractId: function () {
+          setContractId: function() {
           },
-          setSignature: function () {
+          setSignature: function() {
           },
         };
         const mockedProtobuf = {
-          ContractsListingRequest: function () {
+          ContractsListingRequest: function() {
             return mockedListContracts;
           },
         };
@@ -387,7 +387,7 @@ describe('Class ClientServiceBase', () => {
 
         // act
         const response = await clientServiceBase
-        .listContracts(mockedContractId);
+            .listContracts(mockedContractId);
 
         // assert
         assert(mockSpyContractsListingRequest.calledOnce);
@@ -406,17 +406,17 @@ describe('Class ClientServiceBase', () => {
       it('should work as expected', async () => {
         // prepare
         const mockedValidateLedger = {
-          setAssetId: function () {
+          setAssetId: function() {
           },
-          setCertHolderId: function () {
+          setCertHolderId: function() {
           },
-          setCertVersion: function () {
+          setCertVersion: function() {
           },
-          setSignature: function () {
+          setSignature: function() {
           },
         };
         const mockedProtobuf = {
-          LedgerValidationRequest: function () {
+          LedgerValidationRequest: function() {
             return mockedValidateLedger;
           },
         };
@@ -478,21 +478,21 @@ describe('Class ClientServiceBase', () => {
           mockedFunctionArgument);
       it('should work as expected', async () => {
         const mockedExecuteContract = {
-          setContractId: function () {
+          setContractId: function() {
           },
-          setContractArgument: function () {
+          setContractArgument: function() {
           },
-          setCertHolderId: function () {
+          setCertHolderId: function() {
           },
-          setCertVersion: function () {
+          setCertVersion: function() {
           },
-          setFunctionArgument: function () {
+          setFunctionArgument: function() {
           },
-          setSignature: function () {
+          setSignature: function() {
           },
         };
         const mockedProtobuf = {
-          ContractExecutionRequest: function () {
+          ContractExecutionRequest: function() {
             return mockedExecuteContract;
           },
         };
@@ -564,27 +564,27 @@ describe('Class ClientServiceBase', () => {
       it('should parse and rethrow error on Node.js environment', async () => {
         const status = {'code': 404, 'message': 'foo message'};
         const toObject = sinon.stub()
-        .returns(status);
+            .returns(status);
         const GrpcStatusObject = {'toObject': toObject};
         const deserializeBinaryStub = sinon.stub()
-        .withArgs(status)
-        .returns(GrpcStatusObject);
+            .withArgs(status)
+            .returns(GrpcStatusObject);
         const GrpcStatus = {'deserializeBinary': deserializeBinaryStub};
         const protobuf = {'Status': GrpcStatus};
         const clientServiceBase = new ClientServiceBase(
             services, protobuf, clientProperties);
         environmentStub = sinon.stub(clientServiceBase, '_isNodeJsRuntime')
-        .returns(true);
+            .returns(true);
         const binaryStatus = [status];
         const errorStub = new Error();
         const metadataStub = {
-          'get': function () {
+          'get': function() {
           },
         };
         errorStub.metadata = metadataStub;
         const getStub = sinon.stub(metadataStub, 'get');
         getStub.withArgs(ClientServiceBase.binaryStatusKey)
-        .returns(binaryStatus);
+            .returns(binaryStatus);
 
         try {
           const promise = new Promise((resolve, reject) => {
@@ -600,17 +600,17 @@ describe('Class ClientServiceBase', () => {
       it('should parse and rethrow error on browser environment', async () => {
         const status = {'code': 404, 'message': 'foo message'};
         const toObject = sinon.stub()
-        .returns(status);
+            .returns(status);
         const GrpcStatusObject = {'toObject': toObject};
         const deserializeBinaryStub = sinon.stub()
-        .withArgs(status)
-        .returns(GrpcStatusObject);
+            .withArgs(status)
+            .returns(GrpcStatusObject);
         const GrpcStatus = {'deserializeBinary': deserializeBinaryStub};
         const protobuf = {'Status': GrpcStatus};
         const clientServiceBase = new ClientServiceBase(
             services, protobuf, clientProperties);
         environmentStub = sinon.stub(clientServiceBase, '_isNodeJsRuntime')
-        .returns(false);
+            .returns(false);
         const metadata = {};
         metadata[ClientServiceBase.binaryStatusKey] = status;
         const errorStub = new Error('bar message');
@@ -630,7 +630,7 @@ describe('Class ClientServiceBase', () => {
         const clientServiceBase = new ClientServiceBase(
             services, protobuf, clientProperties);
         environmentStub = sinon.stub(clientServiceBase, '_isNodeJsRuntime')
-        .returns(false);
+            .returns(false);
         const errorStub = new Error('bar message');
         errorStub.metadata = {};
         try {
