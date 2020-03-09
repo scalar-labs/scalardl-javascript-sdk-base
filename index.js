@@ -142,6 +142,20 @@ class ClientServiceBase {
     return this._executePromise(promise);
   }
 
+	/**
+	 *
+	 * @returns {Promise<CertificateRegistrationRequest>}
+	 */
+	async buildCertificateRegistrationRequest() {
+  	const builder = new CertificateRegistrationRequestBuilder(
+  		new this.protobuf.CertificateRegistrationRequest(),
+		).withCertHolderId(this.certHolderId)
+			.withCertVersion(this.certVersion)
+			.withCertPem(this.certPem);
+
+  	return builder.build();
+  }
+
   /**
    * @param {string} id of the function
    * @param {string} name of the function
@@ -180,6 +194,30 @@ class ClientServiceBase {
 
     return this._executePromise(promise);
   };
+
+	/**
+	 * @param {string} id of the function
+	 * @param {string} name of the function
+	 * @param {Uint8Array} functionBytes of the function
+	 * @return {Promise<FunctionRegistrationRequest>}
+	 * @throws {ClientError}
+	 */
+  async buildFunctionRegistrationRequest(id, name, functionBytes) {
+		if (!(functionBytes instanceof Uint8Array)) {
+			throw new ClientError(
+				StatusCode.CLIENT_IO_ERROR,
+				'parameter functionBytes is not a \'Uint8Array\'',
+			);
+		}
+
+		const builder = new FunctionRegistrationRequestBuilder(
+			new this.protobuf.FunctionRegistrationRequest(),
+		).withFunctionId(id)
+			.withFunctionBinaryName(name)
+			.withFunctionByteCode(functionBytes);
+
+		return builder.build();
+	}
 
   /**
    * @param {string} id of the contract
@@ -237,6 +275,45 @@ class ClientServiceBase {
     return this._executePromise(promise);
   }
 
+	/**
+	 *  * @param {string} id of the contract
+	 * @param {string} name  the canonical name of the contract class.
+	 *  For example "com.banking.contract1"
+	 * @param {Uint8Array} contractBytes
+	 * @param {Object}  [properties]
+	 *  JSON Object used for setting client properties
+	 * @returns {Promise<ContractRegistrationRequest>}
+	 * @throws {ClientError}
+	 */
+  async buildContractRegistrationRequest(id, name, contractBytes, properties) {
+		if (!(contractBytes instanceof Uint8Array)) {
+			throw new ClientError(
+				StatusCode.CLIENT_IO_ERROR,
+				'parameter contractBytes is not a \'Uint8Array\'',
+			);
+		}
+
+		const propertiesJson = JSON.stringify(properties);
+		const builder = new ContractRegistrationRequestBuilder(
+			new this.protobuf.ContractRegistrationRequest(),
+			this.signer,
+		).withContractId(id)
+			.withContractBinaryName(name)
+			.withContractByteCode(contractBytes)
+			.withContractProperties(propertiesJson)
+			.withCertHolderId(this.certHolderId)
+			.withCertVersion(this.certVersion);
+
+		try {
+			return await builder.build();
+		} catch (e) {
+			throw new ClientError(
+				StatusCode.RUNTIME_ERROR,
+				e.message,
+			);
+		}
+	}
+
   /**
    * List the registered contract for the current user
    * @param {string} [contractId]
@@ -278,6 +355,29 @@ class ClientServiceBase {
 
     return this._executePromise(promise);
   }
+
+	/**
+	 *
+	 * @param contractId
+	 * @returns {Promise<ContractsListingRequest>}
+	 */
+  async buildContractsListingRequest(contractId) {
+		const builder = new ContractsListingRequestBuilder(
+			new this.protobuf.ContractsListingRequest(),
+			this.signer,
+		).withCertHolderId(this.certHolderId)
+			.withCertVersion(this.certVersion)
+			.withContractId(contractId);
+
+		try {
+			return await builder.build();
+		} catch (e) {
+			throw new ClientError(
+				StatusCode.RUNTIME_ERROR,
+				e.message,
+			);
+		}
+	}
 
   /**
    * Validate the integrity of an asset
@@ -323,6 +423,31 @@ class ClientServiceBase {
 
     return this._executePromise(promise);
   }
+
+	/**
+	 * Validate the integrity of an asset
+	 * @param {number} [assetId]
+	 * @return {Promise<LedgerValidationRequest>}
+	 * @throws {ClientError}
+	 */
+  async buildLedgerValidationRequest(assetId) {
+		const builder = new LedgerValidationRequestBuilder(
+			new this.protobuf.LedgerValidationRequest(),
+			this.signer,
+		).withAssetId(assetId)
+			.withCertHolderId(this.certHolderId)
+			.withCertVersion(this.certVersion);
+
+		try {
+			return await builder.build();
+		} catch (e) {
+			throw new ClientError(
+				StatusCode.RUNTIME_ERROR,
+				e.message,
+			);
+		}
+
+	}
 
   /**
    * @param {string} contractId
@@ -373,6 +498,37 @@ class ClientServiceBase {
 
     return this._executePromise(promise);
   }
+
+	/**
+	 * @param {number} contractId
+	 * @param {Object} argument
+	 * @param {Object} [functionArgument=undefined]
+	 * @return {Promise<ContractExecutionRequest>}
+	 * @throws {ClientError}
+	 */
+  async buildContractExecutionRequest(contractId, argument, functionArgument) {
+		argument['nonce'] = new Date().getTime().toString();
+		const argumentJson = JSON.stringify(argument);
+		const functionArgumentJson = JSON.stringify(functionArgument);
+
+		const builder = new ContractExecutionRequestBuilder(
+			new this.protobuf.ContractExecutionRequest(),
+			this.signer,
+		).withContractId(contractId)
+			.withContractArgument(argumentJson)
+			.withFunctionArgument(functionArgumentJson)
+			.withCertHolderId(this.certHolderId)
+			.withCertVersion(this.certVersion);
+
+		try {
+			return await builder.build();
+		} catch (e) {
+			throw new ClientError(
+				StatusCode.RUNTIME_ERROR,
+				e.message,
+			);
+		}
+	}
 
   /**
    * @param {Promise} promise
