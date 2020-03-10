@@ -69,6 +69,14 @@ class CertificateRegistrationRequestBuilder {
    * @throws {Error}
    */
   async build() {
+    if ((typeof this.certHolderId !== 'string') ||
+        (typeof this.certVersion !== 'number') ||
+        (this.certVersion < 0) ||
+        (typeof this.certPem !== 'string')
+    ) {
+      throw new Error('Illegal argument');
+    }
+
     const request = this.request;
     request.setCertHolderId(this.certHolderId);
     request.setCertVersion(this.certVersion);
