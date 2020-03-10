@@ -43,7 +43,7 @@ class CertificateRegistrationRequestBuilder {
 
   /**
    * Sets the certificate version
-   * @param {string} version
+   * @param {number} version
    * @return {CertificateRegistrationRequestBuilder}
    */
   withCertVersion(version) {
@@ -207,7 +207,7 @@ class ContractRegistrationRequestBuilder {
 
   /**
    * Sets the certificate's version
-   * @param {string} version
+   * @param {number} version
    * @return {ContractRegistrationRequestBuilder}
    */
   withCertVersion(version) {
@@ -292,7 +292,7 @@ class ContractsListingRequestBuilder {
 
   /**
    * Sets the certificate's version
-   * @param {string} version
+   * @param {number} version
    * @return {ContractsListingRequestBuilder}
    */
   withCertVersion(version) {
@@ -384,7 +384,7 @@ class LedgerValidationRequestBuilder {
 
   /**
    * Sets the certificate's version
-   * @param {string} version
+   * @param {number} version
    * @return {LedgerValidationRequestBuilder}
    */
   withCertVersion(version) {
@@ -474,7 +474,7 @@ class ContractExecutionRequestBuilder {
 
   /**
    * Sets the certificate's version
-   * @param {string} version
+   * @param {number} version
    * @return {ContractExecutionRequestBuilder}
    */
   withCertVersion(version) {

@@ -143,7 +143,7 @@ class ClientServiceBase {
   }
 
   /**
-   * @param {number} id of the function
+   * @param {string} id of the function
    * @param {string} name of the function
    * @param {Uint8Array} functionBytes of the function
    * @return {Promise<void>}
@@ -182,7 +182,7 @@ class ClientServiceBase {
   };
 
   /**
-   * @param {number} id of the contract
+   * @param {string} id of the contract
    * @param {string} name  the canonical name of the contract class.
    *  For example "com.banking.contract1"
    * @param {Uint8Array} contractBytes
@@ -281,7 +281,7 @@ class ClientServiceBase {
 
   /**
    * Validate the integrity of an asset
-   * @param {number} [assetId]
+   * @param {string} [assetId]
    * @return {Promise<LedgerValidationResponse>}
    * @throws {ClientError|Error}
    */
@@ -325,7 +325,7 @@ class ClientServiceBase {
   }
 
   /**
-   * @param {number} contractId
+   * @param {string} contractId
    * @param {Object} argument
    * @param {Object} [functionArgument=undefined]
    * @return {Promise<ContractExecutionResponse|void|*>}
