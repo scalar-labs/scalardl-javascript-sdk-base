@@ -146,7 +146,7 @@ class ClientServiceBase {
 	 *
 	 * @returns {Promise<CertificateRegistrationRequest>}
 	 */
-	async buildCertificateRegistrationRequest() {
+	async createSerializedCertificateRegistrationRequest() {
   	const builder = new CertificateRegistrationRequestBuilder(
   		new this.protobuf.CertificateRegistrationRequest(),
 		).withCertHolderId(this.certHolderId)
@@ -202,7 +202,7 @@ class ClientServiceBase {
 	 * @return {Promise<FunctionRegistrationRequest>}
 	 * @throws {ClientError}
 	 */
-  async buildFunctionRegistrationRequest(id, name, functionBytes) {
+  async createSerializedFunctionRegistrationRequest(id, name, functionBytes) {
 		if (!(functionBytes instanceof Uint8Array)) {
 			throw new ClientError(
 				StatusCode.CLIENT_IO_ERROR,
@@ -285,7 +285,7 @@ class ClientServiceBase {
 	 * @returns {Promise<ContractRegistrationRequest>}
 	 * @throws {ClientError}
 	 */
-  async buildContractRegistrationRequest(id, name, contractBytes, properties) {
+  async createSerializedContractRegistrationRequest(id, name, contractBytes, properties) {
 		if (!(contractBytes instanceof Uint8Array)) {
 			throw new ClientError(
 				StatusCode.CLIENT_IO_ERROR,
@@ -361,7 +361,7 @@ class ClientServiceBase {
 	 * @param contractId
 	 * @returns {Promise<ContractsListingRequest>}
 	 */
-  async buildContractsListingRequest(contractId) {
+  async createSerializedContractsListingRequest(contractId) {
 		const builder = new ContractsListingRequestBuilder(
 			new this.protobuf.ContractsListingRequest(),
 			this.signer,
@@ -430,7 +430,7 @@ class ClientServiceBase {
 	 * @return {Promise<LedgerValidationRequest>}
 	 * @throws {ClientError}
 	 */
-  async buildLedgerValidationRequest(assetId) {
+  async createSerializedLedgerValidationRequest(assetId) {
 		const builder = new LedgerValidationRequestBuilder(
 			new this.protobuf.LedgerValidationRequest(),
 			this.signer,
@@ -506,7 +506,7 @@ class ClientServiceBase {
 	 * @return {Promise<ContractExecutionRequest>}
 	 * @throws {ClientError}
 	 */
-  async buildContractExecutionRequest(contractId, argument, functionArgument) {
+  async createSerializedContractExecutionRequest(contractId, argument, functionArgument) {
 		argument['nonce'] = new Date().getTime().toString();
 		const argumentJson = JSON.stringify(argument);
 		const functionArgumentJson = JSON.stringify(functionArgument);
