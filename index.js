@@ -115,7 +115,7 @@ class ClientServiceBase {
 
   /**
    * @return {Promise<void>}
-   * @throws {ClientError}
+   * @throws {ClientError|Error}
    */
   async registerCertificate() {
     const builder = new CertificateRegistrationRequestBuilder(
@@ -147,7 +147,7 @@ class ClientServiceBase {
    * @param {string} name of the function
    * @param {Uint8Array} functionBytes of the function
    * @return {Promise<void>}
-   * @throws {ClientError}
+   * @throws {ClientError|Error}
    */
   async registerFunction(id, name, functionBytes) {
     if (!(functionBytes instanceof Uint8Array)) {
@@ -189,7 +189,7 @@ class ClientServiceBase {
    * @param {Object}  [properties]
    *  JSON Object used for setting client properties
    * @return {Promise<void>}
-   * @throws {ClientError}
+   * @throws {ClientError|Error}
    */
   async registerContract(id, name, contractBytes, properties) {
     if (!(contractBytes instanceof Uint8Array)) {
@@ -242,7 +242,7 @@ class ClientServiceBase {
    * @param {string} [contractId]
    *  to verify if a specific contractId is registered
    * @return {Promise<Object>}
-   * @throws {ClientError}
+   * @throws {ClientError|Error}
    */
   async listContracts(contractId) {
     const builder = new ContractsListingRequestBuilder(
@@ -283,7 +283,7 @@ class ClientServiceBase {
    * Validate the integrity of an asset
    * @param {number} [assetId]
    * @return {Promise<LedgerValidationResponse>}
-   * @throws {ClientError}
+   * @throws {ClientError|Error}
    */
   async validateLedger(assetId) {
     const builder = new LedgerValidationRequestBuilder(
@@ -329,7 +329,7 @@ class ClientServiceBase {
    * @param {Object} argument
    * @param {Object} [functionArgument=undefined]
    * @return {Promise<ContractExecutionResponse|void|*>}
-   * @throws {ClientError}
+   * @throws {ClientError|Error}
    */
   async executeContract(contractId, argument, functionArgument) {
     argument['nonce'] = new Date().getTime().toString();

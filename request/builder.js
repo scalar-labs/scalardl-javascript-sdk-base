@@ -66,6 +66,7 @@ class CertificateRegistrationRequestBuilder {
   /**
    * Builds the CertificateRegistrationRequest
    * @return {CertificateRegistrationRequest}
+   * @throws {Error}
    */
   async build() {
     const request = this.request;
@@ -124,6 +125,7 @@ class FunctionRegistrationRequestBuilder {
   /**
    * Builds the FunctionRegistrationRequest
    * @return {FunctionRegistrationRequest}
+   * @throws {Error}
    */
   async build() {
     const request = this.request;
