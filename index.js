@@ -183,7 +183,6 @@ class ClientServiceBase {
     const request = await this._createFunctionRegistrationRequest(
         id, name, functionBytes,
     );
-
     return request.serializeBinary();
   }
 
