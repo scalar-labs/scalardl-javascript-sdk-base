@@ -112,7 +112,7 @@ class FunctionRegistrationRequestBuilder {
 
   /**
    * Sets the function byteCode
-   * @param {Uint8Array} functionBytes
+   * @param {string} functionBytes
    * @return {FunctionRegistrationRequestBuilder}
    */
   withFunctionByteCode(functionBytes) {
@@ -317,18 +317,19 @@ class ContractsListingRequestBuilder {
    */
   async build() {
     const request = this.request;
-    request.setContractId(this.contractId);
     request.setCertHolderId(this.certHolderId);
     request.setCertVersion(this.certVersion);
+    request.setContractId(this.contractId);
 
-    const contractIdEncoded = new TextEncoder('utf-8').encode(this.contractId);
     const certHolderId = new TextEncoder('utf-8').encode(this.certHolderId);
     const view = new DataView(new ArrayBuffer(4));
     view.setUint32(0, this.certVersion);
     const certVersion = new Uint8Array(view.buffer);
+    const contractIdEncoded = new TextEncoder('utf-8').encode(this.contractId);
 
     const buffer = new Uint8Array(
-      contractIdEncoded.byteLength + certHolderId.byteLength + certVersion.byteLength);
+        contractIdEncoded.byteLength + certHolderId.byteLength +
+        certVersion.byteLength);
     let offset = 0;
 
     buffer.set(contractIdEncoded, offset);
@@ -503,20 +504,20 @@ class ContractExecutionRequestBuilder {
     request.setCertVersion(this.certVersion);
     request.setFunctionArgument(this.functionArgument);
 
-    const contractId = new TextEncoder('utf-8').encode(this.contractId);
+    const contractIdEncoded = new TextEncoder('utf-8').encode(this.contractId);
     const contractArgument = new TextEncoder('utf-8').encode(
         this.contractArgument);
     const certHolderId = new TextEncoder('utf-8').encode(this.certHolderId);
     const view = new DataView(new ArrayBuffer(4));
     view.setUint32(0, this.certVersion);
     const certVersion = new Uint8Array(view.buffer);
+
     const buffer = new Uint8Array(
-        contractId.byteLength + contractArgument.byteLength +
+        contractIdEncoded.byteLength + contractArgument.byteLength +
         certHolderId.byteLength + certVersion.byteLength);
     let offset = 0;
-
-    buffer.set(contractId, offset);
-    offset += contractId.byteLength;
+    buffer.set(contractIdEncoded, offset);
+    offset += contractIdEncoded.byteLength;
     buffer.set(contractArgument, offset);
     offset += contractArgument.byteLength;
     buffer.set(certHolderId, offset);
