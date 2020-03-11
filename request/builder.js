@@ -19,6 +19,22 @@ class TextEncoder {
 }
 
 /**
+ * An internal class to validate input
+ * @class
+ */
+class Validator {
+  /**
+   * @param input
+   * @param type
+   */
+  inputValidation(input, type) {
+    if (input.constructor !== type || (input.constructor === Number && input < 0)) {
+      throw new Error('Illegal argument')
+    }
+  }
+}
+
+/**
  * Used to build a CertificateRegistrationRequest.
  */
 class CertificateRegistrationRequestBuilder {
@@ -69,13 +85,11 @@ class CertificateRegistrationRequestBuilder {
    * @throws {Error}
    */
   async build() {
-    if ((typeof this.certHolderId !== 'string') ||
-        (typeof this.certVersion !== 'number') ||
-        (this.certVersion < 0) ||
-        (typeof this.certPem !== 'string')
-    ) {
-      throw new Error('Illegal argument');
-    }
+    const validator = new Validator();
+    validator.inputValidation(this.certHolderId, String);
+    validator.inputValidation(this.certVersion, Number);
+    validator.inputValidation(this.certPem, String);
+
 
     const request = this.request;
     request.setCertHolderId(this.certHolderId);
@@ -121,7 +135,7 @@ class FunctionRegistrationRequestBuilder {
 
   /**
    * Sets the function byteCode
-   * @param {string} functionBytes
+   * @param {Uint8Array} functionBytes
    * @return {FunctionRegistrationRequestBuilder}
    */
   withFunctionByteCode(functionBytes) {
@@ -136,6 +150,11 @@ class FunctionRegistrationRequestBuilder {
    * @throws {Error}
    */
   async build() {
+    const validator = new Validator();
+    validator.inputValidation(this.functionId, String);
+    validator.inputValidation(this.functionBinaryName, String);
+    validator.inputValidation(this.functionByteCode, Uint8Array);
+
     const request = this.request;
     request.setFunctionId(this.functionId);
     request.setFunctionBinaryName(this.functionBinaryName);
@@ -230,6 +249,14 @@ class ContractRegistrationRequestBuilder {
    * @return {ContractRegistrationRequest}
    */
   async build() {
+    const validator = new Validator();
+    validator.inputValidation(this.contractId, String);
+    validator.inputValidation(this.contractBinaryName, String);
+    validator.inputValidation(this.contractByteCode, Uint8Array);
+    validator.inputValidation(this.contractProperties, String);
+    validator.inputValidation(this.certHolderId, String);
+    validator.inputValidation(this.certVersion, Number);
+
     const request = this.request;
     request.setContractId(this.contractId);
     request.setContractBinaryName(this.contractBinaryName);
@@ -326,6 +353,11 @@ class ContractsListingRequestBuilder {
    * @return {ContractsListingRequest}
    */
   async build() {
+    const validator = new Validator();
+    validator.inputValidation(this.certHolderId, String);
+    validator.inputValidation(this.certVersion, Number);
+    validator.inputValidation(this.contractId, String);
+
     const request = this.request;
     request.setCertHolderId(this.certHolderId);
     request.setCertVersion(this.certVersion);
@@ -407,6 +439,11 @@ class LedgerValidationRequestBuilder {
    * @return {LedgerValidationRequest}
    */
   async build() {
+    const validator = new Validator();
+    validator.inputValidation(this.assetId, String);
+    validator.inputValidation(this.certHolderId, String);
+    validator.inputValidation(this.certVersion, Number);
+
     const request = this.request;
     request.setAssetId(this.assetId);
     request.setCertHolderId(this.certHolderId);
@@ -507,6 +544,13 @@ class ContractExecutionRequestBuilder {
    * @return {ContractExecutionRequest}
    */
   async build() {
+    const validator = new Validator();
+    validator.inputValidation(this.contractId, String);
+    validator.inputValidation(this.contractArgument, String);
+    validator.inputValidation(this.certHolderId, String);
+    validator.inputValidation(this.certVersion, Number);
+    validator.inputValidation(this.functionArgument, String);
+
     const request = this.request;
     request.setContractId(this.contractId);
     request.setContractArgument(this.contractArgument);
