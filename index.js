@@ -139,7 +139,7 @@ class ClientServiceBase {
   /**
    * @return {Uint8Array}
    */
-  async createSerilizedCertificateRegistrationRequest() {
+  async createSerializedCertificateRegistrationRequest() {
     const request = await this._createCertificateRegistrationRequest();
     return request.serializeBinary();
   }
