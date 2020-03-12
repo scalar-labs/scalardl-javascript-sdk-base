@@ -24,10 +24,10 @@ class TextEncoder {
  */
 class Validator {
   /**
-   * @param input
-   * @param type
+   * @param {*} input
+   * @param {Object} type
    */
-  inputValidation(input, type) {
+  validateInput(input, type) {
     if (input.constructor !== type || (input.constructor === Number && input < 0)) {
       throw new Error('Illegal argument')
     }
@@ -86,9 +86,9 @@ class CertificateRegistrationRequestBuilder {
    */
   async build() {
     const validator = new Validator();
-    validator.inputValidation(this.certHolderId, String);
-    validator.inputValidation(this.certVersion, Number);
-    validator.inputValidation(this.certPem, String);
+    validator.validateInput(this.certHolderId, String);
+    validator.validateInput(this.certVersion, Number);
+    validator.validateInput(this.certPem, String);
 
 
     const request = this.request;
@@ -151,9 +151,9 @@ class FunctionRegistrationRequestBuilder {
    */
   async build() {
     const validator = new Validator();
-    validator.inputValidation(this.functionId, String);
-    validator.inputValidation(this.functionBinaryName, String);
-    validator.inputValidation(this.functionByteCode, Uint8Array);
+    validator.validateInput(this.functionId, String);
+    validator.validateInput(this.functionBinaryName, String);
+    validator.validateInput(this.functionByteCode, Uint8Array);
 
     const request = this.request;
     request.setFunctionId(this.functionId);
@@ -250,12 +250,12 @@ class ContractRegistrationRequestBuilder {
    */
   async build() {
     const validator = new Validator();
-    validator.inputValidation(this.contractId, String);
-    validator.inputValidation(this.contractBinaryName, String);
-    validator.inputValidation(this.contractByteCode, Uint8Array);
-    validator.inputValidation(this.contractProperties, String);
-    validator.inputValidation(this.certHolderId, String);
-    validator.inputValidation(this.certVersion, Number);
+    validator.validateInput(this.contractId, String);
+    validator.validateInput(this.contractBinaryName, String);
+    validator.validateInput(this.contractByteCode, Uint8Array);
+    validator.validateInput(this.contractProperties, String);
+    validator.validateInput(this.certHolderId, String);
+    validator.validateInput(this.certVersion, Number);
 
     const request = this.request;
     request.setContractId(this.contractId);
@@ -354,9 +354,9 @@ class ContractsListingRequestBuilder {
    */
   async build() {
     const validator = new Validator();
-    validator.inputValidation(this.certHolderId, String);
-    validator.inputValidation(this.certVersion, Number);
-    validator.inputValidation(this.contractId, String);
+    validator.validateInput(this.certHolderId, String);
+    validator.validateInput(this.certVersion, Number);
+    validator.validateInput(this.contractId, String);
 
     const request = this.request;
     request.setCertHolderId(this.certHolderId);
@@ -440,9 +440,9 @@ class LedgerValidationRequestBuilder {
    */
   async build() {
     const validator = new Validator();
-    validator.inputValidation(this.assetId, String);
-    validator.inputValidation(this.certHolderId, String);
-    validator.inputValidation(this.certVersion, Number);
+    validator.validateInput(this.assetId, String);
+    validator.validateInput(this.certHolderId, String);
+    validator.validateInput(this.certVersion, Number);
 
     const request = this.request;
     request.setAssetId(this.assetId);
@@ -545,11 +545,11 @@ class ContractExecutionRequestBuilder {
    */
   async build() {
     const validator = new Validator();
-    validator.inputValidation(this.contractId, String);
-    validator.inputValidation(this.contractArgument, String);
-    validator.inputValidation(this.certHolderId, String);
-    validator.inputValidation(this.certVersion, Number);
-    validator.inputValidation(this.functionArgument, String);
+    validator.validateInput(this.contractId, String);
+    validator.validateInput(this.contractArgument, String);
+    validator.validateInput(this.certHolderId, String);
+    validator.validateInput(this.certVersion, Number);
+    validator.validateInput(this.functionArgument, String);
 
     const request = this.request;
     request.setContractId(this.contractId);
