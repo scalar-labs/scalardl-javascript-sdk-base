@@ -114,6 +114,7 @@ class ClientServiceBase {
   }
 
   /**
+   * Register user's certificate
    * @return {Promise<void>}
    * @throws {ClientError|Error}
    */
@@ -137,6 +138,7 @@ class ClientServiceBase {
   }
 
   /**
+   *  Create the byte array of CertificateRegistrationRequest
    * @return {Uint8Array}
    */
   async createSerializedCertificateRegistrationRequest() {
@@ -145,6 +147,7 @@ class ClientServiceBase {
   }
 
   /**
+   * Register a Scalar DL function
    * @param {string} id of the function
    * @param {string} name of the function
    * @param {Uint8Array} functionBytes of the function
@@ -173,6 +176,7 @@ class ClientServiceBase {
   };
 
   /**
+   * Create the byte array of FunctionRegistrationRequest
    * @param {string} id of the function
    * @param {string} name of the function
    * @param {Uint8Array} functionBytes of the function
@@ -187,6 +191,7 @@ class ClientServiceBase {
   }
 
   /**
+   * Register a Scalar DL contract
    * @param {string} id of the contract
    * @param {string} name  the canonical name of the contract class.
    *  For example "com.banking.contract1"
@@ -218,6 +223,7 @@ class ClientServiceBase {
   }
 
   /**
+   * Create the byte array of ContractRegistrationRequest
    * @param {string} id of the contract
    * @param {string} name  the canonical name of the contract class.
    *  For example "com.banking.contract1"
@@ -263,6 +269,7 @@ class ClientServiceBase {
   }
 
   /**
+   * Create the byte array of ContractsListingRequest
    * @param {string} contractId
    * @return {Uint8Array}
    * @throws {ClientError}
@@ -325,6 +332,7 @@ class ClientServiceBase {
   }
 
   /**
+   * Create the byte array of LedgerValidationRequest
    * @param {number} [assetId]
    * @return {Uint8Array}
    * @throws {ClientError}
@@ -335,6 +343,7 @@ class ClientServiceBase {
   }
 
   /**
+   * Execute a registered contract
    * @param {string} contractId
    * @param {Object} argument
    * @param {Object} [functionArgument=undefined]
@@ -365,6 +374,7 @@ class ClientServiceBase {
   }
 
   /**
+   * Create the byte array of ContractExecutionRequest
    * @param {number} contractId
    * @param {Object} argument
    * @param {Object} [functionArgument=undefined]
@@ -515,7 +525,6 @@ class ClientServiceBase {
   }
 
   /**
-   * Validate the integrity of an asset
    * @param {number} [assetId]
    * @return {Promise<LedgerValidationRequest>}
    * @throws {ClientError}
