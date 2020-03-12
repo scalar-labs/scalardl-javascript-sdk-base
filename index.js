@@ -140,6 +140,7 @@ class ClientServiceBase {
   /**
    *  Create the byte array of CertificateRegistrationRequest
    * @return {Uint8Array}
+   * @throws {ClientError|Error}
    */
   async createSerializedCertificateRegistrationRequest() {
     const request = await this._createCertificateRegistrationRequest();
@@ -181,7 +182,7 @@ class ClientServiceBase {
    * @param {string} name of the function
    * @param {Uint8Array} functionBytes of the function
    * @return {Uint8Array}
-   * @throws {ClientError}
+   * @throws {ClientError|Error}
    */
   async createSerializedFunctionRegistrationRequest(id, name, functionBytes) {
     const request = await this._createFunctionRegistrationRequest(
@@ -231,7 +232,7 @@ class ClientServiceBase {
    * @param {Object}  [properties]
    *  JSON Object used for setting client properties
    * @return {Uint8Array}
-   * @throws {ClientError}
+   * @throws {ClientError|Error}
    */
   async createSerializedContractRegistrationRequest(
       id, name, contractBytes, properties,
@@ -282,7 +283,7 @@ class ClientServiceBase {
   /**
    * @param {string} contractId
    * @return {Promise<ContractsListingRequest>}
-   * @throws {ClientError}
+   * @throws {ClientError|Error}
    */
   async _createContractsListingRequest(contractId) {
     const builder = new ContractsListingRequestBuilder(
@@ -333,9 +334,9 @@ class ClientServiceBase {
 
   /**
    * Create the byte array of LedgerValidationRequest
-   * @param {number} [assetId]
+   * @param {string} [assetId]
    * @return {Uint8Array}
-   * @throws {ClientError}
+   * @throws {ClientError|Error}
    */
   async createSerializedLedgerValidationRequest(assetId) {
     const request = await this._createLedgerValidationRequest(assetId);
@@ -375,11 +376,11 @@ class ClientServiceBase {
 
   /**
    * Create the byte array of ContractExecutionRequest
-   * @param {number} contractId
+   * @param {string} contractId
    * @param {Object} argument
    * @param {Object} [functionArgument=undefined]
    * @return {Uint8Array}
-   * @throws {ClientError}
+   * @throws {ClientError|Error}
    */
   async createSerializedContractExecutionRequest(
       contractId, argument, functionArgument,
@@ -464,7 +465,7 @@ class ClientServiceBase {
    * @param {string} name of the function
    * @param {Uint8Array} functionBytes of the function
    * @return {Promise<FunctionRegistrationRequest>}
-   * @throws {ClientError}
+   * @throws {ClientError|Error}
    */
   async _createFunctionRegistrationRequest(id, name, functionBytes) {
     if (!(functionBytes instanceof Uint8Array)) {
@@ -491,7 +492,7 @@ class ClientServiceBase {
    * @param {Object}  [properties]
    *  JSON Object used for setting client properties
    * @return {Promise<ContractRegistrationRequest>}
-   * @throws {ClientError}
+   * @throws {ClientError|Error}
    */
   async _createContractRegistrationRequest(
       id, name, contractBytes, properties,
@@ -525,9 +526,9 @@ class ClientServiceBase {
   }
 
   /**
-   * @param {number} [assetId]
+   * @param {string} [assetId]
    * @return {Promise<LedgerValidationRequest>}
-   * @throws {ClientError}
+   * @throws {ClientError|Error}
    */
   async _createLedgerValidationRequest(assetId) {
     const builder = new LedgerValidationRequestBuilder(
@@ -548,11 +549,11 @@ class ClientServiceBase {
   }
 
   /**
-   * @param {number} contractId
+   * @param {string} contractId
    * @param {Object} argument
    * @param {Object} [functionArgument=undefined]
    * @return {Promise<ContractExecutionRequest>}
-   * @throws {ClientError}
+   * @throws {ClientError|Error}
    */
   async _createContractExecutionRequest(
       contractId, argument, functionArgument,
