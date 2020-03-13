@@ -140,7 +140,7 @@ class FunctionRegistrationRequestBuilder {
 
   /**
    * Sets the function byteCode
-   * @param {Uint8Array} functionBytes
+   * @param {string} functionBytes
    * @return {FunctionRegistrationRequestBuilder}
    */
   withFunctionByteCode(functionBytes) {
