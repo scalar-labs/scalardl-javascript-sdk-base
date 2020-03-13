@@ -26,10 +26,15 @@ class Validator {
   /**
    * @param {*} input
    * @param {Object} type
+   * @param {Boolean} optional, true if input is nullable
    */
-  validateInput(input, type) {
+  validateInput(input, type, optional) {
+    if (!input && !optional) {
+      throw new Error('Specified argument is null or undefined.')
+    }
+
     if (input.constructor !== type || (input.constructor === Number && input < 0)) {
-      throw new Error('Illegal argument')
+      throw new Error('Specified argument is illegal.')
     }
   }
 }
@@ -356,7 +361,7 @@ class ContractsListingRequestBuilder {
     const validator = new Validator();
     validator.validateInput(this.certHolderId, String);
     validator.validateInput(this.certVersion, Number);
-    validator.validateInput(this.contractId, String);
+    validator.validateInput(this.contractId, String, true);
 
     const request = this.request;
     request.setCertHolderId(this.certHolderId);
