@@ -95,7 +95,6 @@ class CertificateRegistrationRequestBuilder {
     validator.validateInput(this.certVersion, Number);
     validator.validateInput(this.certPem, String);
 
-
     const request = this.request;
     request.setCertHolderId(this.certHolderId);
     request.setCertVersion(this.certVersion);
