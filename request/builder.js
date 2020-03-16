@@ -19,6 +19,27 @@ class TextEncoder {
 }
 
 /**
+ * An internal class to validate input
+ * @class
+ */
+class Validator {
+  /**
+   * @param {*} input
+   * @param {Object} type
+   * @param {Boolean} optional, true if input is nullable
+   */
+  validateInput(input, type, optional) {
+    if (!input && !optional) {
+      throw new Error('Specified argument is null or undefined.')
+    }
+
+    if (input.constructor !== type || (input.constructor === Number && input < 0)) {
+      throw new Error('Specified argument is illegal.')
+    }
+  }
+}
+
+/**
  * Used to build a CertificateRegistrationRequest.
  */
 class CertificateRegistrationRequestBuilder {
@@ -43,7 +64,7 @@ class CertificateRegistrationRequestBuilder {
 
   /**
    * Sets the certificate version
-   * @param {string} version
+   * @param {number} version
    * @return {CertificateRegistrationRequestBuilder}
    */
   withCertVersion(version) {
@@ -66,8 +87,14 @@ class CertificateRegistrationRequestBuilder {
   /**
    * Builds the CertificateRegistrationRequest
    * @return {CertificateRegistrationRequest}
+   * @throws {Error}
    */
   async build() {
+    const validator = new Validator();
+    validator.validateInput(this.certHolderId, String);
+    validator.validateInput(this.certVersion, Number);
+    validator.validateInput(this.certPem, String);
+
     const request = this.request;
     request.setCertHolderId(this.certHolderId);
     request.setCertVersion(this.certVersion);
@@ -124,8 +151,14 @@ class FunctionRegistrationRequestBuilder {
   /**
    * Builds the FunctionRegistrationRequest
    * @return {FunctionRegistrationRequest}
+   * @throws {Error}
    */
   async build() {
+    const validator = new Validator();
+    validator.validateInput(this.functionId, String);
+    validator.validateInput(this.functionBinaryName, String);
+    validator.validateInput(this.functionByteCode, Uint8Array);
+
     const request = this.request;
     request.setFunctionId(this.functionId);
     request.setFunctionBinaryName(this.functionBinaryName);
@@ -205,7 +238,7 @@ class ContractRegistrationRequestBuilder {
 
   /**
    * Sets the certificate's version
-   * @param {string} version
+   * @param {number} version
    * @return {ContractRegistrationRequestBuilder}
    */
   withCertVersion(version) {
@@ -220,6 +253,14 @@ class ContractRegistrationRequestBuilder {
    * @return {ContractRegistrationRequest}
    */
   async build() {
+    const validator = new Validator();
+    validator.validateInput(this.contractId, String);
+    validator.validateInput(this.contractBinaryName, String);
+    validator.validateInput(this.contractByteCode, Uint8Array);
+    validator.validateInput(this.contractProperties, String);
+    validator.validateInput(this.certHolderId, String);
+    validator.validateInput(this.certVersion, Number);
+
     const request = this.request;
     request.setContractId(this.contractId);
     request.setContractBinaryName(this.contractBinaryName);
@@ -290,7 +331,7 @@ class ContractsListingRequestBuilder {
 
   /**
    * Sets the certificate's version
-   * @param {string} version
+   * @param {number} version
    * @return {ContractsListingRequestBuilder}
    */
   withCertVersion(version) {
@@ -316,6 +357,11 @@ class ContractsListingRequestBuilder {
    * @return {ContractsListingRequest}
    */
   async build() {
+    const validator = new Validator();
+    validator.validateInput(this.certHolderId, String);
+    validator.validateInput(this.certVersion, Number);
+    validator.validateInput(this.contractId, String, true);
+
     const request = this.request;
     request.setCertHolderId(this.certHolderId);
     request.setCertVersion(this.certVersion);
@@ -382,7 +428,7 @@ class LedgerValidationRequestBuilder {
 
   /**
    * Sets the certificate's version
-   * @param {string} version
+   * @param {number} version
    * @return {LedgerValidationRequestBuilder}
    */
   withCertVersion(version) {
@@ -397,6 +443,11 @@ class LedgerValidationRequestBuilder {
    * @return {LedgerValidationRequest}
    */
   async build() {
+    const validator = new Validator();
+    validator.validateInput(this.assetId, String);
+    validator.validateInput(this.certHolderId, String);
+    validator.validateInput(this.certVersion, Number);
+
     const request = this.request;
     request.setAssetId(this.assetId);
     request.setCertHolderId(this.certHolderId);
@@ -472,7 +523,7 @@ class ContractExecutionRequestBuilder {
 
   /**
    * Sets the certificate's version
-   * @param {string} version
+   * @param {number} version
    * @return {ContractExecutionRequestBuilder}
    */
   withCertVersion(version) {
@@ -497,6 +548,13 @@ class ContractExecutionRequestBuilder {
    * @return {ContractExecutionRequest}
    */
   async build() {
+    const validator = new Validator();
+    validator.validateInput(this.contractId, String);
+    validator.validateInput(this.contractArgument, String);
+    validator.validateInput(this.certHolderId, String);
+    validator.validateInput(this.certVersion, Number);
+    validator.validateInput(this.functionArgument, String);
+
     const request = this.request;
     request.setContractId(this.contractId);
     request.setContractArgument(this.contractArgument);

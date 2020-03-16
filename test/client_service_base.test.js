@@ -17,7 +17,7 @@ const clientProperties = {
   'scalar.dl.client.private_key_pem': 'key',
   'scalar.dl.client.cert_pem': 'cert',
   'scalar.dl.client.cert_holder_id': 'hold',
-  'scalar.dl.client.cert_version': '1.0',
+  'scalar.dl.client.cert_version': 1,
 };
 
 describe('Class ClientServiceBase', () => {
@@ -176,7 +176,7 @@ describe('Class ClientServiceBase', () => {
       );
       it('should work as expected', async () => {
         // prepare
-        const mockedContractId = 12345;
+        const mockedContractId = '12345';
         const mockedName = 'foo';
         const mockedByteCode = new Uint8Array([1, 2, 3]);
         const mockedFunctionRegistrationRequest = {
@@ -248,7 +248,7 @@ describe('Class ClientServiceBase', () => {
       );
       it('should work as expected', async () => {
         // prepare
-        const mockedContractId = 12345;
+        const mockedContractId = '12345';
         const mockedName = 'foo';
         const mockedByteCode = new Uint8Array([1, 2, 3]);
         const mockedPropertiesJson = JSON.stringify(clientProperties);
@@ -340,7 +340,7 @@ describe('Class ClientServiceBase', () => {
     describe('listContract', () => {
       it('should work as expected', async () => {
         // prepare
-        const mockedContractId = 12345;
+        const mockedContractId = '12345';
         const mockedListContracts = {
           setCertHolderId: function() {
           },
@@ -471,7 +471,7 @@ describe('Class ClientServiceBase', () => {
     });
     describe('executeContract', () => {
       // prepare
-      const mockedContractId = 12345;
+      const mockedContractId = '12345';
       const mockedArgument = {'mocked': 'argument'};
       const mockedFunctionArgument = 'mockedFunctionArgument';
       const mockedFunctionArgumentJson = JSON.stringify(
