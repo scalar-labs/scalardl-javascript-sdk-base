@@ -29,12 +29,16 @@ class Validator {
    * @param {Boolean} optional, true if input is nullable
    */
   validateInput(input, type, optional) {
-    if (!input && !optional) {
-      throw new Error('Specified argument is null or undefined.')
+    if (optional && (input === null || typeof input === 'undefined')) {
+      return;
     }
 
-    if (input.constructor !== type || (input.constructor === Number && input < 0)) {
-      throw new Error('Specified argument is illegal.')
+    if (typeof input === 'undefined'
+        || input === null
+        || input.constructor !== type
+        || (input.constructor === Number && input < 0)
+    ) {
+      throw new Error('Specified argument is illegal.');
     }
   }
 }
