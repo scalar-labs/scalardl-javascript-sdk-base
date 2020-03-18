@@ -276,7 +276,7 @@ class ClientServiceBase {
    * @throws {ClientError}
    */
   async createSerializedContractsListingRequest(contractId) {
-    const request = await this.__createContractsListingRequest(contractId);
+    const request = await this._createContractsListingRequest(contractId);
     return request.serializeBinary();
   }
 
