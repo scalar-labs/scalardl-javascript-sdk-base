@@ -33,6 +33,10 @@ class Validator {
       return;
     }
 
+    if (type.name === 'Uint8Array' && (input instanceof Uint8Array)) {
+      return;
+    }
+
     if (typeof input === 'undefined'
         || input === null
         || input.constructor !== type
