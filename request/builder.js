@@ -561,7 +561,7 @@ class ContractExecutionRequestBuilder {
     validator.validateInput(this.contractArgument, String);
     validator.validateInput(this.certHolderId, String);
     validator.validateInput(this.certVersion, Number);
-    validator.validateInput(this.functionArgument, String);
+    validator.validateInput(this.functionArgument, String, true);
 
     const request = this.request;
     request.setContractId(this.contractId);
