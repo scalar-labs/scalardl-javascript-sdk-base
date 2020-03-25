@@ -265,7 +265,7 @@ class ContractRegistrationRequestBuilder {
     validator.validateInput(this.contractId, String);
     validator.validateInput(this.contractBinaryName, String);
     validator.validateInput(this.contractByteCode, Uint8Array);
-    validator.validateInput(this.contractProperties, String);
+    validator.validateInput(this.contractProperties, String, true);
     validator.validateInput(this.certHolderId, String);
     validator.validateInput(this.certVersion, Number);
 
