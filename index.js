@@ -43,14 +43,11 @@ class ClientServiceBase {
       );
     }
     /** @const */
-    this.privateKeyPem = this._getRequiredProperty(properties,
-        'scalar.dl.client.private_key_pem');
+    this.privateKeyPem = properties['scalar.dl.client.private_key_pem'];
     /** @const */
-    this.certPem = this._getRequiredProperty(properties,
-        'scalar.dl.client.cert_pem');
+    this.certPem = properties['scalar.dl.client.cert_pem'];
     /** @const */
-    this.certHolderId = this._getRequiredProperty(properties,
-        'scalar.dl.client.cert_holder_id');
+    this.certHolderId = properties['scalar.dl.client.cert_holder_id'];
     /** @const */
     this.credential =
       properties['scalar.dl.client.authorization.credential'];
@@ -95,22 +92,6 @@ class ClientServiceBase {
    */
   static get binaryStatusKey() {
     return 'rpc.status-bin';
-  }
-
-  /**
-   * @param {Object} properties JSON Object used for setting client properties
-   * @param {string} name the name of the property to get
-   * @return {Object} The client property specified in the @name parameter
-   */
-  _getRequiredProperty(properties, name) {
-    const value = properties[name];
-    if (!value) {
-      throw new ClientError(
-          StatusCode.CLIENT_IO_ERROR,
-          `property '${name}' is required`,
-      );
-    }
-    return value;
   }
 
   /**
