@@ -1,9 +1,9 @@
 {
   "dependencies": {
+    "ajv": "^6.12.0",
     "elliptic": "^6.5.1",
     "js-crypto-key-utils": "^0.7.2",
-    "jsrsasign": "^8.0.15",
-    "validate": "^5.1.0"
+    "jsrsasign": "^8.0.15"
   },
   "name": "@scalar-labs/scalardl-javascript-sdk-base",
   "repository": "https://github.com/scalar-labs/scalardl-javascript-sdk-base",
