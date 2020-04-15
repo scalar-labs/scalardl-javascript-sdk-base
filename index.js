@@ -586,4 +586,5 @@ module.exports = {
   ContractExecutionResult,
   LedgerValidationResult,
   AssetProof,
+  ClientPropertiesValidator,
 };
