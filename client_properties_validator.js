@@ -15,6 +15,15 @@ const defaultSchema = {
     'scalar.dl.client.private_key_pem': {
       'type': 'string',
     },
+    'scalar.dl.client.server.host': {
+      'type': 'string',
+    },
+    'scalar.dl.client.server.port': {
+      'type': 'number',
+    },
+    'scalar.dl.client.server.privileged_port': {
+      'type': 'number',
+    },
   },
 };
 
