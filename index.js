@@ -1,5 +1,7 @@
 const {StatusCode} = require('./status_code');
 const {ClientError} = require('./client_error');
+const {ClientPropertiesValidator} = require('./client_properties_validator');
+
 const {
   ContractRegistrationRequestBuilder,
   ContractsListingRequestBuilder,
@@ -30,41 +32,25 @@ class ClientServiceBase {
   constructor(services, protobuf, properties) {
     /** @const */
     this.properties = properties;
-    /** @const */
-    this.serverHost = properties['scalar.dl.client.server.host'];
-    /** @const */
-    this.serverPort = properties['scalar.dl.client.server.port'];
-    /** @const */
-    this.tlsEnabled = properties['scalar.dl.client.tls.enabled'];
-    if (this.tlsEnabled !== undefined && typeof this.tlsEnabled !== 'boolean') {
-      throw new ClientError(
-          StatusCode.CLIENT_IO_ERROR,
-          'property \'scalar.dl.client.tls.enabled\' is not a boolean',
-      );
-    }
-    /** @const */
-    this.privateKeyPem = properties['scalar.dl.client.private_key_pem'];
-    /** @const */
-    this.certPem = properties['scalar.dl.client.cert_pem'];
-    /** @const */
-    this.certHolderId = properties['scalar.dl.client.cert_holder_id'];
-    /** @const */
-    this.credential =
-      properties['scalar.dl.client.authorization.credential'];
-    /** @const */
-    this.certVersion = properties['scalar.dl.client.cert_version'];
 
     /** @const */
     this.metadata = {};
-    if (this.credential) {
-      this.metadata.Authorization = this.credential;
+    if (properties['scalar.dl.client.authorization.credential']) {
+      this.metadata.Authorization =
+        properties['scalar.dl.client.authorization.credential'];
     }
 
     /** @const */
-    if (this._isNodeJsRuntime()) {
-      this.signer = new EllipticSigner(this.privateKeyPem);
-    } else {
-      this.signer = new WebCryptoSigner(this.privateKeyPem);
+    if (properties['scalar.dl.client.private_key_pem']) {
+      if (this._isNodeJsRuntime()) {
+        this.signer = new EllipticSigner(
+            properties['scalar.dl.client.private_key_pem']
+        );
+      } else {
+        this.signer = new WebCryptoSigner(
+            properties['scalar.dl.client.private_key_pem']
+        );
+      }
     }
 
     /**
@@ -267,11 +253,16 @@ class ClientServiceBase {
    * @throws {ClientError|Error}
    */
   async _createContractsListingRequest(contractId) {
+    const validator = new ClientPropertiesValidator([
+      'scalar.dl.client.cert_holder_id',
+      'scalar.dl.client.cert_version',
+    ]);
+    validator.validate(this.properties);
     const builder = new ContractsListingRequestBuilder(
         new this.protobuf.ContractsListingRequest(),
         this.signer,
-    ).withCertHolderId(this.certHolderId)
-        .withCertVersion(this.certVersion)
+    ).withCertHolderId(this.properties['scalar.dl.client.cert_holder_id'])
+        .withCertVersion(this.properties['scalar.dl.client.cert_version'])
         .withContractId(contractId);
 
     try {
@@ -432,11 +423,18 @@ class ClientServiceBase {
    * @return {Promise<CertificateRegistrationRequest>}
    */
   async _createCertificateRegistrationRequest() {
+    const validator = new ClientPropertiesValidator([
+      'scalar.dl.client.cert_pem',
+      'scalar.dl.client.cert_holder_id',
+      'scalar.dl.client.cert_version',
+    ]);
+    validator.validate(this.properties);
+
     const builder = new CertificateRegistrationRequestBuilder(
         new this.protobuf.CertificateRegistrationRequest(),
-    ).withCertHolderId(this.certHolderId)
-        .withCertVersion(this.certVersion)
-        .withCertPem(this.certPem);
+    ).withCertHolderId(this.properties['scalar.dl.client.cert_holder_id'])
+        .withCertVersion(this.properties['scalar.dl.client.cert_version'])
+        .withCertPem(this.properties['scalar.dl.client.cert_pem']);
 
     return builder.build();
   }
@@ -485,6 +483,12 @@ class ClientServiceBase {
       );
     }
 
+    const validator = new ClientPropertiesValidator([
+      'scalar.dl.client.cert_holder_id',
+      'scalar.dl.client.cert_version',
+    ]);
+    validator.validate(this.properties);
+
     const propertiesJson = JSON.stringify(properties);
     const builder = new ContractRegistrationRequestBuilder(
         new this.protobuf.ContractRegistrationRequest(),
@@ -493,8 +497,8 @@ class ClientServiceBase {
         .withContractBinaryName(name)
         .withContractByteCode(contractBytes)
         .withContractProperties(propertiesJson)
-        .withCertHolderId(this.certHolderId)
-        .withCertVersion(this.certVersion);
+        .withCertHolderId(this.properties['scalar.dl.client.cert_holder_id'])
+        .withCertVersion(this.properties['scalar.dl.client.cert_version']);
 
     try {
       return builder.build();
@@ -512,12 +516,18 @@ class ClientServiceBase {
    * @throws {ClientError|Error}
    */
   async _createLedgerValidationRequest(assetId) {
+    const validator = new ClientPropertiesValidator([
+      'scalar.dl.client.cert_holder_id',
+      'scalar.dl.client.cert_version',
+    ]);
+    validator.validate(this.properties);
+
     const builder = new LedgerValidationRequestBuilder(
         new this.protobuf.LedgerValidationRequest(),
         this.signer,
     ).withAssetId(assetId)
-        .withCertHolderId(this.certHolderId)
-        .withCertVersion(this.certVersion);
+        .withCertHolderId(this.properties['scalar.dl.client.cert_holder_id'])
+        .withCertVersion(this.properties['scalar.dl.client.cert_version']);
 
     try {
       return builder.build();
@@ -539,6 +549,12 @@ class ClientServiceBase {
   async _createContractExecutionRequest(
       contractId, argument, functionArgument,
   ) {
+    const validator = new ClientPropertiesValidator([
+      'scalar.dl.client.cert_holder_id',
+      'scalar.dl.client.cert_version',
+    ]);
+    validator.validate(this.properties);
+
     argument['nonce'] = new Date().getTime().toString();
     const argumentJson = JSON.stringify(argument);
     const functionArgumentJson = JSON.stringify(functionArgument);
@@ -549,8 +565,8 @@ class ClientServiceBase {
     ).withContractId(contractId)
         .withContractArgument(argumentJson)
         .withFunctionArgument(functionArgumentJson)
-        .withCertHolderId(this.certHolderId)
-        .withCertVersion(this.certVersion);
+        .withCertHolderId(this.properties['scalar.dl.client.cert_holder_id'])
+        .withCertVersion(this.properties['scalar.dl.client.cert_version']);
 
     try {
       return builder.build();
