@@ -43,7 +43,11 @@ class ClientPropertiesValidator {
    * @throws {Error}
    */
   validate(properties) {
-    const schema = Object.assign(defaultSchema, {'required': this.required});
+    const schema = {
+      ...defaultSchema,
+      ...{'required': this.required},
+    };
+
     if (!ajv.validate(schema, properties)) {
       throw new Error(
           ajv.errors.reduce(
