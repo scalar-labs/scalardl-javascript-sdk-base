@@ -2,6 +2,8 @@ const Ajv = require('ajv');
 const ajv = new Ajv();
 
 const defaultSchema = {
+  '$schema': 'http://json-schema.org/draft-07/schema',
+  'type': 'object',
   'properties': {
     'scalar.dl.client.cert_holder_id': {
       'type': 'string',
@@ -23,6 +25,9 @@ const defaultSchema = {
     },
     'scalar.dl.client.server.privileged_port': {
       'type': 'number',
+    },
+    'scalar.dl.client.tls.ca_root_cert_pem': {
+      'type': 'string',
     },
   },
 };
