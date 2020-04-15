@@ -13,7 +13,7 @@ const {
 const {ContractExecutionResult} = require('./contract_execution_result');
 const {LedgerValidationResult} = require('./ledger_validation_result');
 const {AssetProof} = require('./asset_proof');
-const {EllipticSigner, WebCryptoSigner} = require('./signer');
+const {Factory: SignerFactory} = require('./signer');
 
 /**
  * This class handles all client interactions including registering certificates
@@ -38,19 +38,6 @@ class ClientServiceBase {
     if (properties['scalar.dl.client.authorization.credential']) {
       this.metadata.Authorization =
         properties['scalar.dl.client.authorization.credential'];
-    }
-
-    /** @const */
-    if (properties['scalar.dl.client.private_key_pem']) {
-      if (this._isNodeJsRuntime()) {
-        this.signer = new EllipticSigner(
-            properties['scalar.dl.client.private_key_pem']
-        );
-      } else {
-        this.signer = new WebCryptoSigner(
-            properties['scalar.dl.client.private_key_pem']
-        );
-      }
     }
 
     /**
@@ -256,11 +243,16 @@ class ClientServiceBase {
     const validator = new ClientPropertiesValidator([
       'scalar.dl.client.cert_holder_id',
       'scalar.dl.client.cert_version',
+      'scalar.dl.client.private_key_pem',
     ]);
     validator.validate(this.properties);
+
+    const signerFactory = new SignerFactory(
+        this.properties['scalar.dl.client.private_key_pem']
+    );
     const builder = new ContractsListingRequestBuilder(
         new this.protobuf.ContractsListingRequest(),
-        this.signer,
+        signerFactory.create(),
     ).withCertHolderId(this.properties['scalar.dl.client.cert_holder_id'])
         .withCertVersion(this.properties['scalar.dl.client.cert_version'])
         .withContractId(contractId);
@@ -486,13 +478,17 @@ class ClientServiceBase {
     const validator = new ClientPropertiesValidator([
       'scalar.dl.client.cert_holder_id',
       'scalar.dl.client.cert_version',
+      'scalar.dl.client.private_key_pem',
     ]);
     validator.validate(this.properties);
 
+    const signerFactory = new SignerFactory(
+        this.properties['scalar.dl.client.private_key_pem']
+    );
     const propertiesJson = JSON.stringify(properties);
     const builder = new ContractRegistrationRequestBuilder(
         new this.protobuf.ContractRegistrationRequest(),
-        this.signer,
+        signerFactory.create(),
     ).withContractId(id)
         .withContractBinaryName(name)
         .withContractByteCode(contractBytes)
@@ -519,12 +515,16 @@ class ClientServiceBase {
     const validator = new ClientPropertiesValidator([
       'scalar.dl.client.cert_holder_id',
       'scalar.dl.client.cert_version',
+      'scalar.dl.client.private_key_pem',
     ]);
     validator.validate(this.properties);
 
+    const signerFactory = new SignerFactory(
+        this.properties['scalar.dl.client.private_key_pem']
+    );
     const builder = new LedgerValidationRequestBuilder(
         new this.protobuf.LedgerValidationRequest(),
-        this.signer,
+        signerFactory.create(),
     ).withAssetId(assetId)
         .withCertHolderId(this.properties['scalar.dl.client.cert_holder_id'])
         .withCertVersion(this.properties['scalar.dl.client.cert_version']);
@@ -552,16 +552,20 @@ class ClientServiceBase {
     const validator = new ClientPropertiesValidator([
       'scalar.dl.client.cert_holder_id',
       'scalar.dl.client.cert_version',
+      'scalar.dl.client.private_key_pem',
     ]);
     validator.validate(this.properties);
 
+    const signerFactory = new SignerFactory(
+        this.properties['scalar.dl.client.private_key_pem']
+    );
     argument['nonce'] = new Date().getTime().toString();
     const argumentJson = JSON.stringify(argument);
     const functionArgumentJson = JSON.stringify(functionArgument);
 
     const builder = new ContractExecutionRequestBuilder(
         new this.protobuf.ContractExecutionRequest(),
-        this.signer,
+        signerFactory.create(),
     ).withContractId(contractId)
         .withContractArgument(argumentJson)
         .withFunctionArgument(functionArgumentJson)
