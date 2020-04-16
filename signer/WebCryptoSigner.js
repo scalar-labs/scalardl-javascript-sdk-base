@@ -1,5 +1,4 @@
 const jsrsasign = require('jsrsasign');
-const keyutil = require('js-crypto-key-utils');
 
 /**
  * The signer based on Web Crypto API
@@ -18,7 +17,7 @@ class WebCryptoSigner {
    */
   async sign(content) {
     if (!this.pkcs8) {
-      this.pkcs8 = await this._PKCS1ToPKCS8(this.pkcs1);
+      this.pkcs8 = this._PKCS1ToPKCS8(this.pkcs1);
     }
 
     const algorithm = { // EcdsaParams
@@ -45,18 +44,14 @@ class WebCryptoSigner {
   /**
    * @param {String} pkcs1
    */
-  async _PKCS1ToPKCS8(pkcs1) {
+  _PKCS1ToPKCS8(pkcs1) {
     pkcs1 = pkcs1.replace('-----BEGIN EC PRIVATE KEY-----', '')
         .replace('-----END EC PRIVATE KEY-----', '')
         .replace(/\n/g, '');
     const k = jsrsasign.KEYUTIL.getKey(
         jsrsasign.b64utohex(pkcs1), null, 'pkcs5prv',
     );
-    const kk = new keyutil.Key('oct',
-        new Uint8Array(jsrsasign.hextoArrayBuffer(k.prvKeyHex)),
-        {namedCurve: 'P-256'},
-    );
-    return await kk.export('pem');
+    return jsrsasign.KEYUTIL.getPEM(k, "PKCS8PRV");
   }
 
   /**
