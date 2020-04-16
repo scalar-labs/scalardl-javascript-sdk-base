@@ -20,7 +20,7 @@ class Factory {
     if (typeof window === 'undefined') { // Node environment
       return new EllipticSigner(this.key);
     } else { // Browser environment
-      return new new WebCryptoSigner(this.key);
+      return new WebCryptoSigner(this.key);
     }
   }
 }
