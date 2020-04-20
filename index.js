@@ -1,6 +1,6 @@
 const {StatusCode} = require('./status_code');
 const {ClientError} = require('./client_error');
-const {ClientPropertiesValidator} = require('./client_properties_validator');
+const {ClientProperties} = require('./client_properties');
 
 const {
   ContractRegistrationRequestBuilder,
@@ -240,21 +240,21 @@ class ClientServiceBase {
    * @throws {ClientError|Error}
    */
   async _createContractsListingRequest(contractId) {
-    const validator = new ClientPropertiesValidator([
-      'scalar.dl.client.cert_holder_id',
-      'scalar.dl.client.cert_version',
-      'scalar.dl.client.private_key_pem',
-    ]);
-    validator.validate(this.properties);
-
-    const signerFactory = new SignerFactory(
-        this.properties['scalar.dl.client.private_key_pem']
+    const properties = new ClientProperties(
+        this.properties,
+        [
+          'scalar.dl.client.cert_holder_id',
+          'scalar.dl.client.cert_version',
+          'scalar.dl.client.private_key_pem',
+        ],
     );
+
+    const signerFactory = new SignerFactory(properties.getPrivateKeyPem());
     const builder = new ContractsListingRequestBuilder(
         new this.protobuf.ContractsListingRequest(),
         signerFactory.create(),
-    ).withCertHolderId(this.properties['scalar.dl.client.cert_holder_id'])
-        .withCertVersion(this.properties['scalar.dl.client.cert_version'])
+    ).withCertHolderId(properties.getCertHolderId())
+        .withCertVersion(properties.getCertVersion())
         .withContractId(contractId);
 
     try {
@@ -415,18 +415,20 @@ class ClientServiceBase {
    * @return {Promise<CertificateRegistrationRequest>}
    */
   async _createCertificateRegistrationRequest() {
-    const validator = new ClientPropertiesValidator([
-      'scalar.dl.client.cert_pem',
-      'scalar.dl.client.cert_holder_id',
-      'scalar.dl.client.cert_version',
-    ]);
-    validator.validate(this.properties);
+    const properties = new ClientProperties(
+        this.properties,
+        [
+          'scalar.dl.client.cert_pem',
+          'scalar.dl.client.cert_holder_id',
+          'scalar.dl.client.cert_version',
+        ],
+    );
 
     const builder = new CertificateRegistrationRequestBuilder(
         new this.protobuf.CertificateRegistrationRequest(),
-    ).withCertHolderId(this.properties['scalar.dl.client.cert_holder_id'])
-        .withCertVersion(this.properties['scalar.dl.client.cert_version'])
-        .withCertPem(this.properties['scalar.dl.client.cert_pem']);
+    ).withCertHolderId(properties.getCertHolderId())
+        .withCertVersion(properties.getCertVersion())
+        .withCertPem(properties.getCertPem());
 
     return builder.build();
   }
@@ -475,15 +477,17 @@ class ClientServiceBase {
       );
     }
 
-    const validator = new ClientPropertiesValidator([
-      'scalar.dl.client.cert_holder_id',
-      'scalar.dl.client.cert_version',
-      'scalar.dl.client.private_key_pem',
-    ]);
-    validator.validate(this.properties);
+    const clientProperties = new ClientProperties(
+        this.properties,
+        [
+          'scalar.dl.client.cert_holder_id',
+          'scalar.dl.client.cert_version',
+          'scalar.dl.client.private_key_pem',
+        ],
+    );
 
     const signerFactory = new SignerFactory(
-        this.properties['scalar.dl.client.private_key_pem']
+        clientProperties.getPrivateKeyPem(),
     );
     const propertiesJson = JSON.stringify(properties);
     const builder = new ContractRegistrationRequestBuilder(
@@ -493,8 +497,8 @@ class ClientServiceBase {
         .withContractBinaryName(name)
         .withContractByteCode(contractBytes)
         .withContractProperties(propertiesJson)
-        .withCertHolderId(this.properties['scalar.dl.client.cert_holder_id'])
-        .withCertVersion(this.properties['scalar.dl.client.cert_version']);
+        .withCertHolderId(clientProperties.getCertHolderId())
+        .withCertVersion(clientProperties.getCertVersion());
 
     try {
       return builder.build();
@@ -512,22 +516,22 @@ class ClientServiceBase {
    * @throws {ClientError|Error}
    */
   async _createLedgerValidationRequest(assetId) {
-    const validator = new ClientPropertiesValidator([
-      'scalar.dl.client.cert_holder_id',
-      'scalar.dl.client.cert_version',
-      'scalar.dl.client.private_key_pem',
-    ]);
-    validator.validate(this.properties);
-
-    const signerFactory = new SignerFactory(
-        this.properties['scalar.dl.client.private_key_pem']
+    const properties = new ClientProperties(
+        this.properties,
+        [
+          'scalar.dl.client.cert_holder_id',
+          'scalar.dl.client.cert_version',
+          'scalar.dl.client.private_key_pem',
+        ],
     );
+
+    const signerFactory = new SignerFactory(properties.getPrivateKeyPem());
     const builder = new LedgerValidationRequestBuilder(
         new this.protobuf.LedgerValidationRequest(),
         signerFactory.create(),
     ).withAssetId(assetId)
-        .withCertHolderId(this.properties['scalar.dl.client.cert_holder_id'])
-        .withCertVersion(this.properties['scalar.dl.client.cert_version']);
+        .withCertHolderId(properties.getCertHolderId())
+        .withCertVersion(properties.getCertVersion());
 
     try {
       return builder.build();
@@ -549,16 +553,16 @@ class ClientServiceBase {
   async _createContractExecutionRequest(
       contractId, argument, functionArgument,
   ) {
-    const validator = new ClientPropertiesValidator([
-      'scalar.dl.client.cert_holder_id',
-      'scalar.dl.client.cert_version',
-      'scalar.dl.client.private_key_pem',
-    ]);
-    validator.validate(this.properties);
-
-    const signerFactory = new SignerFactory(
-        this.properties['scalar.dl.client.private_key_pem']
+    const properties = new ClientProperties(
+        this.properties,
+        [
+          'scalar.dl.client.cert_holder_id',
+          'scalar.dl.client.cert_version',
+          'scalar.dl.client.private_key_pem',
+        ],
     );
+
+    const signerFactory = new SignerFactory(properties.getPrivateKeyPem());
     argument['nonce'] = new Date().getTime().toString();
     const argumentJson = JSON.stringify(argument);
     const functionArgumentJson = JSON.stringify(functionArgument);
@@ -569,8 +573,8 @@ class ClientServiceBase {
     ).withContractId(contractId)
         .withContractArgument(argumentJson)
         .withFunctionArgument(functionArgumentJson)
-        .withCertHolderId(this.properties['scalar.dl.client.cert_holder_id'])
-        .withCertVersion(this.properties['scalar.dl.client.cert_version']);
+        .withCertHolderId(properties.getCertHolderId())
+        .withCertVersion(properties.getCertVersion());
 
     try {
       return builder.build();
@@ -590,5 +594,5 @@ module.exports = {
   ContractExecutionResult,
   LedgerValidationResult,
   AssetProof,
-  ClientPropertiesValidator,
+  ClientProperties,
 };
