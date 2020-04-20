@@ -13,7 +13,7 @@ const {
 const {ContractExecutionResult} = require('./contract_execution_result');
 const {LedgerValidationResult} = require('./ledger_validation_result');
 const {AssetProof} = require('./asset_proof');
-const {Factory: SignerFactory} = require('./signer');
+const {SignerFactory} = require('./signer');
 
 /**
  * This class handles all client interactions including registering certificates

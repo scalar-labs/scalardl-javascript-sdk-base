@@ -3,9 +3,9 @@ const {JsrsasignSigner} = require('./JsrsasignSigner');
 const {WebCryptoSigner} = require('./WebCryptoSigner');
 
 /**
- * Factory to generate signers
+ * SignerFactory to generate signers
  */
-class Factory {
+class SignerFactory {
   /**
    * @param {String|CryptoKey} key
    */
@@ -29,5 +29,5 @@ module.exports = {
   EllipticSigner,
   JsrsasignSigner,
   WebCryptoSigner,
-  Factory,
+  SignerFactory,
 };
