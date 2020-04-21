@@ -124,6 +124,13 @@ class ClientProperties {
   getTlsCaRootCertPem() {
     return this.properties[TLS_CA_ROOT_CERT_PEM];
   }
+
+  /**
+   * @return {String}
+   */
+  getAuthorizationCredential() {
+    return this.properties[AUTHORIZATION_CREDENTIAL];
+  }
 }
 
 module.exports = {
