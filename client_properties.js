@@ -9,6 +9,7 @@ const SERVER_HOST = 'scalar.dl.client.server.host';
 const SERVER_PORT = 'scalar.dl.client.server.port';
 const SERVER_PRIVILEGED_PORT = 'scalar.dl.client.server.privileged_port';
 const TLS_CA_ROOT_CERT_PEM = 'scalar.dl.client.tls.ca_root_cert_pem';
+const AUTHORIZATION_CREDENTIAL = 'scalar.dl.client.authorization.credential';
 
 const defaultSchema = {
   '$schema': 'http://json-schema.org/draft-07/schema',
@@ -37,6 +38,9 @@ defaultSchema.properties[SERVER_PRIVILEGED_PORT] = {
   'type': 'number',
 };
 defaultSchema.properties[TLS_CA_ROOT_CERT_PEM] = {
+  'type': 'string',
+};
+defaultSchema.properties[AUTHORIZATION_CREDENTIAL] = {
   'type': 'string',
 };
 
@@ -124,4 +128,13 @@ class ClientProperties {
 
 module.exports = {
   ClientProperties,
+  CERT_HOLDER_ID,
+  CERT_VERSION,
+  CERT_PEM,
+  PRIVATE_KEY_PEM,
+  SERVER_HOST,
+  SERVER_PORT,
+  SERVER_PRIVILEGED_PORT,
+  TLS_CA_ROOT_CERT_PEM,
+  AUTHORIZATION_CREDENTIAL,
 };

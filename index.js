@@ -1,6 +1,17 @@
 const {StatusCode} = require('./status_code');
 const {ClientError} = require('./client_error');
-const {ClientProperties} = require('./client_properties');
+const {
+  ClientProperties,
+  CERT_HOLDER_ID,
+  CERT_VERSION,
+  CERT_PEM,
+  PRIVATE_KEY_PEM,
+  SERVER_HOST,
+  SERVER_PORT,
+  SERVER_PRIVILEGED_PORT,
+  TLS_CA_ROOT_CERT_PEM,
+  AUTHORIZATION_CREDENTIAL,
+} = require('./client_properties');
 
 const {
   ContractRegistrationRequestBuilder,
@@ -35,9 +46,9 @@ class ClientServiceBase {
 
     /** @const */
     this.metadata = {};
-    if (properties['scalar.dl.client.authorization.credential']) {
+    if (properties[AUTHORIZATION_CREDENTIAL]) {
       this.metadata.Authorization =
-        properties['scalar.dl.client.authorization.credential'];
+        properties[AUTHORIZATION_CREDENTIAL];
     }
 
     /**
@@ -243,9 +254,9 @@ class ClientServiceBase {
     const properties = new ClientProperties(
         this.properties,
         [
-          'scalar.dl.client.cert_holder_id',
-          'scalar.dl.client.cert_version',
-          'scalar.dl.client.private_key_pem',
+          CERT_HOLDER_ID,
+          CERT_VERSION,
+          PRIVATE_KEY_PEM,
         ],
     );
 
@@ -418,9 +429,9 @@ class ClientServiceBase {
     const properties = new ClientProperties(
         this.properties,
         [
-          'scalar.dl.client.cert_pem',
-          'scalar.dl.client.cert_holder_id',
-          'scalar.dl.client.cert_version',
+          CERT_PEM,
+          CERT_HOLDER_ID,
+          CERT_VERSION,
         ],
     );
 
@@ -480,9 +491,9 @@ class ClientServiceBase {
     const clientProperties = new ClientProperties(
         this.properties,
         [
-          'scalar.dl.client.cert_holder_id',
-          'scalar.dl.client.cert_version',
-          'scalar.dl.client.private_key_pem',
+          CERT_HOLDER_ID,
+          CERT_VERSION,
+          PRIVATE_KEY_PEM,
         ],
     );
 
@@ -519,9 +530,9 @@ class ClientServiceBase {
     const properties = new ClientProperties(
         this.properties,
         [
-          'scalar.dl.client.cert_holder_id',
-          'scalar.dl.client.cert_version',
-          'scalar.dl.client.private_key_pem',
+          CERT_HOLDER_ID,
+          CERT_VERSION,
+          PRIVATE_KEY_PEM,
         ],
     );
 
@@ -556,9 +567,9 @@ class ClientServiceBase {
     const properties = new ClientProperties(
         this.properties,
         [
-          'scalar.dl.client.cert_holder_id',
-          'scalar.dl.client.cert_version',
-          'scalar.dl.client.private_key_pem',
+          CERT_HOLDER_ID,
+          CERT_VERSION,
+          PRIVATE_KEY_PEM,
         ],
     );
 
@@ -595,4 +606,13 @@ module.exports = {
   LedgerValidationResult,
   AssetProof,
   ClientProperties,
+  CERT_HOLDER_ID,
+  CERT_VERSION,
+  CERT_PEM,
+  PRIVATE_KEY_PEM,
+  SERVER_HOST,
+  SERVER_PORT,
+  SERVER_PRIVILEGED_PORT,
+  TLS_CA_ROOT_CERT_PEM,
+  AUTHORIZATION_CREDENTIAL,
 };
