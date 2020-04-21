@@ -1,6 +1,11 @@
 const {StatusCode} = require('./status_code');
 const {ClientError} = require('./client_error');
 const {
+  ClientProperties,
+  ClientPropertiesField,
+} = require('./client_properties');
+
+const {
   ContractRegistrationRequestBuilder,
   ContractsListingRequestBuilder,
   LedgerValidationRequestBuilder,
@@ -11,7 +16,7 @@ const {
 const {ContractExecutionResult} = require('./contract_execution_result');
 const {LedgerValidationResult} = require('./ledger_validation_result');
 const {AssetProof} = require('./asset_proof');
-const {EllipticSigner, WebCryptoSigner} = require('./signer');
+const {SignerFactory} = require('./signer');
 
 /**
  * This class handles all client interactions including registering certificates
@@ -30,41 +35,12 @@ class ClientServiceBase {
   constructor(services, protobuf, properties) {
     /** @const */
     this.properties = properties;
-    /** @const */
-    this.serverHost = properties['scalar.dl.client.server.host'];
-    /** @const */
-    this.serverPort = properties['scalar.dl.client.server.port'];
-    /** @const */
-    this.tlsEnabled = properties['scalar.dl.client.tls.enabled'];
-    if (this.tlsEnabled !== undefined && typeof this.tlsEnabled !== 'boolean') {
-      throw new ClientError(
-          StatusCode.CLIENT_IO_ERROR,
-          'property \'scalar.dl.client.tls.enabled\' is not a boolean',
-      );
-    }
-    /** @const */
-    this.privateKeyPem = properties['scalar.dl.client.private_key_pem'];
-    /** @const */
-    this.certPem = properties['scalar.dl.client.cert_pem'];
-    /** @const */
-    this.certHolderId = properties['scalar.dl.client.cert_holder_id'];
-    /** @const */
-    this.credential =
-      properties['scalar.dl.client.authorization.credential'];
-    /** @const */
-    this.certVersion = properties['scalar.dl.client.cert_version'];
 
     /** @const */
     this.metadata = {};
-    if (this.credential) {
-      this.metadata.Authorization = this.credential;
-    }
-
-    /** @const */
-    if (this._isNodeJsRuntime()) {
-      this.signer = new EllipticSigner(this.privateKeyPem);
-    } else {
-      this.signer = new WebCryptoSigner(this.privateKeyPem);
+    if (properties[ClientPropertiesField.AUTHORIZATION_CREDENTIAL]) {
+      this.metadata.Authorization =
+        properties[ClientPropertiesField.AUTHORIZATION_CREDENTIAL];
     }
 
     /**
@@ -267,11 +243,21 @@ class ClientServiceBase {
    * @throws {ClientError|Error}
    */
   async _createContractsListingRequest(contractId) {
+    const properties = new ClientProperties(
+        this.properties,
+        [
+          ClientPropertiesField.CERT_HOLDER_ID,
+          ClientPropertiesField.CERT_VERSION,
+          ClientPropertiesField.PRIVATE_KEY_PEM,
+        ],
+    );
+
+    const signerFactory = new SignerFactory(properties.getPrivateKeyPem());
     const builder = new ContractsListingRequestBuilder(
         new this.protobuf.ContractsListingRequest(),
-        this.signer,
-    ).withCertHolderId(this.certHolderId)
-        .withCertVersion(this.certVersion)
+        signerFactory.create(),
+    ).withCertHolderId(properties.getCertHolderId())
+        .withCertVersion(properties.getCertVersion())
         .withContractId(contractId);
 
     try {
@@ -432,11 +418,20 @@ class ClientServiceBase {
    * @return {Promise<CertificateRegistrationRequest>}
    */
   async _createCertificateRegistrationRequest() {
+    const properties = new ClientProperties(
+        this.properties,
+        [
+          ClientPropertiesField.CERT_PEM,
+          ClientPropertiesField.CERT_HOLDER_ID,
+          ClientPropertiesField.CERT_VERSION,
+        ],
+    );
+
     const builder = new CertificateRegistrationRequestBuilder(
         new this.protobuf.CertificateRegistrationRequest(),
-    ).withCertHolderId(this.certHolderId)
-        .withCertVersion(this.certVersion)
-        .withCertPem(this.certPem);
+    ).withCertHolderId(properties.getCertHolderId())
+        .withCertVersion(properties.getCertVersion())
+        .withCertPem(properties.getCertPem());
 
     return builder.build();
   }
@@ -485,16 +480,28 @@ class ClientServiceBase {
       );
     }
 
+    const clientProperties = new ClientProperties(
+        this.properties,
+        [
+          ClientPropertiesField.CERT_HOLDER_ID,
+          ClientPropertiesField.CERT_VERSION,
+          ClientPropertiesField.PRIVATE_KEY_PEM,
+        ],
+    );
+
+    const signerFactory = new SignerFactory(
+        clientProperties.getPrivateKeyPem(),
+    );
     const propertiesJson = JSON.stringify(properties);
     const builder = new ContractRegistrationRequestBuilder(
         new this.protobuf.ContractRegistrationRequest(),
-        this.signer,
+        signerFactory.create(),
     ).withContractId(id)
         .withContractBinaryName(name)
         .withContractByteCode(contractBytes)
         .withContractProperties(propertiesJson)
-        .withCertHolderId(this.certHolderId)
-        .withCertVersion(this.certVersion);
+        .withCertHolderId(clientProperties.getCertHolderId())
+        .withCertVersion(clientProperties.getCertVersion());
 
     try {
       return builder.build();
@@ -512,12 +519,22 @@ class ClientServiceBase {
    * @throws {ClientError|Error}
    */
   async _createLedgerValidationRequest(assetId) {
+    const properties = new ClientProperties(
+        this.properties,
+        [
+          ClientPropertiesField.CERT_HOLDER_ID,
+          ClientPropertiesField.CERT_VERSION,
+          ClientPropertiesField.PRIVATE_KEY_PEM,
+        ],
+    );
+
+    const signerFactory = new SignerFactory(properties.getPrivateKeyPem());
     const builder = new LedgerValidationRequestBuilder(
         new this.protobuf.LedgerValidationRequest(),
-        this.signer,
+        signerFactory.create(),
     ).withAssetId(assetId)
-        .withCertHolderId(this.certHolderId)
-        .withCertVersion(this.certVersion);
+        .withCertHolderId(properties.getCertHolderId())
+        .withCertVersion(properties.getCertVersion());
 
     try {
       return builder.build();
@@ -539,18 +556,28 @@ class ClientServiceBase {
   async _createContractExecutionRequest(
       contractId, argument, functionArgument,
   ) {
+    const properties = new ClientProperties(
+        this.properties,
+        [
+          ClientPropertiesField.CERT_HOLDER_ID,
+          ClientPropertiesField.CERT_VERSION,
+          ClientPropertiesField.PRIVATE_KEY_PEM,
+        ],
+    );
+
+    const signerFactory = new SignerFactory(properties.getPrivateKeyPem());
     argument['nonce'] = new Date().getTime().toString();
     const argumentJson = JSON.stringify(argument);
     const functionArgumentJson = JSON.stringify(functionArgument);
 
     const builder = new ContractExecutionRequestBuilder(
         new this.protobuf.ContractExecutionRequest(),
-        this.signer,
+        signerFactory.create(),
     ).withContractId(contractId)
         .withContractArgument(argumentJson)
         .withFunctionArgument(functionArgumentJson)
-        .withCertHolderId(this.certHolderId)
-        .withCertVersion(this.certVersion);
+        .withCertHolderId(properties.getCertHolderId())
+        .withCertVersion(properties.getCertVersion());
 
     try {
       return builder.build();
@@ -570,4 +597,6 @@ module.exports = {
   ContractExecutionResult,
   LedgerValidationResult,
   AssetProof,
+  ClientProperties,
+  ClientPropertiesField,
 };
