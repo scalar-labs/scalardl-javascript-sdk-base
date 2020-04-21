@@ -2,15 +2,7 @@ const {StatusCode} = require('./status_code');
 const {ClientError} = require('./client_error');
 const {
   ClientProperties,
-  CERT_HOLDER_ID,
-  CERT_VERSION,
-  CERT_PEM,
-  PRIVATE_KEY_PEM,
-  SERVER_HOST,
-  SERVER_PORT,
-  SERVER_PRIVILEGED_PORT,
-  TLS_CA_ROOT_CERT_PEM,
-  AUTHORIZATION_CREDENTIAL,
+  ClientPropertiesField,
 } = require('./client_properties');
 
 const {
@@ -46,9 +38,9 @@ class ClientServiceBase {
 
     /** @const */
     this.metadata = {};
-    if (properties[AUTHORIZATION_CREDENTIAL]) {
+    if (properties[ClientPropertiesField.AUTHORIZATION_CREDENTIAL]) {
       this.metadata.Authorization =
-        properties[AUTHORIZATION_CREDENTIAL];
+        properties[ClientPropertiesField.AUTHORIZATION_CREDENTIAL];
     }
 
     /**
@@ -254,9 +246,9 @@ class ClientServiceBase {
     const properties = new ClientProperties(
         this.properties,
         [
-          CERT_HOLDER_ID,
-          CERT_VERSION,
-          PRIVATE_KEY_PEM,
+          ClientPropertiesField.CERT_HOLDER_ID,
+          ClientPropertiesField.CERT_VERSION,
+          ClientPropertiesField.PRIVATE_KEY_PEM,
         ],
     );
 
@@ -429,9 +421,9 @@ class ClientServiceBase {
     const properties = new ClientProperties(
         this.properties,
         [
-          CERT_PEM,
-          CERT_HOLDER_ID,
-          CERT_VERSION,
+          ClientPropertiesField.CERT_PEM,
+          ClientPropertiesField.CERT_HOLDER_ID,
+          ClientPropertiesField.CERT_VERSION,
         ],
     );
 
@@ -491,9 +483,9 @@ class ClientServiceBase {
     const clientProperties = new ClientProperties(
         this.properties,
         [
-          CERT_HOLDER_ID,
-          CERT_VERSION,
-          PRIVATE_KEY_PEM,
+          ClientPropertiesField.CERT_HOLDER_ID,
+          ClientPropertiesField.CERT_VERSION,
+          ClientPropertiesField.PRIVATE_KEY_PEM,
         ],
     );
 
@@ -530,9 +522,9 @@ class ClientServiceBase {
     const properties = new ClientProperties(
         this.properties,
         [
-          CERT_HOLDER_ID,
-          CERT_VERSION,
-          PRIVATE_KEY_PEM,
+          ClientPropertiesField.CERT_HOLDER_ID,
+          ClientPropertiesField.CERT_VERSION,
+          ClientPropertiesField.PRIVATE_KEY_PEM,
         ],
     );
 
@@ -567,9 +559,9 @@ class ClientServiceBase {
     const properties = new ClientProperties(
         this.properties,
         [
-          CERT_HOLDER_ID,
-          CERT_VERSION,
-          PRIVATE_KEY_PEM,
+          ClientPropertiesField.CERT_HOLDER_ID,
+          ClientPropertiesField.CERT_VERSION,
+          ClientPropertiesField.PRIVATE_KEY_PEM,
         ],
     );
 
@@ -606,13 +598,5 @@ module.exports = {
   LedgerValidationResult,
   AssetProof,
   ClientProperties,
-  CERT_HOLDER_ID,
-  CERT_VERSION,
-  CERT_PEM,
-  PRIVATE_KEY_PEM,
-  SERVER_HOST,
-  SERVER_PORT,
-  SERVER_PRIVILEGED_PORT,
-  TLS_CA_ROOT_CERT_PEM,
-  AUTHORIZATION_CREDENTIAL,
+  ClientPropertiesField,
 };
