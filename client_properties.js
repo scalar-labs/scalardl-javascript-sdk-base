@@ -10,6 +10,7 @@ const ClientPropertiesField = {
   SERVER_PORT: 'scalar.dl.client.server.port',
   SERVER_PRIVILEGED_PORT: 'scalar.dl.client.server.privileged_port',
   TLS_CA_ROOT_CERT_PEM: 'scalar.dl.client.tls.ca_root_cert_pem',
+  TLS_ENABLED: 'scalar.dl.client.tls.enabled',
   AUTHORIZATION_CREDENTIAL: 'scalar.dl.client.authorization.credential',
 };
 
@@ -41,6 +42,9 @@ defaultSchema.properties[ClientPropertiesField.SERVER_PRIVILEGED_PORT] = {
 };
 defaultSchema.properties[ClientPropertiesField.TLS_CA_ROOT_CERT_PEM] = {
   'type': 'string',
+};
+defaultSchema.properties[ClientPropertiesField.TLS_ENABLED] = {
+  'type': 'boolean',
 };
 defaultSchema.properties[ClientPropertiesField.AUTHORIZATION_CREDENTIAL] = {
   'type': 'string',
@@ -125,6 +129,13 @@ class ClientProperties {
    */
   getTlsCaRootCertPem() {
     return this.properties[ClientPropertiesField.TLS_CA_ROOT_CERT_PEM];
+  }
+
+  /**
+   * @return {Boolean}
+   */
+  getTlsEnabled() {
+    return this.properties[ClientPropertiesField.TLS_ENABLED];
   }
 
   /**
