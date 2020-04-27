@@ -25,9 +25,9 @@ class AssetProof {
     return new AssetProof(
         proof.getAssetId(),
         proof.getAge(),
-        proof.getHash_asU8() | new Uint8Array(),
+        proof.getHash_asU8() || new Uint8Array(),
         proof.getNonce(),
-        proof.getSignature_asU8() | new Uint8Array(),
+        proof.getSignature_asU8() || new Uint8Array(),
     );
   }
 
