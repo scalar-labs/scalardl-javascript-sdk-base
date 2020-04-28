@@ -4,6 +4,7 @@ const {
   ClientError,
   ContractExecutionResult,
   LedgerValidationResult,
+  AssetProof,
 } = require('..');
 
 const sinon = require('sinon');
@@ -416,7 +417,7 @@ describe('Class ClientServiceBase', () => {
                   const mockProof = {
                     getAssetId: () => 'asset-id',
                     getAge: () => 1,
-                    getHash_asU8: () => null,
+                    getHash_asU8: () => new Uint8Array([1, 2, 3]),
                     getNonce: () => 'nonce',
                     getSignature_asU8: () => null,
                   };
@@ -455,6 +456,13 @@ describe('Class ClientServiceBase', () => {
             clientProperties['scalar.dl.client.cert_version']));
         assert(mockSpySetSignature.calledOnce);
         assert.instanceOf(response, LedgerValidationResult);
+
+        const assetProof = response.getProof();
+        assert.equal(assetProof.getId(), 'asset-id');
+        assert.equal(assetProof.getAge(), 1);
+        assert.deepEqual(assetProof.getHash(), new Uint8Array([1, 2, 3]));
+        assert.equal(assetProof.getNonce(), 'nonce');
+        assert.deepEqual(assetProof.getSignature(), new Uint8Array());
       });
     });
     describe('executeContract', () => {
@@ -506,7 +514,7 @@ describe('Class ClientServiceBase', () => {
                     getAge: () => 1,
                     getHash_asU8: () => null,
                     getNonce: () => 'nonce',
-                    getSignature_asU8: () => null,
+                    getSignature_asU8: () => new Uint8Array([1, 2, 3]),
                   };
                   const mockedResponse = {
                     getResult: () => '',
@@ -557,6 +565,13 @@ describe('Class ClientServiceBase', () => {
             mockedFunctionArgumentJson));
 
         assert.instanceOf(response, ContractExecutionResult);
+
+        const assetProof = response.getProofs()[0];
+        assert.equal(assetProof.getId(), 'asset-id');
+        assert.equal(assetProof.getAge(), 1);
+        assert.deepEqual(assetProof.getHash(), new Uint8Array());
+        assert.equal(assetProof.getNonce(), 'nonce');
+        assert.deepEqual(assetProof.getSignature(), new Uint8Array([1, 2, 3]));
       });
     });
     describe('_executePromise', () => {

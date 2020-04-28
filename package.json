@@ -6,7 +6,7 @@
   },
   "name": "@scalar-labs/scalardl-javascript-sdk-base",
   "repository": "https://github.com/scalar-labs/scalardl-javascript-sdk-base",
-  "version": "2.6.0",
+  "version": "2.6.1",
   "description": "This package is the base of Scalar DL JavaScript SDK. You probably don't really need to use this package directly. Check @scalar-labs/scalardl-web-client-sdk.",
   "author": "Scalar, Inc.",
   "license": "AGPL-3.0-or-later",
