@@ -248,11 +248,12 @@ class ClientServiceBase {
         [
           ClientPropertiesField.CERT_HOLDER_ID,
           ClientPropertiesField.CERT_VERSION,
-          ClientPropertiesField.PRIVATE_KEY_PEM,
         ],
     );
 
-    const signerFactory = new SignerFactory(properties.getPrivateKeyPem());
+    const signerFactory = new SignerFactory(
+        properties.getPrivateKeyCryptoKey() || properties.getPrivateKeyPem()
+    );
     const builder = new ContractsListingRequestBuilder(
         new this.protobuf.ContractsListingRequest(),
         signerFactory.create(),
@@ -485,12 +486,12 @@ class ClientServiceBase {
         [
           ClientPropertiesField.CERT_HOLDER_ID,
           ClientPropertiesField.CERT_VERSION,
-          ClientPropertiesField.PRIVATE_KEY_PEM,
         ],
     );
 
     const signerFactory = new SignerFactory(
-        clientProperties.getPrivateKeyPem(),
+        clientProperties.getPrivateKeyCryptoKey() ||
+        clientProperties.getPrivateKeyPem()
     );
     const propertiesJson = JSON.stringify(properties);
     const builder = new ContractRegistrationRequestBuilder(
@@ -524,11 +525,12 @@ class ClientServiceBase {
         [
           ClientPropertiesField.CERT_HOLDER_ID,
           ClientPropertiesField.CERT_VERSION,
-          ClientPropertiesField.PRIVATE_KEY_PEM,
         ],
     );
 
-    const signerFactory = new SignerFactory(properties.getPrivateKeyPem());
+    const signerFactory = new SignerFactory(
+        properties.getPrivateKeyCryptoKey() || properties.getPrivateKeyPem()
+    );
     const builder = new LedgerValidationRequestBuilder(
         new this.protobuf.LedgerValidationRequest(),
         signerFactory.create(),
@@ -561,11 +563,12 @@ class ClientServiceBase {
         [
           ClientPropertiesField.CERT_HOLDER_ID,
           ClientPropertiesField.CERT_VERSION,
-          ClientPropertiesField.PRIVATE_KEY_PEM,
         ],
     );
 
-    const signerFactory = new SignerFactory(properties.getPrivateKeyPem());
+    const signerFactory = new SignerFactory(
+        properties.getPrivateKeyCryptoKey() || properties.getPrivateKeyPem()
+    );
     argument['nonce'] = new Date().getTime().toString();
     const argumentJson = JSON.stringify(argument);
     const functionArgumentJson = JSON.stringify(functionArgument);

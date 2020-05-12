@@ -5,10 +5,18 @@ const jsrsasign = require('jsrsasign');
  */
 class WebCryptoSigner {
   /**
-   * @param {String} pkcs1 PKCS#1
+   * @param {String|Object} key key can be a CryptoKey or PKCS#1 PEM
    */
-  constructor(pkcs1) {
-    this.pkcs1 = pkcs1;
+  constructor(key) {
+    if (typeof key == 'string') {
+      this.pkcs1 = key;
+    } else if (typeof key === 'object') {
+      this.key = key;
+    } else {
+      throw new Error(
+          'key type should be either String (PEM) or Object (CryptoKey)'
+      );
+    }
   }
 
   /**
@@ -16,8 +24,18 @@ class WebCryptoSigner {
    * @return {Uint8Array}
    */
   async sign(content) {
-    if (!this.pkcs8) {
-      this.pkcs8 = this._PKCS1ToPKCS8(this.pkcs1);
+    let key;
+    if (this.key) {
+      key = this.key;
+    } else {
+      if (!this.pkcs8) {
+        this.pkcs8 = await this._PKCS1ToPKCS8(this.pkcs1);
+      }
+      try {
+        key = await this._key(this.pkcs8);
+      } catch (_) {
+        throw new Error('Failed load the PEM file');
+      }
     }
 
     const algorithm = { // EcdsaParams
@@ -25,13 +43,6 @@ class WebCryptoSigner {
       hash: 'SHA-256',
     };
     const data = content;
-    let key;
-
-    try {
-      key = await this._key(this.pkcs8);
-    } catch (_) {
-      throw new Error('Failed to sign the request');
-    }
 
     try {
       const signature = await window.crypto.subtle.sign(algorithm, key, data);
@@ -43,6 +54,7 @@ class WebCryptoSigner {
 
   /**
    * @param {String} pkcs1
+   * @return {String}
    */
   _PKCS1ToPKCS8(pkcs1) {
     pkcs1 = pkcs1.replace('-----BEGIN EC PRIVATE KEY-----', '')
@@ -51,7 +63,7 @@ class WebCryptoSigner {
     const k = jsrsasign.KEYUTIL.getKey(
         jsrsasign.b64utohex(pkcs1), null, 'pkcs5prv',
     );
-    return jsrsasign.KEYUTIL.getPEM(k, "PKCS8PRV");
+    return jsrsasign.KEYUTIL.getPEM(k, 'PKCS8PRV');
   }
 
   /**
