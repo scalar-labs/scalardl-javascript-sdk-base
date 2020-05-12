@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "ajv": "^6.12.0",
+    "ajv": "^6.12.2",
     "elliptic": "^6.5.1",
     "jsrsasign": "^8.0.15"
   },
@@ -15,7 +15,7 @@
     "chai-as-promised": "^7.1.1",
     "eslint": "^5.16.0",
     "eslint-config-google": "^0.13.0",
-    "mocha": "^6.1.4",
+    "mocha": "^6.2.3",
     "mochawesome": "^4.1.0",
     "sinon": "^7.5.0"
   },
