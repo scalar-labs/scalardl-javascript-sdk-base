@@ -60,13 +60,25 @@ defaultSchema.properties[ClientPropertiesField.AUTHORIZATION_CREDENTIAL] = {
 class ClientProperties {
   /**
    * @param {Object} properties native JavaScript object containing properties
-   * @param {Array} required array of string. required properties
+   * @param {Array} allOf array of string. required properties
+   * @param {Array} oneOf array of string. required properties
    */
-  constructor(properties, required) {
+  constructor(properties, allOf, oneOf) {
+    allOf = allOf || [];
+    oneOf = oneOf || [];
+
     const schema = {
       ...defaultSchema,
-      ...{'required': required},
     };
+
+    if (allOf.length > 0) {
+      schema['allOf'] = allOf.map((property) => ({'required': [property]}));
+    }
+
+    if (oneOf.length > 0) {
+      schema['oneOf'] = oneOf.map((property) => ({'required': [property]}));
+    }
+
     if (!ajv.validate(schema, properties)) {
       throw new Error(
           ajv.errors.reduce(
