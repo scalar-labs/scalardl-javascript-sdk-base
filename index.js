@@ -249,6 +249,10 @@ class ClientServiceBase {
           ClientPropertiesField.CERT_HOLDER_ID,
           ClientPropertiesField.CERT_VERSION,
         ],
+        [
+          ClientPropertiesField.PRIVATE_KEY_PEM,
+          ClientPropertiesField.PRIVATE_KEY_CRYPTOKEY,
+        ],
     );
 
     const signerFactory = new SignerFactory(
@@ -487,6 +491,10 @@ class ClientServiceBase {
           ClientPropertiesField.CERT_HOLDER_ID,
           ClientPropertiesField.CERT_VERSION,
         ],
+        [
+          ClientPropertiesField.PRIVATE_KEY_PEM,
+          ClientPropertiesField.PRIVATE_KEY_CRYPTOKEY,
+        ],
     );
 
     const signerFactory = new SignerFactory(
@@ -526,6 +534,10 @@ class ClientServiceBase {
           ClientPropertiesField.CERT_HOLDER_ID,
           ClientPropertiesField.CERT_VERSION,
         ],
+        [
+          ClientPropertiesField.PRIVATE_KEY_PEM,
+          ClientPropertiesField.PRIVATE_KEY_CRYPTOKEY,
+        ],
     );
 
     const signerFactory = new SignerFactory(
@@ -563,6 +575,10 @@ class ClientServiceBase {
         [
           ClientPropertiesField.CERT_HOLDER_ID,
           ClientPropertiesField.CERT_VERSION,
+        ],
+        [
+          ClientPropertiesField.PRIVATE_KEY_PEM,
+          ClientPropertiesField.PRIVATE_KEY_CRYPTOKEY,
         ],
     );
 
