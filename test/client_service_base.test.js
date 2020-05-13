@@ -4,7 +4,6 @@ const {
   ClientError,
   ContractExecutionResult,
   LedgerValidationResult,
-  AssetProof,
 } = require('..');
 
 const sinon = require('sinon');
