@@ -32,7 +32,7 @@ class WebCryptoSigner {
         this.pkcs8 = await this._PKCS1ToPKCS8(this.pkcs1);
       }
       try {
-        key = await this._key(this.pkcs8);
+        key = await this._toCryptoKeyFromPkcs8(this.pkcs8);
       } catch (_) {
         throw new Error('Failed load the PEM file');
       }
@@ -120,7 +120,7 @@ class WebCryptoSigner {
    * @param {String} pkcs8
    * @return {Object}
    */
-  _key(pkcs8) {
+  _toCryptoKeyFromPkcs8(pkcs8) {
     pkcs8 = pkcs8.replace('-----BEGIN PRIVATE KEY-----', '')
         .replace('-----END PRIVATE KEY-----', '')
         .replace(/\n/g, '');
