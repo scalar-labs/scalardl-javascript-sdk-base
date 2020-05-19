@@ -6,6 +6,7 @@ const ClientPropertiesField = {
   CERT_VERSION: 'scalar.dl.client.cert_version',
   CERT_PEM: 'scalar.dl.client.cert_pem',
   PRIVATE_KEY_PEM: 'scalar.dl.client.private_key_pem',
+  PRIVATE_KEY_CRYPTOKEY: 'scalar.dl.client.private_key_cryptokey',
   SERVER_HOST: 'scalar.dl.client.server.host',
   SERVER_PORT: 'scalar.dl.client.server.port',
   SERVER_PRIVILEGED_PORT: 'scalar.dl.client.server.privileged_port',
@@ -30,6 +31,9 @@ defaultSchema.properties[ClientPropertiesField.CERT_PEM] = {
 };
 defaultSchema.properties[ClientPropertiesField.PRIVATE_KEY_PEM] = {
   'type': 'string',
+};
+defaultSchema.properties[ClientPropertiesField.PRIVATE_KEY_CRYPTOKEY] = {
+  'type': 'object',
 };
 defaultSchema.properties[ClientPropertiesField.SERVER_HOST] = {
   'type': 'string',
@@ -56,13 +60,25 @@ defaultSchema.properties[ClientPropertiesField.AUTHORIZATION_CREDENTIAL] = {
 class ClientProperties {
   /**
    * @param {Object} properties native JavaScript object containing properties
-   * @param {Array} required array of string. required properties
+   * @param {Array} allOf array of string. required properties
+   * @param {Array} oneOf array of string. required properties
    */
-  constructor(properties, required) {
+  constructor(properties, allOf, oneOf) {
+    allOf = allOf || [];
+    oneOf = oneOf || [];
+
     const schema = {
       ...defaultSchema,
-      ...{'required': required},
     };
+
+    if (allOf.length > 0) {
+      schema['allOf'] = allOf.map((property) => ({'required': [property]}));
+    }
+
+    if (oneOf.length > 0) {
+      schema['oneOf'] = oneOf.map((property) => ({'required': [property]}));
+    }
+
     if (!ajv.validate(schema, properties)) {
       throw new Error(
           ajv.errors.reduce(
@@ -101,6 +117,13 @@ class ClientProperties {
    */
   getPrivateKeyPem() {
     return this.properties[ClientPropertiesField.PRIVATE_KEY_PEM];
+  }
+
+  /**
+   * @return {!CryptoKey}
+   */
+  getPrivateKeyCryptoKey() {
+    return this.properties[ClientPropertiesField.PRIVATE_KEY_CRYPTOKEY];
   }
 
   /**
