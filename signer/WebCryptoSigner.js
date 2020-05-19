@@ -29,10 +29,10 @@ class WebCryptoSigner {
       key = this.key;
     } else {
       if (!this.pkcs8) {
-        this.pkcs8 = await this._PKCS1ToPKCS8(this.pkcs1);
+        this.pkcs8 = await this._toPkcs8From(this.pkcs1);
       }
       try {
-        key = await this._toCryptoKeyFromPkcs8(this.pkcs8);
+        key = await this._toCryptoKeyFrom(this.pkcs8);
       } catch (_) {
         throw new Error('Failed load the PEM file');
       }
@@ -56,7 +56,7 @@ class WebCryptoSigner {
    * @param {String} pkcs1
    * @return {String}
    */
-  _PKCS1ToPKCS8(pkcs1) {
+  _toPkcs8From(pkcs1) {
     pkcs1 = pkcs1.replace('-----BEGIN EC PRIVATE KEY-----', '')
         .replace('-----END EC PRIVATE KEY-----', '')
         .replace(/\n/g, '');
@@ -120,7 +120,7 @@ class WebCryptoSigner {
    * @param {String} pkcs8
    * @return {Object}
    */
-  _toCryptoKeyFromPkcs8(pkcs8) {
+  _toCryptoKeyFrom(pkcs8) {
     pkcs8 = pkcs8.replace('-----BEGIN PRIVATE KEY-----', '')
         .replace('-----END PRIVATE KEY-----', '')
         .replace(/\n/g, '');
