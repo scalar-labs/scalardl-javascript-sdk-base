@@ -262,9 +262,7 @@ class ClientServiceBase {
 
     const builder = new ContractsListingRequestBuilder(
         new this.protobuf.ContractsListingRequest(),
-        this._createSigner(
-            properties.getPrivateKeyCryptoKey() || properties.getPrivateKeyPem()
-        ),
+        this._createSigner(properties),
     ).withCertHolderId(properties.getCertHolderId())
         .withCertVersion(properties.getCertVersion())
         .withContractId(contractId);
@@ -504,10 +502,7 @@ class ClientServiceBase {
     const propertiesJson = JSON.stringify(properties);
     const builder = new ContractRegistrationRequestBuilder(
         new this.protobuf.ContractRegistrationRequest(),
-        this._createSigner(
-            clientProperties.getPrivateKeyCryptoKey() ||
-            clientProperties.getPrivateKeyPem()
-        ),
+        this._createSigner(clientProperties),
     ).withContractId(id)
         .withContractBinaryName(name)
         .withContractByteCode(contractBytes)
@@ -545,9 +540,7 @@ class ClientServiceBase {
 
     const builder = new LedgerValidationRequestBuilder(
         new this.protobuf.LedgerValidationRequest(),
-        this._createSigner(
-            properties.getPrivateKeyCryptoKey() || properties.getPrivateKeyPem()
-        ),
+        this._createSigner(properties),
     ).withAssetId(assetId)
         .withCertHolderId(properties.getCertHolderId())
         .withCertVersion(properties.getCertVersion());
@@ -590,9 +583,7 @@ class ClientServiceBase {
 
     const builder = new ContractExecutionRequestBuilder(
         new this.protobuf.ContractExecutionRequest(),
-        this._createSigner(
-            properties.getPrivateKeyCryptoKey() || properties.getPrivateKeyPem()
-        ),
+        this._createSigner(properties),
     ).withContractId(contractId)
         .withContractArgument(argumentJson)
         .withFunctionArgument(functionArgumentJson)
@@ -610,11 +601,14 @@ class ClientServiceBase {
   }
 
   /**
-   * @param {String|Object} key
+   * @param {Object} properties
    * @return {Object}
    */
-  _createSigner(key) {
-    this.signer = this.signer || this.signerFactory.create(key);
+  _createSigner(properties) {
+    this.signer = this.signer || this.signerFactory.create(
+        properties.getPrivateKeyCryptoKey() || properties.getPrivateKeyPem(),
+    );
+
     return this.signer;
   }
 }
