@@ -472,13 +472,13 @@ class ClientServiceBase {
    * @param {string} name  the canonical name of the contract class.
    *  For example "com.banking.contract1"
    * @param {Uint8Array} contractBytes
-   * @param {Object}  [properties]
-   *  JSON Object used for setting client properties
+   * @param {Object}  [contractProperties]
+   *  JSON Object used for setting contract properties
    * @return {Promise<ContractRegistrationRequest>}
    * @throws {ClientError|Error}
    */
   async _createContractRegistrationRequest(
-      id, name, contractBytes, properties,
+      id, name, contractBytes, contractProperties,
   ) {
     if (!(contractBytes instanceof Uint8Array)) {
       throw new ClientError(
@@ -487,7 +487,7 @@ class ClientServiceBase {
       );
     }
 
-    const clientProperties = new ClientProperties(
+    const properties = new ClientProperties(
         this.properties,
         [
           ClientPropertiesField.CERT_HOLDER_ID,
@@ -499,16 +499,16 @@ class ClientServiceBase {
         ],
     );
 
-    const propertiesJson = JSON.stringify(properties);
+    const contractPropertiesJson = JSON.stringify(contractProperties);
     const builder = new ContractRegistrationRequestBuilder(
         new this.protobuf.ContractRegistrationRequest(),
-        this._createSigner(clientProperties),
+        this._createSigner(properties),
     ).withContractId(id)
         .withContractBinaryName(name)
         .withContractByteCode(contractBytes)
-        .withContractProperties(propertiesJson)
-        .withCertHolderId(clientProperties.getCertHolderId())
-        .withCertVersion(clientProperties.getCertVersion());
+        .withContractProperties(contractPropertiesJson)
+        .withCertHolderId(properties.getCertHolderId())
+        .withCertVersion(properties.getCertVersion());
 
     try {
       return builder.build();
@@ -605,9 +605,9 @@ class ClientServiceBase {
    * @return {Object}
    */
   _createSigner(properties) {
-    this.signer = this.signer || this.signerFactory.create(
-        properties.getPrivateKeyCryptoKey() || properties.getPrivateKeyPem(),
-    );
+    const key =
+      properties.getPrivateKeyCryptoKey() || properties.getPrivateKeyPem();
+    this.signer = this.signer || this.signerFactory.create(key);
 
     return this.signer;
   }
