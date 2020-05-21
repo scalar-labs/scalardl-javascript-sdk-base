@@ -14,6 +14,9 @@ const services = {
   'ledgerPrivileged': {},
   'ledgerClient': {},
 };
+const chai = require('chai');
+chai.use(require('chai-as-promised'));
+
 const clientProperties = {
   'scalar.dl.client.private_key_pem': '-----BEGIN EC PRIVATE KEY-----\n' +
   'MHcCAQEEICcJGMEw3dyXUGFu/5a36HqY0ynZi9gLUfKgYWMYgr/IoAoGCCqGSM49\n' +
@@ -240,6 +243,9 @@ describe('Class ClientServiceBase', () => {
             return mockedContractRegistrationRequest;
           },
         };
+        const mockedSigner = {
+          sign: function() {},
+        };
         const clientServiceBase = new ClientServiceBase(
             {
               ledgerClient: {
@@ -250,7 +256,9 @@ describe('Class ClientServiceBase', () => {
                   callback(null, mockedResponse);
                 },
               },
-
+              signerFactory: {
+                create: () => mockedSigner,
+              },
             },
             mockedProtobuf,
             clientProperties,
@@ -279,6 +287,7 @@ describe('Class ClientServiceBase', () => {
         const mockSpySetSignature = sinon.spy(
             mockedContractRegistrationRequest,
             'setSignature');
+        const mockSpySign = sinon.spy(mockedSigner, 'sign');
 
         // act
         const response = await clientServiceBase.registerContract(
@@ -300,6 +309,7 @@ describe('Class ClientServiceBase', () => {
         assert(mockSpySetCertVersion.calledWithExactly(
             clientProperties['scalar.dl.client.cert_version']));
         assert(mockSpySetSignature.calledOnce);
+        assert(mockSpySign.calledOnce);
         assert.isUndefined(response);
       });
     });
@@ -334,6 +344,9 @@ describe('Class ClientServiceBase', () => {
             return mockedListContracts;
           },
         };
+        const mockedSigner = {
+          sign: function() {},
+        };
         const clientServiceBase = new ClientServiceBase(
             {
               ledgerClient: {
@@ -345,6 +358,9 @@ describe('Class ClientServiceBase', () => {
                   };
                   callback(null, mockedResponse);
                 },
+              },
+              signerFactory: {
+                create: () => mockedSigner,
               },
             },
             mockedProtobuf,
@@ -361,6 +377,7 @@ describe('Class ClientServiceBase', () => {
             'setContractId');
         const mockSpySetSignature = sinon.spy(mockedListContracts,
             'setSignature');
+        const mockSpySign = sinon.spy(mockedSigner, 'sign');
 
         // act
         const response = await clientServiceBase
@@ -375,6 +392,7 @@ describe('Class ClientServiceBase', () => {
         assert(
             mockSpySetContractId.calledWithExactly(mockedContractId));
         assert(mockSpySetSignature.calledOnce);
+        assert(mockSpySign.calledOnce);
         assert.instanceOf(response, Object);
       });
     });
@@ -409,6 +427,9 @@ describe('Class ClientServiceBase', () => {
             return mockedValidateLedger;
           },
         };
+        const mockedSigner = {
+          sign: function() {},
+        };
         const clientServiceBase = new ClientServiceBase(
             {
               ledgerClient: {
@@ -427,6 +448,9 @@ describe('Class ClientServiceBase', () => {
                   callback(null, mockedResponse);
                 },
               },
+              signerFactory: {
+                create: () => mockedSigner,
+              },
             },
             mockedProtobuf,
             clientProperties,
@@ -442,6 +466,7 @@ describe('Class ClientServiceBase', () => {
             'setCertVersion');
         const mockSpySetSignature = sinon.spy(mockedValidateLedger,
             'setSignature');
+        const mockSpySign = sinon.spy(mockedSigner, 'sign');
 
         // act
         const response = await clientServiceBase.validateLedger(mockedAssetId);
@@ -454,6 +479,7 @@ describe('Class ClientServiceBase', () => {
         assert(mockSpySetCertVersion.calledWithExactly(
             clientProperties['scalar.dl.client.cert_version']));
         assert(mockSpySetSignature.calledOnce);
+        assert(mockSpySign.calledOnce);
         assert.instanceOf(response, LedgerValidationResult);
 
         const assetProof = response.getProof();
@@ -503,6 +529,9 @@ describe('Class ClientServiceBase', () => {
             return mockedExecuteContract;
           },
         };
+        const mockedSigner = {
+          sign: function() {},
+        };
 
         const clientServiceBase = new ClientServiceBase(
             {
@@ -521,6 +550,9 @@ describe('Class ClientServiceBase', () => {
                   };
                   callback(null, mockedResponse);
                 },
+              },
+              signerFactory: {
+                create: () => mockedSigner,
               },
             },
             mockedProtobuf,
@@ -543,6 +575,7 @@ describe('Class ClientServiceBase', () => {
             'setFunctionArgument');
         const mockSpySetSignature = sinon.spy(mockedExecuteContract,
             'setSignature');
+        const mockSpySign = sinon.spy(mockedSigner, 'sign');
 
         // act
         const response = await clientServiceBase.executeContract(
@@ -560,6 +593,7 @@ describe('Class ClientServiceBase', () => {
         assert(mockSpySetCertVersion.calledWithExactly(
             clientProperties['scalar.dl.client.cert_version']));
         assert(mockSpySetSignature.calledOnce);
+        assert(mockSpySign.calledOnce);
         assert(mockSpySetFunctionArgument.calledWithExactly(
             mockedFunctionArgumentJson));
 

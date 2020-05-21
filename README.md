@@ -16,7 +16,7 @@ The files *scalardl-web-client-sdk* and *scalardl-node-client-sdk* are based on 
 After modifying the implementation of scalardl-javascript-sdk-base, we have to upgrade the version field in the  package.json. It looks like this:
 
 ```
-"version": "2.2.0",
+"version": "3.0.0",
 ```
 
 The version conforms to the rules of [semantic versioning](https://semver.org/). After the package.json is upgraded with a new version, push the package to the NPM registry with `npm publish`.
