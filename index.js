@@ -260,13 +260,11 @@ class ClientServiceBase {
         ],
     );
 
-    this.signer = this.signer || this.signerFactory.create(
-        properties.getPrivateKeyCryptoKey() || properties.getPrivateKeyPem()
-    );
-
     const builder = new ContractsListingRequestBuilder(
         new this.protobuf.ContractsListingRequest(),
-        this.signer,
+        this._createSigner(
+            properties.getPrivateKeyCryptoKey() || properties.getPrivateKeyPem()
+        ),
     ).withCertHolderId(properties.getCertHolderId())
         .withCertVersion(properties.getCertVersion())
         .withContractId(contractId);
@@ -503,15 +501,13 @@ class ClientServiceBase {
         ],
     );
 
-    this.signer = this.signer || this.signerFactory.create(
-        clientProperties.getPrivateKeyCryptoKey() ||
-        clientProperties.getPrivateKeyPem()
-    );
-
     const propertiesJson = JSON.stringify(properties);
     const builder = new ContractRegistrationRequestBuilder(
         new this.protobuf.ContractRegistrationRequest(),
-        this.signer,
+        this._createSigner(
+            clientProperties.getPrivateKeyCryptoKey() ||
+            clientProperties.getPrivateKeyPem()
+        ),
     ).withContractId(id)
         .withContractBinaryName(name)
         .withContractByteCode(contractBytes)
@@ -547,12 +543,11 @@ class ClientServiceBase {
         ],
     );
 
-    this.signer = this.signer || this.signerFactory.create(
-        properties.getPrivateKeyCryptoKey() || properties.getPrivateKeyPem()
-    );
     const builder = new LedgerValidationRequestBuilder(
         new this.protobuf.LedgerValidationRequest(),
-        this.signer,
+        this._createSigner(
+            properties.getPrivateKeyCryptoKey() || properties.getPrivateKeyPem()
+        ),
     ).withAssetId(assetId)
         .withCertHolderId(properties.getCertHolderId())
         .withCertVersion(properties.getCertVersion());
@@ -589,16 +584,15 @@ class ClientServiceBase {
         ],
     );
 
-    this.signer = this.signer || this.signerFactory.create(
-        properties.getPrivateKeyCryptoKey() || properties.getPrivateKeyPem()
-    );
     argument['nonce'] = new Date().getTime().toString();
     const argumentJson = JSON.stringify(argument);
     const functionArgumentJson = JSON.stringify(functionArgument);
 
     const builder = new ContractExecutionRequestBuilder(
         new this.protobuf.ContractExecutionRequest(),
-        this.signer,
+        this._createSigner(
+            properties.getPrivateKeyCryptoKey() || properties.getPrivateKeyPem()
+        ),
     ).withContractId(contractId)
         .withContractArgument(argumentJson)
         .withFunctionArgument(functionArgumentJson)
@@ -613,6 +607,15 @@ class ClientServiceBase {
           e.message,
       );
     }
+  }
+
+  /**
+   * @param {String|Object} key
+   * @return {Object}
+   */
+  _createSigner(key) {
+    this.signer = this.signer || this.signerFactory.create(key);
+    return this.signer;
   }
 }
 
