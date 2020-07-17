@@ -1,11 +1,11 @@
 {
   "dependencies": {
     "ajv": "^6.12.2",
-    "jsrsasign": "^8.0.15"
+    "jsrsasign": "^8.0.20"
   },
   "name": "@scalar-labs/scalardl-javascript-sdk-base",
   "repository": "https://github.com/scalar-labs/scalardl-javascript-sdk-base",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "This package is the base of Scalar DL JavaScript SDK. You probably don't really need to use this package directly. Check @scalar-labs/scalardl-web-client-sdk.",
   "author": "Scalar, Inc.",
   "license": "AGPL-3.0-or-later",
