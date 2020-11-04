@@ -1,22 +1,22 @@
 {
   "dependencies": {
-    "ajv": "^6.12.2",
-    "jsrsasign": "^8.0.20"
+    "ajv": "^6.12.6",
+    "jsrsasign": "^10.0.4"
   },
   "name": "@scalar-labs/scalardl-javascript-sdk-base",
   "repository": "https://github.com/scalar-labs/scalardl-javascript-sdk-base",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "This package is the base of Scalar DL JavaScript SDK. You probably don't really need to use this package directly. Check @scalar-labs/scalardl-web-client-sdk.",
   "author": "Scalar, Inc.",
   "license": "AGPL-3.0-or-later",
   "devDependencies": {
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
-    "eslint": "^5.16.0",
-    "eslint-config-google": "^0.13.0",
-    "mocha": "^6.2.3",
-    "mochawesome": "^4.1.0",
-    "sinon": "^7.5.0"
+    "eslint": "^7.12.1",
+    "eslint-config-google": "^0.14.0",
+    "mocha": "^8.2.0",
+    "mochawesome": "^6.1.1",
+    "sinon": "^9.2.1"
   },
   "scripts": {
     "test": "mocha --reporter mochawesome test/"
