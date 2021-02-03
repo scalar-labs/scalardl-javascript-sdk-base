@@ -17,6 +17,8 @@ const {ContractExecutionResult} = require('./contract_execution_result');
 const {LedgerValidationResult} = require('./ledger_validation_result');
 const {AssetProof} = require('./asset_proof');
 
+const {v4: uuidv4} = require('uuid');
+
 /**
  * This class handles all client interactions including registering certificates
  * and contracts, listing contracts, validating the ledger, and executing
@@ -577,7 +579,7 @@ class ClientServiceBase {
         ],
     );
 
-    argument['nonce'] = new Date().getTime().toString();
+    argument['nonce'] = uuidv4();
     const argumentJson = JSON.stringify(argument);
     const functionArgumentJson = JSON.stringify(functionArgument);
 
