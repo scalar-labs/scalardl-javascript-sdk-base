@@ -486,14 +486,16 @@ class LedgerValidationRequestBuilder {
     request.setCertVersion(this.certVersion);
 
     const assetId_ = new TextEncoder('utf-8').encode(this.assetId);
-    const view = new DataView(new ArrayBuffer(4));
-    view.setUint32(0, this.startAge)
-    const startAge = new Uint8Array(view.buffer)
-    view.setUint32(0, this.endAge)
-    const endAge = new Uint8Array(view.buffer)
+    const viewStartAge = new DataView(new ArrayBuffer(4));
+    const viewEndAge = new DataView(new ArrayBuffer(4));
+    const viewCertVersion = new DataView(new ArrayBuffer(4));
+    viewStartAge.setUint32(0, this.startAge)
+    const startAge = new Uint8Array(viewStartAge.buffer)
+    viewEndAge.setUint32(0, this.endAge)
+    const endAge = new Uint8Array(viewEndAge.buffer)
     const certHolderId = new TextEncoder('utf-8').encode(this.certHolderId);
-    view.setUint32(0, this.certVersion);
-    const certVersion = new Uint8Array(view.buffer);
+    viewCertVersion.setUint32(0, this.certVersion);
+    const certVersion = new Uint8Array(viewCertVersion.buffer);
 
     const buffer = new Uint8Array(
         assetId_.byteLength +
