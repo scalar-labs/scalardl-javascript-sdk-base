@@ -280,11 +280,13 @@ class ClientServiceBase {
   /**
    * Validate the integrity of an asset
    * @param {string} [assetId]
+   * @param {number} [startAge]
+   * @param {number} [endAge]
    * @return {Promise<LedgerValidationResponse>}
    * @throws {ClientError|Error}
    */
-  async validateLedger(assetId) {
-    const request = await this._createLedgerValidationRequest(assetId);
+  async validateLedger(assetId, startAge, endAge) {
+    const request = await this._createLedgerValidationRequest(assetId, startAge, endAge);
     const promise = new Promise((resolve, reject) => {
       this.ledgerClient.validateLedger(
           request,
@@ -522,10 +524,12 @@ class ClientServiceBase {
 
   /**
    * @param {string} [assetId]
+   * @param {number} [startAge]
+   * @param {number} [endAge]
    * @return {Promise<LedgerValidationRequest>}
    * @throws {ClientError|Error}
    */
-  async _createLedgerValidationRequest(assetId) {
+  async _createLedgerValidationRequest(assetId, startAge, endAge) {
     const properties = new ClientProperties(
         this.properties,
         [
@@ -542,6 +546,8 @@ class ClientServiceBase {
         new this.protobuf.LedgerValidationRequest(),
         this._createSigner(properties),
     ).withAssetId(assetId)
+        .withStartAge(startAge)
+        .withEndAge(endAge)
         .withCertHolderId(properties.getCertHolderId())
         .withCertVersion(properties.getCertVersion());
 
