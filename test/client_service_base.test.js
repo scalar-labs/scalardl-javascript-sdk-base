@@ -415,6 +415,10 @@ describe('Class ClientServiceBase', () => {
         const mockedValidateLedger = {
           setAssetId: function() {
           },
+          setStartAge: function() {
+          },
+          setEndAge: function() {
+          },
           setCertHolderId: function() {
           },
           setCertVersion: function() {
@@ -469,7 +473,7 @@ describe('Class ClientServiceBase', () => {
         const mockSpySign = sinon.spy(mockedSigner, 'sign');
 
         // act
-        const response = await clientServiceBase.validateLedger(mockedAssetId);
+        const response = await clientServiceBase.validateLedger(mockedAssetId, 0, 0);
 
         // assert
         assert(mockSpyLedgerValidationRequest.calledOnce);
