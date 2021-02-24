@@ -312,11 +312,13 @@ class ClientServiceBase {
   /**
    * Create the byte array of LedgerValidationRequest
    * @param {string} [assetId]
+   * @param {number} [startAge] must be >= 0
+   * @param {number} [endAge] must be <= 2147483647
    * @return {Uint8Array}
    * @throws {ClientError|Error}
    */
-  async createSerializedLedgerValidationRequest(assetId) {
-    const request = await this._createLedgerValidationRequest(assetId);
+  async createSerializedLedgerValidationRequest(assetId, startAge, endAge) {
+    const request = await this._createLedgerValidationRequest(assetId, startAge, endAge);
     return request.serializeBinary();
   }
 
