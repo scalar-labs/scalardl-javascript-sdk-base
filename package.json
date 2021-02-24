@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "ajv": "^6.12.6",
+    "grpc": "^1.24.5",
     "jsrsasign": "^10.0.4",
     "uuid": "^8.3.2"
   },

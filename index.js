@@ -18,6 +18,7 @@ const {LedgerValidationResult} = require('./ledger_validation_result');
 const {AssetProof} = require('./asset_proof');
 
 const {v4: uuidv4} = require('uuid');
+const grpc = require('grpc');
 
 /**
  * This class handles all client interactions including registering certificates
@@ -38,10 +39,10 @@ class ClientServiceBase {
     this.properties = properties;
 
     /** @const */
-    this.metadata = {};
+    this.metadata = new grpc.Metadata();
     if (properties[ClientPropertiesField.AUTHORIZATION_CREDENTIAL]) {
-      this.metadata.Authorization =
-        properties[ClientPropertiesField.AUTHORIZATION_CREDENTIAL];
+      this.metadata.add('authorization',
+          properties[ClientPropertiesField.AUTHORIZATION_CREDENTIAL]);
     }
 
     /**
@@ -608,7 +609,7 @@ class ClientServiceBase {
    */
   _createSigner(properties) {
     const key =
-      properties.getPrivateKeyCryptoKey() || properties.getPrivateKeyPem();
+        properties.getPrivateKeyCryptoKey() || properties.getPrivateKeyPem();
     this.signer = this.signer || this.signerFactory.create(key);
 
     return this.signer;
