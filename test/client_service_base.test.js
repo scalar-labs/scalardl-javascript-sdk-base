@@ -19,24 +19,24 @@ chai.use(require('chai-as-promised'));
 
 const clientProperties = {
   'scalar.dl.client.private_key_pem': '-----BEGIN EC PRIVATE KEY-----\n' +
-  'MHcCAQEEICcJGMEw3dyXUGFu/5a36HqY0ynZi9gLUfKgYWMYgr/IoAoGCCqGSM49\n' +
-  'AwEHoUQDQgAEBGuhqumyh7BVNqcNKAQQipDGooUpURve2dO66pQCgjtSfu7lJV20\n' +
-  'XYWdrgo0Y3eXEhvK0lsURO9N0nrPiQWT4A==\n-----END EC PRIVATE KEY-----\n',
+      'MHcCAQEEICcJGMEw3dyXUGFu/5a36HqY0ynZi9gLUfKgYWMYgr/IoAoGCCqGSM49\n' +
+      'AwEHoUQDQgAEBGuhqumyh7BVNqcNKAQQipDGooUpURve2dO66pQCgjtSfu7lJV20\n' +
+      'XYWdrgo0Y3eXEhvK0lsURO9N0nrPiQWT4A==\n-----END EC PRIVATE KEY-----\n',
   'scalar.dl.client.cert_pem': '-----BEGIN CERTIFICATE-----\n' +
-  'MIICizCCAjKgAwIBAgIUMEUDTdWsQpftFkqs6bCd6U++4nEwCgYIKoZIzj0EAwIw\n' +
-  'bzELMAkGA1UEBhMCSlAxDjAMBgNVBAgTBVRva3lvMQ4wDAYDVQQHEwVUb2t5bzEf\n' +
-  'MB0GA1UEChMWU2FtcGxlIEludGVybWVkaWF0ZSBDQTEfMB0GA1UEAxMWU2FtcGxl\n' +
-  'IEludGVybWVkaWF0ZSBDQTAeFw0xODA5MTAwODA3MDBaFw0yMTA5MDkwODA3MDBa\n' +
-  'MEUxCzAJBgNVBAYTAkFVMRMwEQYDVQQIEwpTb21lLVN0YXRlMSEwHwYDVQQKExhJ\n' +
-  'bnRlcm5ldCBXaWRnaXRzIFB0eSBMdGQwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNC\n' +
-  'AAQEa6Gq6bKHsFU2pw0oBBCKkMaihSlRG97Z07rqlAKCO1J+7uUlXbRdhZ2uCjRj\n' +
-  'd5cSG8rSWxRE703Ses+JBZPgo4HVMIHSMA4GA1UdDwEB/wQEAwIFoDATBgNVHSUE\n' +
-  'DDAKBggrBgEFBQcDAjAMBgNVHRMBAf8EAjAAMB0GA1UdDgQWBBRDd2MS9Ndo68PJ\n' +
-  'y9K/RNY6syZW0zAfBgNVHSMEGDAWgBR+Y+v8yByDNp39G7trYrTfZ0UjJzAxBggr\n' +
-  'BgEFBQcBAQQlMCMwIQYIKwYBBQUHMAGGFWh0dHA6Ly9sb2NhbGhvc3Q6ODg4OTAq\n' +
-  'BgNVHR8EIzAhMB+gHaAbhhlodHRwOi8vbG9jYWxob3N0Ojg4ODgvY3JsMAoGCCqG\n' +
-  'SM49BAMCA0cAMEQCIC/Bo4oNU6yHFLJeme5ApxoNdyu3rWyiqWPxJmJAr9L0AiBl\n' +
-  'Gc/v+yh4dHIDhCrimajTQAYOG9n0kajULI70Gg7TNw==\n-----END CERTIFICATE-----\n',
+      'MIICizCCAjKgAwIBAgIUMEUDTdWsQpftFkqs6bCd6U++4nEwCgYIKoZIzj0EAwIw\n' +
+      'bzELMAkGA1UEBhMCSlAxDjAMBgNVBAgTBVRva3lvMQ4wDAYDVQQHEwVUb2t5bzEf\n' +
+      'MB0GA1UEChMWU2FtcGxlIEludGVybWVkaWF0ZSBDQTEfMB0GA1UEAxMWU2FtcGxl\n' +
+      'IEludGVybWVkaWF0ZSBDQTAeFw0xODA5MTAwODA3MDBaFw0yMTA5MDkwODA3MDBa\n' +
+      'MEUxCzAJBgNVBAYTAkFVMRMwEQYDVQQIEwpTb21lLVN0YXRlMSEwHwYDVQQKExhJ\n' +
+      'bnRlcm5ldCBXaWRnaXRzIFB0eSBMdGQwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNC\n' +
+      'AAQEa6Gq6bKHsFU2pw0oBBCKkMaihSlRG97Z07rqlAKCO1J+7uUlXbRdhZ2uCjRj\n' +
+      'd5cSG8rSWxRE703Ses+JBZPgo4HVMIHSMA4GA1UdDwEB/wQEAwIFoDATBgNVHSUE\n' +
+      'DDAKBggrBgEFBQcDAjAMBgNVHRMBAf8EAjAAMB0GA1UdDgQWBBRDd2MS9Ndo68PJ\n' +
+      'y9K/RNY6syZW0zAfBgNVHSMEGDAWgBR+Y+v8yByDNp39G7trYrTfZ0UjJzAxBggr\n' +
+      'BgEFBQcBAQQlMCMwIQYIKwYBBQUHMAGGFWh0dHA6Ly9sb2NhbGhvc3Q6ODg4OTAq\n' +
+      'BgNVHR8EIzAhMB+gHaAbhhlodHRwOi8vbG9jYWxob3N0Ojg4ODgvY3JsMAoGCCqG\n' +
+      'SM49BAMCA0cAMEQCIC/Bo4oNU6yHFLJeme5ApxoNdyu3rWyiqWPxJmJAr9L0AiBl\n' +
+      'Gc/v+yh4dHIDhCrimajTQAYOG9n0kajULI70Gg7TNw==\n-----END CERTIFICATE-----\n',
   'scalar.dl.client.cert_holder_id': 'hold',
   'scalar.dl.client.cert_version': 1,
 };
@@ -116,7 +116,7 @@ describe('Class ClientServiceBase', () => {
     describe('registerFunction', () => {
       it('should throw an error when contractBytes is not a Uint8Array',
           async () => {
-          // prepare
+            // prepare
             const clientServiceBase = new ClientServiceBase(services, protobuf,
                 clientProperties);
 
@@ -203,7 +203,7 @@ describe('Class ClientServiceBase', () => {
       );
       it('should throw an error when contractBytes is not a Uint8Array',
           async () => {
-          // prepare
+            // prepare
             const clientServiceBase = new ClientServiceBase(
                 services, protobuf, clientProperties);
 
@@ -244,7 +244,8 @@ describe('Class ClientServiceBase', () => {
           },
         };
         const mockedSigner = {
-          sign: function() {},
+          sign: function() {
+          },
         };
         const clientServiceBase = new ClientServiceBase(
             {
@@ -345,7 +346,8 @@ describe('Class ClientServiceBase', () => {
           },
         };
         const mockedSigner = {
-          sign: function() {},
+          sign: function() {
+          },
         };
         const clientServiceBase = new ClientServiceBase(
             {
@@ -380,8 +382,8 @@ describe('Class ClientServiceBase', () => {
         const mockSpySign = sinon.spy(mockedSigner, 'sign');
 
         // act
-        const response = await clientServiceBase
-            .listContracts(mockedContractId);
+        const response = await clientServiceBase.listContracts(
+            mockedContractId);
 
         // assert
         assert(mockSpyContractsListingRequest.calledOnce);
@@ -397,7 +399,7 @@ describe('Class ClientServiceBase', () => {
       });
     });
     describe('validateLedger', () => {
-      it('should throw error when some properties are not provied',
+      it('should throw error when some properties are not provided',
           async () => {
             const clientServiceBase = new ClientServiceBase(
                 {}, // service
@@ -406,6 +408,42 @@ describe('Class ClientServiceBase', () => {
             );
             await expect(
                 clientServiceBase.validateLedger('whatever'),
+            ).to.be.rejected;
+          },
+      );
+      it('should throw an error when startAge is not valid',
+          async () => {
+            const clientServiceBase = new ClientServiceBase(
+                {}, // service
+                null, // protobuf
+                {}, // properties
+            );
+            await expect(
+                clientServiceBase.validateLedger('whatever', -1, 3),
+            ).to.be.rejected;
+          },
+      );
+      it('should throw an error when endAge is not valid',
+          async () => {
+            const clientServiceBase = new ClientServiceBase(
+                {}, // service
+                null, // protobuf
+                {}, // properties
+            );
+            await expect(
+                clientServiceBase.validateLedger('whatever', 0, 100000000000000000),
+            ).to.be.rejected;
+          },
+      );
+      it('should throw an error when endAge is inferior to startAge',
+          async () => {
+            const clientServiceBase = new ClientServiceBase(
+                {}, // service
+                null, // protobuf
+                {}, // properties
+            );
+            await expect(
+                clientServiceBase.validateLedger('whatever', 3, 2),
             ).to.be.rejected;
           },
       );
@@ -432,7 +470,8 @@ describe('Class ClientServiceBase', () => {
           },
         };
         const mockedSigner = {
-          sign: function() {},
+          sign: function() {
+          },
         };
         const clientServiceBase = new ClientServiceBase(
             {
@@ -473,7 +512,7 @@ describe('Class ClientServiceBase', () => {
         const mockSpySign = sinon.spy(mockedSigner, 'sign');
 
         // act
-        const response = await clientServiceBase.validateLedger(mockedAssetId, 0, 0);
+        const response = await clientServiceBase.validateLedger(mockedAssetId);
 
         // assert
         assert(mockSpyLedgerValidationRequest.calledOnce);
@@ -534,7 +573,8 @@ describe('Class ClientServiceBase', () => {
           },
         };
         const mockedSigner = {
-          sign: function() {},
+          sign: function() {
+          },
         };
 
         const clientServiceBase = new ClientServiceBase(
@@ -614,18 +654,17 @@ describe('Class ClientServiceBase', () => {
     describe('_executePromise', () => {
       it('should parse and rethrow error on Node.js environment', async () => {
         const status = {'code': 404, 'message': 'foo message'};
-        const toObject = sinon.stub()
-            .returns(status);
+        const toObject = sinon.stub().returns(status);
         const GrpcStatusObject = {'toObject': toObject};
-        const deserializeBinaryStub = sinon.stub()
-            .withArgs(status)
-            .returns(GrpcStatusObject);
+        const deserializeBinaryStub = sinon.stub().
+        withArgs(status).
+        returns(GrpcStatusObject);
         const GrpcStatus = {'deserializeBinary': deserializeBinaryStub};
         const protobuf = {'Status': GrpcStatus};
         const clientServiceBase = new ClientServiceBase(
             services, protobuf, clientProperties);
-        environmentStub = sinon.stub(clientServiceBase, '_isNodeJsRuntime')
-            .returns(true);
+        environmentStub = sinon.stub(clientServiceBase, '_isNodeJsRuntime').
+        returns(true);
         const binaryStatus = [status];
         const errorStub = new Error();
         const metadataStub = {
@@ -634,8 +673,8 @@ describe('Class ClientServiceBase', () => {
         };
         errorStub.metadata = metadataStub;
         const getStub = sinon.stub(metadataStub, 'get');
-        getStub.withArgs(ClientServiceBase.binaryStatusKey)
-            .returns(binaryStatus);
+        getStub.withArgs(ClientServiceBase.binaryStatusKey).
+        returns(binaryStatus);
 
         try {
           const promise = new Promise((resolve, reject) => {
@@ -650,18 +689,17 @@ describe('Class ClientServiceBase', () => {
       });
       it('should parse and rethrow error on browser environment', async () => {
         const status = {'code': 404, 'message': 'foo message'};
-        const toObject = sinon.stub()
-            .returns(status);
+        const toObject = sinon.stub().returns(status);
         const GrpcStatusObject = {'toObject': toObject};
-        const deserializeBinaryStub = sinon.stub()
-            .withArgs(status)
-            .returns(GrpcStatusObject);
+        const deserializeBinaryStub = sinon.stub().
+        withArgs(status).
+        returns(GrpcStatusObject);
         const GrpcStatus = {'deserializeBinary': deserializeBinaryStub};
         const protobuf = {'Status': GrpcStatus};
         const clientServiceBase = new ClientServiceBase(
             services, protobuf, clientProperties);
-        environmentStub = sinon.stub(clientServiceBase, '_isNodeJsRuntime')
-            .returns(false);
+        environmentStub = sinon.stub(clientServiceBase, '_isNodeJsRuntime').
+        returns(false);
         const metadata = {};
         metadata[ClientServiceBase.binaryStatusKey] = status;
         const errorStub = new Error('bar message');
@@ -680,8 +718,8 @@ describe('Class ClientServiceBase', () => {
       it('should rethrow error when there is no error status', async () => {
         const clientServiceBase = new ClientServiceBase(
             services, protobuf, clientProperties);
-        environmentStub = sinon.stub(clientServiceBase, '_isNodeJsRuntime')
-            .returns(false);
+        environmentStub = sinon.stub(clientServiceBase, '_isNodeJsRuntime').
+        returns(false);
         const errorStub = new Error('bar message');
         errorStub.metadata = {};
         try {

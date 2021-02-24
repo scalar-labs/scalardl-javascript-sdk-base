@@ -280,13 +280,14 @@ class ClientServiceBase {
   /**
    * Validate the integrity of an asset
    * @param {string} [assetId]
-   * @param {number} [startAge]
-   * @param {number} [endAge]
+   * @param {number} [startAge] must be >= 0
+   * @param {number} [endAge] must be <= 2147483647
    * @return {Promise<LedgerValidationResponse>}
    * @throws {ClientError|Error}
    */
-  async validateLedger(assetId, startAge, endAge) {
-    const request = await this._createLedgerValidationRequest(assetId, startAge, endAge);
+  async validateLedger(assetId, startAge = 0, endAge = 2147483647) {
+    const request = await this._createLedgerValidationRequest(assetId, startAge,
+        endAge);
     const promise = new Promise((resolve, reject) => {
       this.ledgerClient.validateLedger(
           request,
@@ -530,6 +531,12 @@ class ClientServiceBase {
    * @throws {ClientError|Error}
    */
   async _createLedgerValidationRequest(assetId, startAge, endAge) {
+    if (!(endAge >= startAge && startAge >= 0 && endAge <= 2147483647)) {
+      throw new ClientError(
+          StatusCode.CLIENT_IO_ERROR,
+          'invalid ages are specified',
+      );
+    }
     const properties = new ClientProperties(
         this.properties,
         [
