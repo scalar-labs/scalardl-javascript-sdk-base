@@ -424,22 +424,22 @@ class LedgerValidationRequestBuilder {
   }
 
   /**
-   * Sets the asset ID
+   * Sets the startAge
    * @param {number} startAge
    * @return {LedgerValidationRequestBuilder}
    */
   withStartAge(startAge) {
-    this.startAge = startAge
+    this.startAge = startAge;
     return this;
   }
 
   /**
-   * Sets the asset ID
+   * Sets the endAge
    * @param {number} endAge
    * @return {LedgerValidationRequestBuilder}
    */
   withEndAge(endAge) {
-    this.endAge = endAge
+    this.endAge = endAge;
     return this;
   }
 

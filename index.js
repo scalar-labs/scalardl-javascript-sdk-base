@@ -533,7 +533,7 @@ class ClientServiceBase {
    * @throws {ClientError|Error}
    */
   async _createLedgerValidationRequest(assetId, startAge, endAge) {
-    if (!(endAge >= startAge && startAge >= 0 && endAge <= 2147483647)) {
+    if (!(endAge >= startAge && startAge >= 0 && endAge <= Number.MAX_SAFE_INTEGER)) {
       throw new ClientError(
           StatusCode.CLIENT_IO_ERROR,
           'invalid ages are specified',
