@@ -59,7 +59,6 @@ workflows:
             branches:
               only:
                 - master
-                - /feature\/.*/
       - deploy:
           context: "scalar"
           requires:
