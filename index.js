@@ -17,6 +17,8 @@ const {ContractExecutionResult} = require('./contract_execution_result');
 const {LedgerValidationResult} = require('./ledger_validation_result');
 const {AssetProof} = require('./asset_proof');
 
+const {v4: uuidv4} = require('uuid');
+
 /**
  * This class handles all client interactions including registering certificates
  * and contracts, listing contracts, validating the ledger, and executing
@@ -73,6 +75,22 @@ class ClientServiceBase {
    */
   static get binaryStatusKey() {
     return 'rpc.status-bin';
+  }
+
+  /**
+   * get max age
+   * @return {number}
+   */
+  static get maxAge() {
+    return 2147483647;
+  }
+
+  /**
+   * get min age
+   * @return {number}
+   */
+  static get minAge() {
+    return 0;
   }
 
   /**
@@ -285,7 +303,7 @@ class ClientServiceBase {
    * @return {Promise<LedgerValidationResponse>}
    * @throws {ClientError|Error}
    */
-  async validateLedger(assetId, startAge = 0, endAge = 2147483647) {
+  async validateLedger(assetId, startAge = ClientServiceBase.minAge, endAge = ClientServiceBase.maxAge) {
     const request = await this._createLedgerValidationRequest(assetId, startAge,
         endAge);
     const promise = new Promise((resolve, reject) => {
@@ -317,7 +335,9 @@ class ClientServiceBase {
    * @return {Uint8Array}
    * @throws {ClientError|Error}
    */
-  async createSerializedLedgerValidationRequest(assetId, startAge, endAge) {
+  async createSerializedLedgerValidationRequest(assetId,
+                                                startAge= ClientServiceBase.minAge,
+                                                endAge= ClientServiceBase.maxAge) {
     const request = await this._createLedgerValidationRequest(assetId, startAge, endAge);
     return request.serializeBinary();
   }
@@ -533,7 +553,7 @@ class ClientServiceBase {
    * @throws {ClientError|Error}
    */
   async _createLedgerValidationRequest(assetId, startAge, endAge) {
-    if (!(endAge >= startAge && startAge >= 0 && endAge <= Number.MAX_SAFE_INTEGER)) {
+    if (!(endAge >= startAge && startAge >= ClientServiceBase.minAge && endAge <= ClientServiceBase.maxAge)) {
       throw new ClientError(
           StatusCode.CLIENT_IO_ERROR,
           'invalid ages are specified',
@@ -592,7 +612,7 @@ class ClientServiceBase {
         ],
     );
 
-    argument['nonce'] = new Date().getTime().toString();
+    argument['nonce'] = uuidv4();
     const argumentJson = JSON.stringify(argument);
     const functionArgumentJson = JSON.stringify(functionArgument);
 
