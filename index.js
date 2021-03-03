@@ -76,12 +76,13 @@ class ClientServiceBase {
 
   /**
    * get max age
-   * INT_MAX is equivalent to java's Integer.MAX_VALUE
+   * INT32_MAX is equivalent to
+   * java's Integer.MAX_VALUE which is 2147483647
    * @return {number}
    */
   static get maxAge() {
-    const INT_MAX = 2147483647;
-    return INT_MAX;
+    const INT32_MAX = 0x7fffffff;
+    return INT32_MAX;
   }
 
   /**
