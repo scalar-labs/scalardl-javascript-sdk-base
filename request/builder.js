@@ -424,6 +424,26 @@ class LedgerValidationRequestBuilder {
   }
 
   /**
+   * Sets the startAge
+   * @param {number} startAge
+   * @return {LedgerValidationRequestBuilder}
+   */
+  withStartAge(startAge) {
+    this.startAge = startAge;
+    return this;
+  }
+
+  /**
+   * Sets the endAge
+   * @param {number} endAge
+   * @return {LedgerValidationRequestBuilder}
+   */
+  withEndAge(endAge) {
+    this.endAge = endAge;
+    return this;
+  }
+
+  /**
    * Sets the ID of the certificate holder
    * @param {string} id
    * @return {LedgerValidationRequestBuilder}
@@ -453,25 +473,43 @@ class LedgerValidationRequestBuilder {
   async build() {
     const validator = new Validator();
     validator.validateInput(this.assetId, String);
+    validator.validateInput(this.startAge, Number);
+    validator.validateInput(this.endAge, Number);
     validator.validateInput(this.certHolderId, String);
     validator.validateInput(this.certVersion, Number);
 
     const request = this.request;
     request.setAssetId(this.assetId);
+    request.setStartAge(this.startAge);
+    request.setEndAge(this.endAge);
     request.setCertHolderId(this.certHolderId);
     request.setCertVersion(this.certVersion);
 
     const assetId_ = new TextEncoder('utf-8').encode(this.assetId);
+    const viewStartAge = new DataView(new ArrayBuffer(4));
+    const viewEndAge = new DataView(new ArrayBuffer(4));
+    const viewCertVersion = new DataView(new ArrayBuffer(4));
+    viewStartAge.setUint32(0, this.startAge)
+    const startAge = new Uint8Array(viewStartAge.buffer)
+    viewEndAge.setUint32(0, this.endAge)
+    const endAge = new Uint8Array(viewEndAge.buffer)
     const certHolderId = new TextEncoder('utf-8').encode(this.certHolderId);
-    const view = new DataView(new ArrayBuffer(4));
-    view.setUint32(0, this.certVersion);
-    const certVersion = new Uint8Array(view.buffer);
+    viewCertVersion.setUint32(0, this.certVersion);
+    const certVersion = new Uint8Array(viewCertVersion.buffer);
 
     const buffer = new Uint8Array(
-        assetId_.byteLength + certHolderId.byteLength + certVersion.byteLength);
+        assetId_.byteLength +
+        startAge.byteLength +
+        endAge.byteLength +
+        certHolderId.byteLength +
+        certVersion.byteLength);
     let offset = 0;
     buffer.set(assetId_, offset);
     offset += assetId_.byteLength;
+    buffer.set(startAge, offset)
+    offset += startAge.byteLength;
+    buffer.set(endAge, offset)
+    offset += endAge.byteLength;
     buffer.set(certHolderId, offset);
     offset += certHolderId.byteLength;
     buffer.set(certVersion, offset);

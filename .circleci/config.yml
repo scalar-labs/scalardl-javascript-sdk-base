@@ -6,7 +6,8 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/node:10-browsers-legacy
+      #Node LTS 14.16 "fermium"
+      - image: circleci/node:14.16-browsers-legacy
         environment:
           MAX_HEAP_SIZE: 2048m
           HEAP_NEWSIZE: 512m
@@ -41,7 +42,8 @@ jobs:
           path: ~/javascript-sdk-base/mochawesome-report
   deploy:
     docker:
-      - image: circleci/node
+      #Node LTS 14.16 "fermium"
+      - image: circleci/node:14.16
     steps:
       - checkout
       - run:
@@ -54,12 +56,7 @@ workflows:
   version: 2
   build-deploy:
     jobs:
-      - build:
-          filters:
-            branches:
-              only:
-                - master
-                - /feature\/.*/
+      - build
       - deploy:
           context: "scalar"
           requires:

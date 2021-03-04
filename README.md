@@ -7,9 +7,19 @@ Although those two packages use different gRPC tools to generate the service and
 
 The developers might not really need to use this package. Please reference [@scalar-labs/scalardl-web-client-sdk](https://github.com/scalar-labs/scalardl-web-client-sdk) or [@scalar-labs/scalardl-node-client-sdk](https://github.com/scalar-labs/scalardl-node-client-sdk) to create Scalar DLT applications.
 
-## How to update JavaScript-based SDKs
+## Node version used for development and testing
+This package has been developed and tested using Node LTS v14.16.0. named "fermium".
+This means we cannot guarantee the package nominal behaviour when using other Node versions.
 
+## How to update JavaScript-based SDKs
 The files *scalardl-web-client-sdk* and *scalardl-node-client-sdk* are based on *scalardl-javascript-sdk-base*. So if you update the *scalardl-javascript-sdk-base*, you also need to update those SDKs. This following describes how to do it properly.
+
+### Use the recommended Node/Npm version for development
+You can use nvm to set the recommended Node version stated in [.nvmrc](.nvmrc)
+
+```bash
+nvm use
+```
 
 ### Upgrade the scalardl-javascript-sdk-base version
 
