@@ -76,10 +76,13 @@ class ClientServiceBase {
 
   /**
    * get max age
+   * INT32_MAX is equivalent to
+   * java's Integer.MAX_VALUE which is 2147483647
    * @return {number}
    */
   static get maxAge() {
-    return 2147483647;
+    const INT32_MAX = 0x7fffffff;
+    return INT32_MAX;
   }
 
   /**
@@ -553,7 +556,7 @@ class ClientServiceBase {
   async _createLedgerValidationRequest(assetId, startAge, endAge) {
     if (!(endAge >= startAge && startAge >= ClientServiceBase.minAge && endAge <= ClientServiceBase.maxAge)) {
       throw new ClientError(
-          StatusCode.CLIENT_IO_ERROR,
+          StatusCode.CLIENT_RUNTIME_ERROR,
           'invalid ages are specified',
       );
     }
