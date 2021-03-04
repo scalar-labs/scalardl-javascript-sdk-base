@@ -75,18 +75,16 @@ class ClientServiceBase {
   }
 
   /**
-   * get max age
-   * INT32_MAX is equivalent to
-   * java's Integer.MAX_VALUE which is 2147483647
+   * Get ledger asset maximum age which is equivalent to
+   * Java's Integer.MAX_VALUE equal to 2147483647
    * @return {number}
    */
   static get maxAge() {
-    const INT32_MAX = 0x7fffffff;
-    return INT32_MAX;
+    return 0x7fffffff;
   }
 
   /**
-   * get min age
+   * Get ledger asset minimum age
    * @return {number}
    */
   static get minAge() {
@@ -303,7 +301,8 @@ class ClientServiceBase {
    * @return {Promise<LedgerValidationResponse>}
    * @throws {ClientError|Error}
    */
-  async validateLedger(assetId, startAge = ClientServiceBase.minAge, endAge = ClientServiceBase.maxAge) {
+  async validateLedger(assetId, startAge = ClientServiceBase.minAge,
+      endAge = ClientServiceBase.maxAge) {
     const request = await this._createLedgerValidationRequest(assetId, startAge,
         endAge);
     const promise = new Promise((resolve, reject) => {
@@ -336,9 +335,10 @@ class ClientServiceBase {
    * @throws {ClientError|Error}
    */
   async createSerializedLedgerValidationRequest(assetId,
-      startAge= ClientServiceBase.minAge,
-      endAge= ClientServiceBase.maxAge) {
-    const request = await this._createLedgerValidationRequest(assetId, startAge, endAge);
+      startAge = ClientServiceBase.minAge,
+      endAge = ClientServiceBase.maxAge) {
+    const request = await this._createLedgerValidationRequest(assetId, startAge,
+        endAge);
     return request.serializeBinary();
   }
 
@@ -554,7 +554,8 @@ class ClientServiceBase {
    * @throws {ClientError|Error}
    */
   async _createLedgerValidationRequest(assetId, startAge, endAge) {
-    if (!(endAge >= startAge && startAge >= ClientServiceBase.minAge && endAge <= ClientServiceBase.maxAge)) {
+    if (!(endAge >= startAge && startAge >= ClientServiceBase.minAge &&
+      endAge <= ClientServiceBase.maxAge)) {
       throw new ClientError(
           StatusCode.CLIENT_RUNTIME_ERROR,
           'invalid ages are specified',
