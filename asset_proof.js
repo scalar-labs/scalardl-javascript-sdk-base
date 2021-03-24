@@ -67,6 +67,25 @@ class AssetProof {
   }
 
   /**
+   * @param {Uint8Array}
+   * @return {Boolean}
+   */
+  hashEquals(hash) {
+    if (!(hash instanceof Uint8Array)) {
+      return false;
+    }
+    if (this.hash.length !== hash.length) {
+      return false;
+    }
+    for (var i = 0; i < this.hash.length; ++i) {
+      if (this.hash[i] !== hash[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
    * @return {string}
    */
   toString() {
