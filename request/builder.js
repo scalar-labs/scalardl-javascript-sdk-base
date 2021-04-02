@@ -718,12 +718,12 @@ class RequestProofRegistrationRequestBuilder {
 }
 
 /**
- * Used for building a AssetProofRegistrationRequest
+ * Used for building a ContractExecutionRequestWithAssetProofs
  */
-class AssetProofsRegistrationRequestBuilder {
+class ContractExecutionRequestWithAssetProofsBuilder {
   /**
    * @constructs
-   * @param {AssetProofsRegistrationRequest} request
+   * @param {ContractExecutionRequestWithAssetProof} request
    */
   constructor(request) {
     this.request = request;
@@ -732,7 +732,7 @@ class AssetProofsRegistrationRequestBuilder {
   /**
    * Sets the asset proofs
    * @param {Array} proofs
-   * @return {AssetProofsRegistrationRequestBuilder}
+   * @return {ContractExecutionRequestWithAssetProofsBuilder}
    */
   withProofs(proofs) {
     /** @const */
@@ -741,9 +741,9 @@ class AssetProofsRegistrationRequestBuilder {
   }
 
   /**
-   * Builds the AssetProofRegistrationRequest
+   * Builds the ContractExecutionRequestWithAssetProofs
    * @throws {Error}
-   * @return {AssetProofsRegistrationRequest}
+   * @return {ContractExecutionRequestWithAssetProofs}
    */
   build() {
     const request = this.request;
@@ -760,5 +760,5 @@ module.exports = {
   LedgerValidationRequestBuilder,
   ContractExecutionRequestBuilder,
   RequestProofRegistrationRequestBuilder,
-  AssetProofsRegistrationRequestBuilder,
+  ContractExecutionRequestWithAssetProofsBuilder,
 };

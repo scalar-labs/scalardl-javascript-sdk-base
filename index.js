@@ -13,7 +13,7 @@ const {
   FunctionRegistrationRequestBuilder,
   ContractExecutionRequestBuilder,
   RequestProofRegistrationRequestBuilder,
-  AssetProofsRegistrationRequestBuilder,
+  ContractExecutionRequestWithAssetProofsBuilder,
 } = require('./request/builder');
 const {ContractExecutionResult} = require('./contract_execution_result');
 const {LedgerValidationResult} = require('./ledger_validation_result');
@@ -401,7 +401,7 @@ class ClientServiceBase {
             if (err) {
               reject(err);
             } else {
-              await this._registerToAuditorAssetProofs(response);
+              await this._executeInAuditor(response);
               resolve(ContractExecutionResult.fromGrpcContractExecutionResponse(
                   response,
               ));
@@ -511,13 +511,13 @@ class ClientServiceBase {
   /**
    * @param {ContractExecutionResponse} response
    */
-  async _registerToAuditorAssetProofs(response) {
+  async _executeInAuditor(response) {
     if (!this._isAuditorEnabled()) {
       return;
     }
     const promise = new Promise((resolve, reject) => {
-      this.auditorClient.registerAssetProofs(
-          this._createAssetProofsRegistrationRequest(response),
+      this.auditorClient.executeContractWithProofs(
+          this._createContractExecutionRequestWithAssetProofs(response),
           this.metadata,
           (err, _) => {
             if (err) {
@@ -823,11 +823,11 @@ class ClientServiceBase {
 
   /**
    * @param {ContractExecutionResponse} response
-   * @return {Promise<AssetProofsRegistrationRequest>}
+   * @return {Promise<ContractExecutionRequestWithAssetProofs>}
    */
-  _createAssetProofsRegistrationRequest(response) {
-    const builder = new AssetProofsRegistrationRequestBuilder(
-        new this.protobuf.AssetProofsRegistrationRequest(),
+   _createContractExecutionRequestWithAssetProofs(response) {
+    const builder = new ContractExecutionRequestWithAssetProofsBuilder(
+        new this.protobuf.ContractExecutionRequestWithAssetProofs(),
     ).withProofs(response.getProofsList());
 
     return builder.build();
