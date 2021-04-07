@@ -401,7 +401,13 @@ class ClientServiceBase {
             if (err) {
               reject(err);
             } else {
-              await this._executeInAuditor(response);
+              const isConsistent = await this._executeInAuditor(response);
+              if (!isConsistent) {
+                reject(new ClientError(
+                    StatusCode.INCONSISTENT_STATES,
+                    "The results from Ledger and Auditor don't match",
+                ));
+              }
               resolve(ContractExecutionResult.fromGrpcContractExecutionResponse(
                   response,
               ));
@@ -510,25 +516,69 @@ class ClientServiceBase {
 
   /**
    * @param {ContractExecutionResponse} response
+   * @return {Boolean} return false if Auditor is enabled and the results
+   * from Ledger and Auditor don't match
    */
   async _executeInAuditor(response) {
     if (!this._isAuditorEnabled()) {
-      return;
+      return true;
     }
     const promise = new Promise((resolve, reject) => {
       this.auditorClient.executeContractWithProofs(
           this._createContractExecutionRequestWithAssetProofs(response),
           this.metadata,
-          (err, _) => {
+          (err, auditorResponse) => {
             if (err) {
               reject(err);
             } else {
-              resolve();
+              const auditorResult =
+                ContractExecutionResult.fromGrpcContractExecutionResponse(
+                  auditorResponse,
+                );
+              if (auditorResult.getProofs().length > 0) {
+                const ledgerResult =
+                  ContractExecutionResult.fromGrpcContractExecutionResponse(
+                      response,
+                  );
+                if (!this._validateResponses(ledgerResult, auditorResult)) {
+                  resolve(false);
+                }
+              }
+              resolve(true);
             }
           },
       );
     });
     return this._executePromise(promise);
+  }
+
+  /**
+   * @param {ContractExecutionResult} result1
+   * @param {ContractExecutionResult} result2
+   * @return {Boolean}
+   * @throws {ClientError}
+   */
+  _validateResponses(result1, result2) {
+    // We assume that JSON.parse() creates the identically-ordered object
+    // in fromGrpcContractExecutionResponse() if the execution result is same.
+    if (JSON.stringify(result1.getResult()) !== JSON.stringify(result2.getResult())
+      || result1.getProofs().length !== result2.getProofs().length) {
+      return false;
+    }
+
+    let map = new Map();
+    result1.getProofs().forEach(p => map.set(p.getId(), p));
+    result2.getProofs().forEach(
+        p2 => {
+          const p1 = map.get(p2.getId());
+          if (p1 === null || typeof p1 === 'undefined'
+              || p1.getAge() !== p2.getAge()
+              || !p1.hashEquals(p2.getHash())) {
+            return false;
+          }
+        }
+    )
+    return true;
   }
 
   /**
@@ -570,6 +620,8 @@ class ClientServiceBase {
       const status = this._parseStatusFromError(e);
       if (status) {
         throw new ClientError(status.code, status.message);
+      } else if (e.code === StatusCode.INCONSISTENT_STATES) {
+        throw e;
       } else {
         throw new ClientError(
             StatusCode.UNKNOWN_TRANSACTION_STATUS,
