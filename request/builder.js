@@ -634,6 +634,124 @@ class ContractExecutionRequestBuilder {
   }
 }
 
+/**
+ * Used for building a RequestProofRegistrationRequest
+ */
+class RequestProofRegistrationRequestBuilder {
+  /**
+   * @constructs
+   * @param {RequestProofRegistrationRequest} request
+   */
+  constructor(request) {
+    this.request = request;
+  }
+
+  /**
+   * Sets the contract ID
+   * @param {string} id
+   * @return {RequestProofRegistrationRequestBuilder}
+   */
+  withContractId(id) {
+    /** @const */
+    this.contractId = id;
+    return this;
+  }
+
+  /**
+   * Sets the contract argument
+   * @param {string} argument
+   * @return {RequestProofRegistrationRequestBuilder}
+   */
+  withContractArgument(argument) {
+    /** @const */
+    this.contractArgument = argument;
+    return this;
+  }
+
+  /**
+   * Sets the ID of the certificate holder
+   * @param {string} id
+   * @return {RequestProofRegistrationRequestBuilder}
+   */
+  withCertHolderId(id) {
+    /** @const */
+    this.certHolderId = id;
+    return this;
+  }
+
+  /**
+   * Sets the certificate's version
+   * @param {number} version
+   * @return {RequestProofRegistrationRequestBuilder}
+   */
+  withCertVersion(version) {
+    /** @const */
+    this.certVersion = version;
+    return this;
+  }
+
+  /**
+   * Sets the signature
+   * @param {Uint8Array} signature
+   * @return {RequestProofRegistrationRequestBuilder}
+   */
+  withSignature(signature) {
+    /** @const */
+    this.signature = signature;
+    return this;
+  }
+
+  /**
+   * Builds the RequestProofRegistrationRequest
+   * @throws {Error}
+   * @return {RequestProofRegistrationRequest}
+   */
+  build() {
+    const request = this.request;
+    request.setContractId(this.contractId);
+    request.setContractArgument(this.contractArgument);
+    request.setCertHolderId(this.certHolderId);
+    request.setCertVersion(this.certVersion);
+    request.setSignature(this.signature);
+    return request;
+  }
+}
+
+/**
+ * Used for building a ContractExecutionRequestWithAssetProofs
+ */
+class ContractExecutionRequestWithAssetProofsBuilder {
+  /**
+   * @constructs
+   * @param {ContractExecutionRequestWithAssetProof} request
+   */
+  constructor(request) {
+    this.request = request;
+  }
+
+  /**
+   * Sets the asset proofs
+   * @param {Array} proofs
+   * @return {ContractExecutionRequestWithAssetProofsBuilder}
+   */
+  withProofs(proofs) {
+    /** @const */
+    this.proofs = proofs;
+    return this;
+  }
+
+  /**
+   * Builds the ContractExecutionRequestWithAssetProofs
+   * @throws {Error}
+   * @return {ContractExecutionRequestWithAssetProofs}
+   */
+  build() {
+    const request = this.request;
+    request.setProofsList(this.proofs);
+    return request;
+  }
+}
+
 module.exports = {
   CertificateRegistrationRequestBuilder,
   FunctionRegistrationRequestBuilder,
@@ -641,4 +759,6 @@ module.exports = {
   ContractsListingRequestBuilder,
   LedgerValidationRequestBuilder,
   ContractExecutionRequestBuilder,
+  RequestProofRegistrationRequestBuilder,
+  ContractExecutionRequestWithAssetProofsBuilder,
 };

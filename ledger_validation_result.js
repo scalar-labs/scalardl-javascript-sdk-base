@@ -7,10 +7,12 @@ class LedgerValidationResult {
   /**
    * @param {StatusCode} code
    * @param {AssetProof} proof
+   * @param {AssetProof} auditorProof
    */
-  constructor(code, proof) {
+  constructor(code, proof, auditorProof) {
     this.code = code;
     this.proof = proof;
+    this.auditorProof = auditorProof;
   }
 
   /**
@@ -23,6 +25,7 @@ class LedgerValidationResult {
         response.getProof()
           ? AssetProof.fromGrpcAssetProof(response.getProof())
           : null,
+        null,
     );
   }
 
@@ -31,6 +34,13 @@ class LedgerValidationResult {
    */
   getProof() {
     return this.proof;
+  }
+
+  /**
+   * @return {AssetProof}
+   */
+  getAuditorProof() {
+    return this.auditorProof;
   }
 
   /**

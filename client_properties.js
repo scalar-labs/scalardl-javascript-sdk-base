@@ -10,6 +10,10 @@ const ClientPropertiesField = {
   SERVER_HOST: 'scalar.dl.client.server.host',
   SERVER_PORT: 'scalar.dl.client.server.port',
   SERVER_PRIVILEGED_PORT: 'scalar.dl.client.server.privileged_port',
+  AUDITOR_ENABLED: 'scalar.dl.client.auditor.enabled',
+  AUDITOR_HOST: 'scalar.dl.client.auditor.host',
+  AUDITOR_PORT: 'scalar.dl.client.auditor.port',
+  AUDITOR_PRIVILEGED_PORT: 'scalar.dl.client.auditor.privileged_port',
   TLS_CA_ROOT_CERT_PEM: 'scalar.dl.client.tls.ca_root_cert_pem',
   TLS_ENABLED: 'scalar.dl.client.tls.enabled',
   AUTHORIZATION_CREDENTIAL: 'scalar.dl.client.authorization.credential',
@@ -42,6 +46,18 @@ defaultSchema.properties[ClientPropertiesField.SERVER_PORT] = {
   'type': 'number',
 };
 defaultSchema.properties[ClientPropertiesField.SERVER_PRIVILEGED_PORT] = {
+  'type': 'number',
+};
+defaultSchema.properties[ClientPropertiesField.AUDITOR_ENABLED] = {
+  'type': 'boolean',
+};
+defaultSchema.properties[ClientPropertiesField.AUDITOR_HOST] = {
+  'type': 'string',
+};
+defaultSchema.properties[ClientPropertiesField.AUDITOR_PORT] = {
+  'type': 'number',
+};
+defaultSchema.properties[ClientPropertiesField.AUDITOR_PRIVILEGED_PORT] = {
   'type': 'number',
 };
 defaultSchema.properties[ClientPropertiesField.TLS_CA_ROOT_CERT_PEM] = {
@@ -145,6 +161,34 @@ class ClientProperties {
    */
   getServerPrivilegedPort() {
     return this.properties[ClientPropertiesField.SERVER_PRIVILEGED_PORT];
+  }
+
+  /**
+   * @return {Boolean}
+   */
+  getAuditorEnabled() {
+    return this.properties[ClientPropertiesField.AUDITOR_ENABLED];
+  }
+
+  /**
+   * @return {String}
+   */
+  getAuditorHost() {
+    return this.properties[ClientPropertiesField.AUDITOR_HOST];
+  }
+
+  /**
+   * @return {Number}
+   */
+  getAuditorPort() {
+    return this.properties[ClientPropertiesField.AUDITOR_PORT];
+  }
+
+  /**
+   * @return {Number}
+   */
+  getAuditorPrivilegedPort() {
+    return this.properties[ClientPropertiesField.AUDITOR_PRIVILEGED_PORT];
   }
 
   /**
