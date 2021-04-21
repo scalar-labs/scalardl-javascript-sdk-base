@@ -393,6 +393,8 @@ class ClientServiceBase {
   }
 
   async _executeContract(request) {
+    await this._registerToAuditorRequestProof(request);
+
     const promise = new Promise((resolve, reject) => {
       this.ledgerClient.executeContract(
           request,
@@ -416,7 +418,6 @@ class ClientServiceBase {
       );
     });
 
-    await this._registerToAuditorRequestProof(request);
     return this._executePromise(promise);
   }
 
