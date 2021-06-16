@@ -12,8 +12,8 @@ const {
   CertificateRegistrationRequestBuilder,
   FunctionRegistrationRequestBuilder,
   ContractExecutionRequestBuilder,
-  RequestProofRegistrationRequestBuilder,
-  ContractExecutionRequestWithAssetProofsBuilder,
+  OrderExecutionRequestBuilder,
+  ExecutionValidationRequestBuilder,
 } = require('./request/builder');
 const {ContractExecutionResult} = require('./contract_execution_result');
 const {LedgerValidationResult} = require('./ledger_validation_result');
@@ -393,17 +393,19 @@ class ClientServiceBase {
   }
 
   async _executeContract(request) {
-    await this._registerToAuditorRequestProof(request);
-
+    let ordered = await this._executeOrdering(request);
     const promise = new Promise((resolve, reject) => {
       this.ledgerClient.executeContract(
-          request,
+          ordered,
           this.metadata,
           async (err, response) => {
             if (err) {
               reject(err);
             } else {
-              const isConsistent = await this._executeInAuditor(response);
+              const isConsistent = await this._executeValidation(
+                  ordered,
+                  response,
+              );
               if (!isConsistent) {
                 reject(new ClientError(
                     StatusCode.INCONSISTENT_STATES,
@@ -494,20 +496,22 @@ class ClientServiceBase {
 
   /**
    * @param {ContractExecutionRequest} request
+   * @return {ContractExecutionRequest|Promise<ContractExecutionRequest>}
    */
-  async _registerToAuditorRequestProof(request) {
+  async _executeOrdering(request) {
     if (!this._isAuditorEnabled()) {
-      return;
+      return request;
     }
     const promise = new Promise((resolve, reject) => {
-      this.auditorClient.registerRequestProof(
-          this._createRequestProofRegistrationRequest(request),
+      this.auditorClient.orderExecution(
+          request,
           this.metadata,
-          (err, _) => {
+          (err, response) => {
             if (err) {
               reject(err);
             } else {
-              resolve();
+              request.setAuditorSignature(response.getSignature());
+              resolve(request);
             }
           },
       );
@@ -516,17 +520,18 @@ class ClientServiceBase {
   }
 
   /**
+   * @param {ContractExecutionRequest} request
    * @param {ContractExecutionResponse} response
    * @return {Boolean} return false if Auditor is enabled and the results
    * from Ledger and Auditor don't match
    */
-  async _executeInAuditor(response) {
+  async _executeValidation(request, response) {
     if (!this._isAuditorEnabled()) {
       return true;
     }
     const promise = new Promise((resolve, reject) => {
-      this.auditorClient.executeContractWithProofs(
-          this._createContractExecutionRequestWithAssetProofs(response),
+      this.auditorClient.validateExecution(
+          this._createExecutionValidationRequest(request, response),
           this.metadata,
           (err, auditorResponse) => {
             if (err) {
@@ -860,11 +865,11 @@ class ClientServiceBase {
 
   /**
    * @param {ContractExecutionRequest} request
-   * @return {Promise<RequestProofRegistrationRequest>}
+   * @return {Promise<OrderExecutionRequest>}
    */
-  _createRequestProofRegistrationRequest(request) {
-    const builder = new RequestProofRegistrationRequestBuilder(
-        new this.protobuf.RequestProofRegistrationRequest(),
+  _createOrderExecutionRequest(request) {
+    const builder = new OrderExecutionRequestBuilder(
+        new this.protobuf.OrderExecutionRequest(),
     ).withContractId(request.getContractId())
         .withContractArgument(request.getContractArgument())
         .withCertHolderId(request.getCertHolderId())
@@ -876,12 +881,13 @@ class ClientServiceBase {
 
   /**
    * @param {ContractExecutionResponse} response
-   * @return {Promise<ContractExecutionRequestWithAssetProofs>}
+   * @return {Promise<ExecutionValidationRequest>}
    */
-   _createContractExecutionRequestWithAssetProofs(response) {
-    const builder = new ContractExecutionRequestWithAssetProofsBuilder(
-        new this.protobuf.ContractExecutionRequestWithAssetProofs(),
-    ).withProofs(response.getProofsList());
+   _createExecutionValidationRequest(request, response) {
+    const builder = new ExecutionValidationRequestBuilder(
+        new this.protobuf.ExecutionValidationRequest(),
+    ).withContractExecutionRequest(request)
+        .withProofs(response.getProofsList());
 
     return builder.build();
   }

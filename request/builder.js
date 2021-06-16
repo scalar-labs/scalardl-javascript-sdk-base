@@ -635,118 +635,47 @@ class ContractExecutionRequestBuilder {
 }
 
 /**
- * Used for building a RequestProofRegistrationRequest
+ * Used for building a ExecutionValidationRequest
  */
-class RequestProofRegistrationRequestBuilder {
+class ExecutionValidationRequestBuilder {
   /**
    * @constructs
-   * @param {RequestProofRegistrationRequest} request
+   * @param {ExecutionValidationRequest} request
    */
   constructor(request) {
     this.request = request;
   }
 
   /**
-   * Sets the contract ID
-   * @param {string} id
-   * @return {RequestProofRegistrationRequestBuilder}
+   * Sets the request
+   * @param {ContractExecutionRequest}
+   * @return {ExecutionValidationRequestBuilder}
    */
-  withContractId(id) {
+   withContractExecutionRequest(request) {
     /** @const */
-    this.contractId = id;
+    this.contractExecutionRequest = request;
     return this;
-  }
-
-  /**
-   * Sets the contract argument
-   * @param {string} argument
-   * @return {RequestProofRegistrationRequestBuilder}
-   */
-  withContractArgument(argument) {
-    /** @const */
-    this.contractArgument = argument;
-    return this;
-  }
-
-  /**
-   * Sets the ID of the certificate holder
-   * @param {string} id
-   * @return {RequestProofRegistrationRequestBuilder}
-   */
-  withCertHolderId(id) {
-    /** @const */
-    this.certHolderId = id;
-    return this;
-  }
-
-  /**
-   * Sets the certificate's version
-   * @param {number} version
-   * @return {RequestProofRegistrationRequestBuilder}
-   */
-  withCertVersion(version) {
-    /** @const */
-    this.certVersion = version;
-    return this;
-  }
-
-  /**
-   * Sets the signature
-   * @param {Uint8Array} signature
-   * @return {RequestProofRegistrationRequestBuilder}
-   */
-  withSignature(signature) {
-    /** @const */
-    this.signature = signature;
-    return this;
-  }
-
-  /**
-   * Builds the RequestProofRegistrationRequest
-   * @throws {Error}
-   * @return {RequestProofRegistrationRequest}
-   */
-  build() {
-    const request = this.request;
-    request.setContractId(this.contractId);
-    request.setContractArgument(this.contractArgument);
-    request.setCertHolderId(this.certHolderId);
-    request.setCertVersion(this.certVersion);
-    request.setSignature(this.signature);
-    return request;
-  }
-}
-
-/**
- * Used for building a ContractExecutionRequestWithAssetProofs
- */
-class ContractExecutionRequestWithAssetProofsBuilder {
-  /**
-   * @constructs
-   * @param {ContractExecutionRequestWithAssetProof} request
-   */
-  constructor(request) {
-    this.request = request;
   }
 
   /**
    * Sets the asset proofs
    * @param {Array} proofs
-   * @return {ContractExecutionRequestWithAssetProofsBuilder}
+   * @return {ExecutionValidationRequestBuilder}
    */
-  withProofs(proofs) {
+   withProofs(proofs) {
     /** @const */
     this.proofs = proofs;
     return this;
   }
 
   /**
-   * Builds the ContractExecutionRequestWithAssetProofs
+   * Builds the ExecutionValidationRequest
    * @throws {Error}
-   * @return {ContractExecutionRequestWithAssetProofs}
+   * @return {ExecutionValidationRequest}
    */
   build() {
     const request = this.request;
+    request.setRequest(this.contractExecutionRequest);
     request.setProofsList(this.proofs);
     return request;
   }
@@ -759,6 +688,5 @@ module.exports = {
   ContractsListingRequestBuilder,
   LedgerValidationRequestBuilder,
   ContractExecutionRequestBuilder,
-  RequestProofRegistrationRequestBuilder,
-  ContractExecutionRequestWithAssetProofsBuilder,
+  ExecutionValidationRequestBuilder,
 };
