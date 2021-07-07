@@ -12,7 +12,6 @@ const {
   CertificateRegistrationRequestBuilder,
   FunctionRegistrationRequestBuilder,
   ContractExecutionRequestBuilder,
-  OrderExecutionRequestBuilder,
   ExecutionValidationRequestBuilder,
 } = require('./request/builder');
 const {ContractExecutionResult} = require('./contract_execution_result');
@@ -861,22 +860,6 @@ class ClientServiceBase {
           e.message,
       );
     }
-  }
-
-  /**
-   * @param {ContractExecutionRequest} request
-   * @return {Promise<OrderExecutionRequest>}
-   */
-  _createOrderExecutionRequest(request) {
-    const builder = new OrderExecutionRequestBuilder(
-        new this.protobuf.OrderExecutionRequest(),
-    ).withContractId(request.getContractId())
-        .withContractArgument(request.getContractArgument())
-        .withCertHolderId(request.getCertHolderId())
-        .withCertVersion(request.getCertVersion())
-        .withSignature(request.getSignature());
-
-    return builder.build();
   }
 
   /**

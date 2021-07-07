@@ -651,7 +651,7 @@ class ExecutionValidationRequestBuilder {
    * @param {ContractExecutionRequest}
    * @return {ExecutionValidationRequestBuilder}
    */
-   withContractExecutionRequest(request) {
+  withContractExecutionRequest(request) {
     /** @const */
     this.contractExecutionRequest = request;
     return this;
@@ -662,7 +662,7 @@ class ExecutionValidationRequestBuilder {
    * @param {Array} proofs
    * @return {ExecutionValidationRequestBuilder}
    */
-   withProofs(proofs) {
+  withProofs(proofs) {
     /** @const */
     this.proofs = proofs;
     return this;
