@@ -576,11 +576,11 @@ class ClientServiceBase {
                   ContractExecutionResult.fromGrpcContractExecutionResponse(
                       response,
                   );
-                if (!this._validateResponses(ledgerResult, auditorResult)) {
-                  resolve(false);
+                if (this._validateResponses(ledgerResult, auditorResult)) {
+                  resolve(true);
                 }
               }
-              resolve(true);
+              resolve(false);
             }
           },
       );
