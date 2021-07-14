@@ -33,7 +33,8 @@ class ClientServiceBase {
    *  the object of ledgerPrivileged
    * @param {Protobuf} protobuf protobuf object to inject
    * @param {Object} properties JSON Object used for setting client properties
-   * @param {Object} metadata gRPC metadata object used to add header to the gRPC request
+   * @param {Object} metadata gRPC metadata object used to add header
+   *  to the gRPC request
    */
   constructor(services, protobuf, properties, metadata) {
     /** @const */
@@ -114,6 +115,11 @@ class ClientServiceBase {
     return this._registerCertificate(request);
   }
 
+  /**
+   * @param {CertificateRegistrationRequest} request
+   * @return {Promise<void>}
+   * @throws {ClientError|Error}
+   */
   async _registerCertificate(request) {
     const promise = new Promise((resolve, reject) => {
       this.ledgerPrivileged.registerCert(
@@ -158,6 +164,11 @@ class ClientServiceBase {
     return this._registerFunction(request);
   };
 
+  /**
+   * @param {FunctionRegistrationRequest} request
+   * @return {Promise<void>}
+   * @throws {ClientError|Error}
+   */
   async _registerFunction(request) {
     const promise = new Promise((resolve, reject) => {
       this.ledgerPrivileged.registerFunction(
@@ -209,6 +220,11 @@ class ClientServiceBase {
     return this._registerContract(request);
   }
 
+  /**
+   * @param {ContractRegistrationRequest} request
+   * @return {Promise<void>}
+   * @throws {ClientError|Error}
+   */
   async _registerContract(request) {
     const promise = new Promise((resolve, reject) => {
       this.ledgerClient.registerContract(
@@ -260,6 +276,11 @@ class ClientServiceBase {
     return this._listContracts(request);
   }
 
+  /**
+   * @param {ContractsListingRequest} request
+   * @return {Promise<void>}
+   * @throws {ClientError|Error}
+   */
   async _listContracts(request) {
     const promise = new Promise((resolve, reject) => {
       this.ledgerClient.listContracts(
@@ -339,10 +360,15 @@ class ClientServiceBase {
     return this._validateLedger(request);
   }
 
+  /**
+   * @param {LedgerValidationRequest} request
+   * @return {Promise<LedgerValidationResult>}
+   * @throws {ClientError|Error}
+   */
   async _validateLedger(request) {
     let promises;
     const ledgerPromise = this._executePromise(
-      this._validateLedgerAsync(this.ledgerClient, request),
+        this._validateLedgerAsync(this.ledgerClient, request),
     );
     if (this._isAuditorEnabled()) {
       const auditorPromise = this._executePromise(
@@ -352,8 +378,8 @@ class ClientServiceBase {
     } else {
       promises = [ledgerPromise];
     }
- 
-    return Promise.all(promises).then(results => {
+
+    return Promise.all(promises).then((results) => {
       return this._validateResult(results[0], results[1]);
     }).catch((e) => {
       throw e;
@@ -391,8 +417,13 @@ class ClientServiceBase {
     return this._executeContract(request);
   }
 
+  /**
+   * @param {ContractExecutionResult} request
+   * @return {Promise<ContractExecutionResult|void|*>}
+   * @throws {ClientError|Error}
+   */
   async _executeContract(request) {
-    let ordered = await this._executeOrdering(request);
+    const ordered = await this._executeOrdering(request);
     const promise = new Promise((resolve, reject) => {
       this.ledgerClient.executeContract(
           ordered,
@@ -408,7 +439,7 @@ class ClientServiceBase {
               if (!isConsistent) {
                 reject(new ClientError(
                     StatusCode.INCONSISTENT_STATES,
-                    "The results from Ledger and Auditor don't match",
+                    'The results from Ledger and Auditor don\'t match',
                 ));
               }
               resolve(ContractExecutionResult.fromGrpcContractExecutionResponse(
@@ -443,7 +474,7 @@ class ClientServiceBase {
    * @return {Boolean}
    */
   _isAuditorEnabled() {
-    const properties = new ClientProperties(this.properties); 
+    const properties = new ClientProperties(this.properties);
     return properties.getAuditorEnabled();
   }
 
@@ -538,7 +569,7 @@ class ClientServiceBase {
             } else {
               const auditorResult =
                 ContractExecutionResult.fromGrpcContractExecutionResponse(
-                  auditorResponse,
+                    auditorResponse,
                 );
               if (auditorResult.getProofs().length > 0) {
                 const ledgerResult =
@@ -566,23 +597,24 @@ class ClientServiceBase {
   _validateResponses(result1, result2) {
     // We assume that JSON.parse() creates the identically-ordered object
     // in fromGrpcContractExecutionResponse() if the execution result is same.
-    if (JSON.stringify(result1.getResult()) !== JSON.stringify(result2.getResult())
-      || result1.getProofs().length !== result2.getProofs().length) {
+    if (JSON.stringify(result1.getResult()) !==
+        JSON.stringify(result2.getResult()) ||
+        result1.getProofs().length !== result2.getProofs().length) {
       return false;
     }
 
-    let map = new Map();
-    result1.getProofs().forEach(p => map.set(p.getId(), p));
+    const map = new Map();
+    result1.getProofs().forEach((p) => map.set(p.getId(), p));
     result2.getProofs().forEach(
-        p2 => {
+        (p2) => {
           const p1 = map.get(p2.getId());
-          if (p1 === null || typeof p1 === 'undefined'
-              || p1.getAge() !== p2.getAge()
-              || !p1.hashEquals(p2.getHash())) {
+          if (p1 === null || typeof p1 === 'undefined' ||
+              p1.getAge() !== p2.getAge() ||
+              !p1.hashEquals(p2.getHash())) {
             return false;
           }
-        }
-    )
+        },
+    );
     return true;
   }
 
@@ -863,10 +895,11 @@ class ClientServiceBase {
   }
 
   /**
+   * @param {ContractExecutionRequest} request
    * @param {ContractExecutionResponse} response
    * @return {Promise<ExecutionValidationRequest>}
    */
-   _createExecutionValidationRequest(request, response) {
+  _createExecutionValidationRequest(request, response) {
     const builder = new ExecutionValidationRequestBuilder(
         new this.protobuf.ExecutionValidationRequest(),
     ).withContractExecutionRequest(request)
@@ -895,13 +928,13 @@ class ClientServiceBase {
   _validateResult(ledgerResult, auditorResult) {
     if (this._isAuditorEnabled()) {
       let code = StatusCode.INCONSISTENT_STATES;
-      if (ledgerResult.getCode() === StatusCode.OK
-          && auditorResult.getCode() === StatusCode.OK
-          && ledgerResult.getProof() !== null
-          && auditorResult.getProof() !== null
-          && ledgerResult.getProof().hashEquals(
+      if (ledgerResult.getCode() === StatusCode.OK &&
+          auditorResult.getCode() === StatusCode.OK &&
+          ledgerResult.getProof() !== null &&
+          auditorResult.getProof() !== null &&
+          ledgerResult.getProof().hashEquals(
               auditorResult.getProof().getHash(),
-             )
+          )
       ) {
         code = StatusCode.OK;
       }

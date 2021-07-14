@@ -11,9 +11,9 @@ class TextEncoder {
    * @return {Uint8Array}
    */
   encode(string) {
-    return !string
-        ? new Uint8Array()
-        : new Uint8Array(
+    return !string ?
+        new Uint8Array() :
+        new Uint8Array(
             jsrsasign.hextoArrayBuffer(jsrsasign.utf8tohex(string)));
   }
 }
@@ -37,10 +37,10 @@ class Validator {
       return;
     }
 
-    if (typeof input === 'undefined'
-        || input === null
-        || input.constructor !== type
-        || (input.constructor === Number && input < 0)
+    if (typeof input === 'undefined' ||
+        input === null ||
+        input.constructor !== type ||
+        (input.constructor === Number && input < 0)
     ) {
       throw new Error('Specified argument is illegal.');
     }
@@ -489,10 +489,10 @@ class LedgerValidationRequestBuilder {
     const viewStartAge = new DataView(new ArrayBuffer(4));
     const viewEndAge = new DataView(new ArrayBuffer(4));
     const viewCertVersion = new DataView(new ArrayBuffer(4));
-    viewStartAge.setUint32(0, this.startAge)
-    const startAge = new Uint8Array(viewStartAge.buffer)
-    viewEndAge.setUint32(0, this.endAge)
-    const endAge = new Uint8Array(viewEndAge.buffer)
+    viewStartAge.setUint32(0, this.startAge);
+    const startAge = new Uint8Array(viewStartAge.buffer);
+    viewEndAge.setUint32(0, this.endAge);
+    const endAge = new Uint8Array(viewEndAge.buffer);
     const certHolderId = new TextEncoder('utf-8').encode(this.certHolderId);
     viewCertVersion.setUint32(0, this.certVersion);
     const certVersion = new Uint8Array(viewCertVersion.buffer);
@@ -506,9 +506,9 @@ class LedgerValidationRequestBuilder {
     let offset = 0;
     buffer.set(assetId_, offset);
     offset += assetId_.byteLength;
-    buffer.set(startAge, offset)
+    buffer.set(startAge, offset);
     offset += startAge.byteLength;
-    buffer.set(endAge, offset)
+    buffer.set(endAge, offset);
     offset += endAge.byteLength;
     buffer.set(certHolderId, offset);
     offset += certHolderId.byteLength;
@@ -648,7 +648,7 @@ class ExecutionValidationRequestBuilder {
 
   /**
    * Sets the request
-   * @param {ContractExecutionRequest}
+   * @param {ContractExecutionRequest} request
    * @return {ExecutionValidationRequestBuilder}
    */
   withContractExecutionRequest(request) {
