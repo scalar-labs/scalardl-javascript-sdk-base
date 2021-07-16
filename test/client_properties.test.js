@@ -75,7 +75,7 @@ describe('ClientProperties', () => {
               ClientPropertiesField.CERT_VERSION,
             ],
         )).to.throw(Error);
-      }
+      },
   );
 
   it('should work fine with allOf and OneOf', () => {

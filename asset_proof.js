@@ -67,7 +67,7 @@ class AssetProof {
   }
 
   /**
-   * @param {Uint8Array}
+   * @param {Uint8Array} hash
    * @return {Boolean}
    */
   hashEquals(hash) {
@@ -77,7 +77,7 @@ class AssetProof {
     if (this.hash.length !== hash.length) {
       return false;
     }
-    for (var i = 0; i < this.hash.length; ++i) {
+    for (let i = 0; i < this.hash.length; ++i) {
       if (this.hash[i] !== hash[i]) {
         return false;
       }
@@ -89,11 +89,11 @@ class AssetProof {
    * @return {string}
    */
   toString() {
-    return `AssetProof{id=${this.id},`
-        + `age${this.age}},`
-        + `hash=${this.hash},`
-        + `nonce=${this.nonce},`
-        + `signature=${this.signature}}`;
+    return `AssetProof{id=${this.id},` +
+        `age${this.age}},` +
+        `hash=${this.hash},` +
+        `nonce=${this.nonce},` +
+        `signature=${this.signature}}`;
   }
 }
 
