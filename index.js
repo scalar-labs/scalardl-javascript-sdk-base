@@ -430,21 +430,29 @@ class ClientServiceBase {
           this.metadata,
           async (err, response) => {
             if (err) {
-              reject(err);
-            } else {
+              return reject(err);
+            }
+
+            try {
               const isConsistent = await this._executeValidation(
                   ordered,
                   response,
               );
+
               if (!isConsistent) {
-                reject(new ClientError(
+                return reject(new ClientError(
                     StatusCode.INCONSISTENT_STATES,
                     'The results from Ledger and Auditor don\'t match',
                 ));
               }
-              resolve(ContractExecutionResult.fromGrpcContractExecutionResponse(
-                  response,
-              ));
+
+              return resolve(
+                  ContractExecutionResult.fromGrpcContractExecutionResponse(
+                      response,
+                  ),
+              );
+            } catch (err) {
+              return reject(err);
             }
           },
       );
