@@ -573,23 +573,24 @@ class ClientServiceBase {
           this.metadata,
           (err, auditorResponse) => {
             if (err) {
-              reject(err);
-            } else {
-              const auditorResult =
+              return reject(err);
+            }
+
+            const auditorResult =
                 ContractExecutionResult.fromGrpcContractExecutionResponse(
                     auditorResponse,
                 );
-              if (auditorResult.getProofs().length > 0) {
-                const ledgerResult =
-                  ContractExecutionResult.fromGrpcContractExecutionResponse(
-                      response,
-                  );
-                if (this._validateResponses(ledgerResult, auditorResult)) {
-                  resolve(true);
-                }
-              }
-              resolve(false);
-            }
+            const ledgerResult =
+                ContractExecutionResult.fromGrpcContractExecutionResponse(
+                    response,
+                );
+
+            const isConsistent = this._validateResponses(
+                ledgerResult,
+                auditorResult,
+            );
+
+            resolve(isConsistent);
           },
       );
     });
@@ -603,6 +604,13 @@ class ClientServiceBase {
    * @throws {ClientError}
    */
   _validateResponses(result1, result2) {
+    if (
+      (result1.getProofs().length === 0 || result2.getProofs().length === 0) &&
+      (result1.getProofs().length !== result2.getProofs().length)
+    ) {
+      return false;
+    }
+
     // We assume that JSON.parse() creates the identically-ordered object
     // in fromGrpcContractExecutionResponse() if the execution result is same.
     if (JSON.stringify(result1.getResult()) !==
