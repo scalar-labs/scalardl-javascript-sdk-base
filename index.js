@@ -604,13 +604,6 @@ class ClientServiceBase {
    * @throws {ClientError}
    */
   _validateResponses(result1, result2) {
-    if (
-      (result1.getProofs().length === 0 || result2.getProofs().length === 0) &&
-      (result1.getProofs().length !== result2.getProofs().length)
-    ) {
-      return false;
-    }
-
     // We assume that JSON.parse() creates the identically-ordered object
     // in fromGrpcContractExecutionResponse() if the execution result is same.
     if (JSON.stringify(result1.getResult()) !==
