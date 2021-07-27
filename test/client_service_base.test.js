@@ -36,7 +36,8 @@ const clientProperties = {
       'BgEFBQcBAQQlMCMwIQYIKwYBBQUHMAGGFWh0dHA6Ly9sb2NhbGhvc3Q6ODg4OTAq\n' +
       'BgNVHR8EIzAhMB+gHaAbhhlodHRwOi8vbG9jYWxob3N0Ojg4ODgvY3JsMAoGCCqG\n' +
       'SM49BAMCA0cAMEQCIC/Bo4oNU6yHFLJeme5ApxoNdyu3rWyiqWPxJmJAr9L0AiBl\n' +
-      'Gc/v+yh4dHIDhCrimajTQAYOG9n0kajULI70Gg7TNw==\n-----END CERTIFICATE-----\n',
+      'Gc/v+yh4dHIDhCrimajTQAYOG9n0kajULI70Gg7TNw==\n' +
+      '-----END CERTIFICATE-----\n',
   'scalar.dl.client.cert_holder_id': 'hold',
   'scalar.dl.client.cert_version': 1,
 };
@@ -431,7 +432,11 @@ describe('Class ClientServiceBase', () => {
                 {}, // properties
             );
             await expect(
-                clientServiceBase.validateLedger('whatever', 0, 100000000000000000),
+                clientServiceBase.validateLedger(
+                    'whatever',
+                    0,
+                    100000000000000000,
+                ),
             ).to.be.rejected;
           },
       );
@@ -657,14 +662,14 @@ describe('Class ClientServiceBase', () => {
         const toObject = sinon.stub().returns(status);
         const GrpcStatusObject = {'toObject': toObject};
         const deserializeBinaryStub = sinon.stub().
-        withArgs(status).
-        returns(GrpcStatusObject);
+            withArgs(status).
+            returns(GrpcStatusObject);
         const GrpcStatus = {'deserializeBinary': deserializeBinaryStub};
         const protobuf = {'Status': GrpcStatus};
         const clientServiceBase = new ClientServiceBase(
             services, protobuf, clientProperties);
         environmentStub = sinon.stub(clientServiceBase, '_isNodeJsRuntime').
-        returns(true);
+            returns(true);
         const binaryStatus = [status];
         const errorStub = new Error();
         const metadataStub = {
@@ -674,7 +679,7 @@ describe('Class ClientServiceBase', () => {
         errorStub.metadata = metadataStub;
         const getStub = sinon.stub(metadataStub, 'get');
         getStub.withArgs(ClientServiceBase.binaryStatusKey).
-        returns(binaryStatus);
+            returns(binaryStatus);
 
         try {
           const promise = new Promise((resolve, reject) => {
@@ -692,14 +697,14 @@ describe('Class ClientServiceBase', () => {
         const toObject = sinon.stub().returns(status);
         const GrpcStatusObject = {'toObject': toObject};
         const deserializeBinaryStub = sinon.stub().
-        withArgs(status).
-        returns(GrpcStatusObject);
+            withArgs(status).
+            returns(GrpcStatusObject);
         const GrpcStatus = {'deserializeBinary': deserializeBinaryStub};
         const protobuf = {'Status': GrpcStatus};
         const clientServiceBase = new ClientServiceBase(
             services, protobuf, clientProperties);
         environmentStub = sinon.stub(clientServiceBase, '_isNodeJsRuntime').
-        returns(false);
+            returns(false);
         const metadata = {};
         metadata[ClientServiceBase.binaryStatusKey] = status;
         const errorStub = new Error('bar message');
@@ -719,7 +724,7 @@ describe('Class ClientServiceBase', () => {
         const clientServiceBase = new ClientServiceBase(
             services, protobuf, clientProperties);
         environmentStub = sinon.stub(clientServiceBase, '_isNodeJsRuntime').
-        returns(false);
+            returns(false);
         const errorStub = new Error('bar message');
         errorStub.metadata = {};
         try {
