@@ -1,2 +1,5 @@
 README.md
 README.png
+.circleci/
+.eslintrc.json
+test/
