@@ -121,6 +121,8 @@ class ClientServiceBase {
    * @throws {ClientError|Error}
    */
   async _registerCertificate(request) {
+    await this._registerToAuditorCertificate(request);
+
     const promise = new Promise((resolve, reject) => {
       this.ledgerPrivileged.registerCert(
           request,
@@ -135,7 +137,6 @@ class ClientServiceBase {
       );
     });
 
-    await this._registerToAuditorCertificate(request);
     return this._executePromise(promise);
   }
 
@@ -226,6 +227,8 @@ class ClientServiceBase {
    * @throws {ClientError|Error}
    */
   async _registerContract(request) {
+    await this._registerToAuditorContract(request);
+
     const promise = new Promise((resolve, reject) => {
       this.ledgerClient.registerContract(
           request,
@@ -240,7 +243,6 @@ class ClientServiceBase {
       );
     });
 
-    await this._registerToAuditorContract(request);
     return this._executePromise(promise);
   }
 
