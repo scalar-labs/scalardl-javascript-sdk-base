@@ -71,6 +71,26 @@ defaultSchema.properties[ClientPropertiesField.AUTHORIZATION_CREDENTIAL] = {
 };
 
 /**
+ * Return a properties object with default values for optinal properties
+ * @return {Object}
+ */
+function defaultProperties() {
+  const properties = {};
+
+  properties[ClientPropertiesField.SERVER_HOST] = 'localhost';
+  properties[ClientPropertiesField.SERVER_PORT] = 50051;
+  properties[ClientPropertiesField.SERVER_PRIVILEGED_PORT] = 50052;
+  properties[ClientPropertiesField.CERT_VERSION] = 1;
+  properties[ClientPropertiesField.TLS_ENABLED] = false;
+  properties[ClientPropertiesField.AUDITOR_ENABLED] = false;
+  properties[ClientPropertiesField.AUDITOR_HOST] = 'localhost';
+  properties[ClientPropertiesField.AUDITOR_PORT] = 40051;
+  properties[ClientPropertiesField.AUDITOR_PRIVILEGED_PORT] = 40052;
+
+  return properties;
+}
+
+/**
  * A class represents client properties object
  */
 class ClientProperties {
@@ -80,6 +100,11 @@ class ClientProperties {
    * @param {Array} oneOf array of string. required properties
    */
   constructor(properties, allOf, oneOf) {
+    properties = {
+      ...defaultProperties(),
+      ...properties, // this object overwrites the upper default properties
+    };
+
     allOf = allOf || [];
     oneOf = oneOf || [];
 
