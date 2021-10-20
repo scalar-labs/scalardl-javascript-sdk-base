@@ -357,9 +357,50 @@ class ClientServiceBase {
    */
   async validateLedger(assetId, startAge = ClientServiceBase.minAge,
       endAge = ClientServiceBase.maxAge) {
-    const request = await this._createLedgerValidationRequest(assetId, startAge,
-        endAge);
-    return this._validateLedger(request);
+    const properties = new ClientProperties(this.properties, [], []);
+
+    if (properties.getAuditorEnabled() &&
+      properties.getAuditorLinearizableValidationEnabled
+    ) {
+      return this._validateLedgerWithContractExecution(
+          assetId,
+          endAge,
+          properties.getAuditorLinearizableValidationContractId(),
+      );
+    } else {
+      const request = await this._createLedgerValidationRequest(
+          assetId,
+          startAge,
+          endAge,
+      );
+      return this._validateLedger(request);
+    }
+  }
+
+  /**
+   * @param {string} assetId
+   * @param {number} age
+   * @param {string} contractId
+   */
+  async _validateLedgerWithContractExecution(assetId, age, contractId) {
+    const argument = {
+      'asset_id': assetId,
+    };
+
+    if (age !== 0x7fffffff) { // Integer.MAX_VALUE in Java
+      argument['age'] = age;
+    }
+
+    const result = await this.executeContract(contractId, argument);
+
+    const ledgerProofs = result.getProofs();
+    const auditorProofs = result.getAuditorProofs();
+
+    return new LedgerValidationResult(
+        StatusCode.OK,
+        ledgerProofs.length > 0 ? ledgerProofs[0] : null,
+        auditorProofs.length > 0 ? ledgerProofs[0] : null,
+    );
   }
 
   /**
@@ -435,10 +476,29 @@ class ClientServiceBase {
               return reject(err);
             }
 
+            if (!this._isAuditorEnabled()) {
+              return resolve(
+                  ContractExecutionResult.fromGrpcContractExecutionResponse(
+                      response,
+                  ),
+              );
+            }
+
             try {
-              const isConsistent = await this._executeValidation(
+              const auditorResponse = await this._validateExecution(
                   ordered,
                   response,
+              );
+
+              const ledgerResult = ContractExecutionResult
+                  .fromGrpcContractExecutionResponse(response);
+
+              const auditorResult = ContractExecutionResult
+                  .fromGrpcContractExecutionResponse(auditorResponse);
+
+              const isConsistent = this._validateResponses(
+                  ledgerResult,
+                  auditorResult,
               );
 
               if (!isConsistent) {
@@ -448,11 +508,11 @@ class ClientServiceBase {
                 ));
               }
 
-              return resolve(
-                  ContractExecutionResult.fromGrpcContractExecutionResponse(
-                      response,
-                  ),
-              );
+              return resolve(new ContractExecutionResult(
+                  ledgerResult.getResult(),
+                  ledgerResult.getProofs(),
+                  auditorResult.getProofs(),
+              ));
             } catch (err) {
               return reject(err);
             }
@@ -561,38 +621,21 @@ class ClientServiceBase {
 
   /**
    * @param {ContractExecutionRequest} request
-   * @param {ContractExecutionResponse} response
-   * @return {Boolean} return false if Auditor is enabled and the results
-   * from Ledger and Auditor don't match
+   * @param {ContractExecutionResponse} ledgerResponse
+   * @return {Promise<ContractExecutionResponse>}
+   *   the response from the execution validation from the auditor
    */
-  async _executeValidation(request, response) {
-    if (!this._isAuditorEnabled()) {
-      return true;
-    }
+  async _validateExecution(request, ledgerResponse) {
     const promise = new Promise((resolve, reject) => {
       this.auditorClient.validateExecution(
-          this._createExecutionValidationRequest(request, response),
+          this._createExecutionValidationRequest(request, ledgerResponse),
           this.metadata,
           (err, auditorResponse) => {
             if (err) {
-              return reject(err);
+              reject(err);
+            } else {
+              resolve(auditorResponse);
             }
-
-            const auditorResult =
-                ContractExecutionResult.fromGrpcContractExecutionResponse(
-                    auditorResponse,
-                );
-            const ledgerResult =
-                ContractExecutionResult.fromGrpcContractExecutionResponse(
-                    response,
-                );
-
-            const isConsistent = this._validateResponses(
-                ledgerResult,
-                auditorResult,
-            );
-
-            resolve(isConsistent);
           },
       );
     });

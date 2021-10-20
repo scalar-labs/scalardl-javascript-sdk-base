@@ -742,5 +742,142 @@ describe('Class ClientServiceBase', () => {
         }
       });
     });
+
+    describe('validateLedger linearizably', () => {
+      it('should work as expected', async () => {
+        // prepare
+        const mockedSigner = {
+          sign: function() {},
+        };
+
+        const mockedProtobuf = {
+          ContractExecutionRequest: () => ({
+            setContractId: function() {},
+            setContractArgument: function() {},
+            setCertHolderId: function() {},
+            setCertVersion: function() {},
+            setFunctionArgument: function() {},
+            setSignature: function() {},
+            setAuditorSignature: function() {},
+          }),
+          ExecutionValidationRequest: () => ({
+            setRequest: function() {},
+            setProofsList: function() {},
+          }),
+        };
+
+        const mockedLedgerClient = {
+          executeContract: (_, __, callback) => {
+            callback(null, {
+              getResult: () => '',
+              getProofsList: () => [{
+                getAssetId: () => 'foo',
+                getAge: () => 1,
+                getHash_asU8: () => new Uint8Array([0, 0, 0]),
+                getNonce: () => 'nonce',
+                getSignature_asU8: () => new Uint8Array([1, 2, 3]),
+              }],
+            });
+          },
+        };
+
+        const mockedAuditorClient = {
+          orderExecution: (_, __, callback) => {
+            callback(null, {
+              getSignature: () => null,
+            });
+          },
+          validateExecution: (_, __, callback) => {
+            callback(null, {
+              getResult: () => '',
+              getProofsList: () => [{
+                getAssetId: () => 'foo',
+                getAge: () => 1,
+                getHash_asU8: () => new Uint8Array([0, 0, 0]),
+                getNonce: () => 'nonce',
+                getSignature_asU8: () => new Uint8Array([1, 2, 3]),
+              }],
+            });
+          },
+        };
+
+        const clientServiceBase = new ClientServiceBase(
+            {
+              ledgerClient: mockedLedgerClient,
+              auditorClient: mockedAuditorClient,
+              signerFactory: {
+                create: () => mockedSigner,
+              },
+            },
+            mockedProtobuf,
+            {
+              ...clientProperties,
+              'scalar.dl.client.auditor.enabled': true,
+              'scalar.dl.client.auditor.linearizable_validation.enable': true,
+            },
+        );
+
+        const spiedContractExecutionRequest = sinon.spy(
+            mockedProtobuf,
+            'ContractExecutionRequest',
+        );
+
+        const spiedExecuteContract = sinon.spy(
+            mockedLedgerClient,
+            'executeContract',
+        );
+
+        const spiedOrderExecution = sinon.spy(
+            mockedAuditorClient,
+            'orderExecution',
+        );
+
+        const spiedValidateExecution = sinon.spy(
+            mockedAuditorClient,
+            'validateExecution',
+        );
+
+        const spiedExecutionValidationRequest = sinon.spy(
+            mockedProtobuf,
+            'ExecutionValidationRequest',
+        );
+
+        const spiedSign = sinon.spy(mockedSigner, 'sign');
+
+        // act
+        const response = await clientServiceBase.validateLedger('foo');
+
+        // assert
+        assert(spiedContractExecutionRequest.calledOnce);
+        assert(spiedExecutionValidationRequest.calledOnce);
+        assert(spiedExecuteContract.calledOnce);
+        assert(spiedOrderExecution.calledOnce);
+        assert(spiedValidateExecution.calledOnce);
+        assert(spiedSign.calledOnce);
+
+        assert.instanceOf(response, LedgerValidationResult);
+
+        const ledgerProof = response.getProof();
+        const auditorProof = response.getAuditorProof();
+
+        assert.equal(ledgerProof.getId(), 'foo');
+        assert.equal(ledgerProof.getAge(), 1);
+        assert.deepEqual(ledgerProof.getHash(), new Uint8Array([0, 0, 0]));
+        assert.equal(ledgerProof.getNonce(), 'nonce');
+        assert.deepEqual(
+            ledgerProof.getSignature(),
+            new Uint8Array([1, 2, 3]),
+        );
+
+        assert.equal(auditorProof.getId(), 'foo');
+        assert.equal(auditorProof.getAge(), 1);
+        assert.deepEqual(auditorProof.getHash(), new Uint8Array([0, 0, 0]));
+        assert.equal(auditorProof.getNonce(), 'nonce');
+        assert.deepEqual(
+            auditorProof.getSignature(),
+            new Uint8Array([1, 2, 3]),
+        );
+      });
+    });
   });
 });

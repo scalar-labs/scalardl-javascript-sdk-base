@@ -147,4 +147,52 @@ describe('ClientProperties', () => {
     assert.equal(true, properties.getTlsEnabled());
     assert.equal(true, properties.getAuditorEnabled());
   });
+
+  it('should have default linearizable properties', () => {
+    const properties = new ClientProperties({}, [], []);
+    assert.equal(false, properties.getAuditorLinearizableValidationEnabled());
+    assert.equal(
+        'validate-ledger',
+        properties.getAuditorLinearizableValidationContractId(),
+    );
+  });
+
+  it(
+      'should be able to configure linearizable properties in auditor mode',
+      () => {
+        const properties = new ClientProperties({
+          'scalar.dl.client.auditor.enabled': true,
+          'scalar.dl.client.auditor.linearizable_validation.enabled': true,
+          'scalar.dl.client.auditor.linearizable_validation.contract_id': 'foo',
+        }, [], []);
+        assert.equal(
+            true,
+            properties.getAuditorLinearizableValidationEnabled(),
+        );
+        assert.equal(
+            'foo',
+            properties.getAuditorLinearizableValidationContractId(),
+        );
+      },
+  );
+
+  it(
+      'should not be able to configure linearizable properties ' +
+      'if it is not in auditor mode',
+      () => {
+        const properties = new ClientProperties({
+          'scalar.dl.client.auditor.enabled': false,
+          'scalar.dl.client.auditor.linearizable_validation.enabled': true,
+          'scalar.dl.client.auditor.linearizable_validation.contract_id': 'foo',
+        }, [], []);
+        assert.equal(
+            false,
+            properties.getAuditorLinearizableValidationEnabled(),
+        );
+        assert.equal(
+            'validate-ledger',
+            properties.getAuditorLinearizableValidationContractId(),
+        );
+      },
+  );
 });
