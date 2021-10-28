@@ -14,6 +14,10 @@ const ClientPropertiesField = {
   AUDITOR_HOST: 'scalar.dl.client.auditor.host',
   AUDITOR_PORT: 'scalar.dl.client.auditor.port',
   AUDITOR_PRIVILEGED_PORT: 'scalar.dl.client.auditor.privileged_port',
+  AUDITOR_LINEARIZABLE_VALIDATION_ENABLED:
+    'scalar.dl.client.auditor.linearizable_validation.enabled',
+  AUDITOR_LINEARIZABLE_VALIDATION_CONTRACT_ID:
+    'scalar.dl.client.auditor.linearizable_validation.contract_id',
   TLS_CA_ROOT_CERT_PEM: 'scalar.dl.client.tls.ca_root_cert_pem',
   TLS_ENABLED: 'scalar.dl.client.tls.enabled',
   AUTHORIZATION_CREDENTIAL: 'scalar.dl.client.authorization.credential',
@@ -60,6 +64,16 @@ defaultSchema.properties[ClientPropertiesField.AUDITOR_PORT] = {
 defaultSchema.properties[ClientPropertiesField.AUDITOR_PRIVILEGED_PORT] = {
   'type': 'number',
 };
+defaultSchema.properties[
+    ClientPropertiesField.AUDITOR_LINEARIZABLE_VALIDATION_ENABLED
+] = {
+  type: 'boolean',
+};
+defaultSchema.properties[
+    ClientPropertiesField.AUDITOR_LINEARIZABLE_VALIDATION_CONTRACT_ID
+] = {
+  type: 'string',
+};
 defaultSchema.properties[ClientPropertiesField.TLS_CA_ROOT_CERT_PEM] = {
   'type': 'string',
 };
@@ -86,6 +100,12 @@ function defaultProperties() {
   properties[ClientPropertiesField.AUDITOR_HOST] = 'localhost';
   properties[ClientPropertiesField.AUDITOR_PORT] = 40051;
   properties[ClientPropertiesField.AUDITOR_PRIVILEGED_PORT] = 40052;
+  properties[
+      ClientPropertiesField.AUDITOR_LINEARIZABLE_VALIDATION_ENABLED
+  ] = false;
+  properties[
+      ClientPropertiesField.AUDITOR_LINEARIZABLE_VALIDATION_CONTRACT_ID
+  ] = 'validate-ledger';
 
   return properties;
 }
@@ -100,8 +120,10 @@ class ClientProperties {
    * @param {Array} oneOf array of string. required properties
    */
   constructor(properties, allOf, oneOf) {
+    const theDefaultProperties = defaultProperties();
+
     properties = {
-      ...defaultProperties(),
+      ...theDefaultProperties,
       ...properties, // this object overwrites the upper default properties
     };
 
@@ -127,6 +149,21 @@ class ClientProperties {
               'In the client properties:',
           ),
       );
+    }
+
+    if (properties[ClientPropertiesField.AUDITOR_ENABLED] !== true) {
+      properties[
+          ClientPropertiesField.AUDITOR_LINEARIZABLE_VALIDATION_ENABLED
+      ] =
+        theDefaultProperties[
+            ClientPropertiesField.AUDITOR_LINEARIZABLE_VALIDATION_ENABLED
+        ];
+      properties[
+          ClientPropertiesField.AUDITOR_LINEARIZABLE_VALIDATION_CONTRACT_ID
+      ] =
+        theDefaultProperties[
+            ClientPropertiesField.AUDITOR_LINEARIZABLE_VALIDATION_CONTRACT_ID
+        ];
     }
 
     this.properties = properties;
@@ -214,6 +251,24 @@ class ClientProperties {
    */
   getAuditorPrivilegedPort() {
     return this.properties[ClientPropertiesField.AUDITOR_PRIVILEGED_PORT];
+  }
+
+  /**
+   * @return {Boolean}
+   */
+  getAuditorLinearizableValidationEnabled() {
+    return this.properties[
+        ClientPropertiesField.AUDITOR_LINEARIZABLE_VALIDATION_ENABLED
+    ];
+  }
+
+  /**
+   * @return {String}
+   */
+  getAuditorLinearizableValidationContractId() {
+    return this.properties[
+        ClientPropertiesField.AUDITOR_LINEARIZABLE_VALIDATION_CONTRACT_ID
+    ];
   }
 
   /**

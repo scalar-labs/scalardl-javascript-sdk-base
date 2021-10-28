@@ -7,10 +7,12 @@ class ContractExecutionResult {
   /**
    * @param {Object} result
    * @param {Array} proofs
+   * @param {Array} [auditorProofs = []]
    */
-  constructor(result, proofs) {
+  constructor(result, proofs, auditorProofs = []) {
     this.result = result;
     this.proofs = proofs;
+    this.auditorProofs = auditorProofs;
   }
 
   /**
@@ -42,6 +44,13 @@ class ContractExecutionResult {
    */
   getProofs() {
     return this.proofs;
+  }
+
+  /**
+   * @return {Array}
+   */
+  getAuditorProofs() {
+    return this.auditorProofs;
   }
 }
 
