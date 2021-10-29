@@ -1,7 +1,7 @@
 {
   "dependencies": {
-    "ajv": "^6.12.6",
-    "jsrsasign": "^10.0.4",
+    "ajv": "^8.6.3",
+    "jsrsasign": "^10.4.1",
     "uuid": "^8.3.2"
   },
   "name": "@scalar-labs/scalardl-javascript-sdk-base",
@@ -13,11 +13,11 @@
   "devDependencies": {
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
-    "eslint": "^7.12.1",
+    "eslint": "^8.1.0",
     "eslint-config-google": "^0.14.0",
-    "mocha": "^8.2.0",
-    "mochawesome": "^6.1.1",
-    "sinon": "^9.2.1"
+    "mocha": "^9.1.3",
+    "mochawesome": "^6.3.1",
+    "sinon": "^11.1.2"
   },
   "scripts": {
     "test": "mocha --reporter mochawesome test/"
