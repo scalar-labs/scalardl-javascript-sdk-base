@@ -3,12 +3,12 @@
  */
 class AssetProof {
   /**
-    * @param {string} id
-    * @param {number} age
-    * @param {Uint8Array} hash
-    * @param {string} nonce
-    * @param {Uint8Array} signature
-    */
+   * @param {string} id
+   * @param {number} age
+   * @param {Uint8Array} hash
+   * @param {string} nonce
+   * @param {Uint8Array} signature
+   */
   constructor(id, age, hash, nonce, signature) {
     this.id = id;
     this.age = age;
@@ -89,11 +89,13 @@ class AssetProof {
    * @return {string}
    */
   toString() {
-    return `AssetProof{id=${this.id},` +
-        `age${this.age}},` +
-        `hash=${this.hash},` +
-        `nonce=${this.nonce},` +
-        `signature=${this.signature}}`;
+    return (
+      `AssetProof{id=${this.id},` +
+      `age${this.age}},` +
+      `hash=${this.hash},` +
+      `nonce=${this.nonce},` +
+      `signature=${this.signature}}`
+    );
   }
 }
 

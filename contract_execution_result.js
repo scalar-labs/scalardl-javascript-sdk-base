@@ -21,14 +21,13 @@ class ContractExecutionResult {
    */
   static fromGrpcContractExecutionResponse(response) {
     const resultInString = response.getResult();
-    const resultInObject = (resultInString) ?
-      JSON.parse(resultInString) : {};
+    const resultInObject = resultInString ? JSON.parse(resultInString) : {};
 
     return new ContractExecutionResult(
         resultInObject,
-        response.getProofsList().map(
-            (proof) => AssetProof.fromGrpcAssetProof(proof),
-        ),
+        response
+            .getProofsList()
+            .map((proof) => AssetProof.fromGrpcAssetProof(proof)),
     );
   }
 
