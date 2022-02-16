@@ -829,10 +829,12 @@ describe('Class ClientServiceBase', () => {
           sign: function() {},
         };
 
+        const spiedSetContractArgument = sinon.spy();
+
         const mockedProtobuf = {
           ContractExecutionRequest: () => ({
             setContractId: function() {},
-            setContractArgument: function() {},
+            setContractArgument: spiedSetContractArgument,
             setCertHolderId: function() {},
             setCertVersion: function() {},
             setFunctionArgument: function() {},
@@ -937,6 +939,19 @@ describe('Class ClientServiceBase', () => {
         assert(spiedOrderExecution.calledOnce);
         assert(spiedValidateExecution.calledOnce);
         assert(spiedSign.calledOnce);
+
+        assert(spiedSetContractArgument.getCall(0));
+        assert(JSON.parse(spiedSetContractArgument.getCall(0).firstArg));
+        assert(
+            'start_age' in JSON.parse(
+                spiedSetContractArgument.getCall(0).firstArg,
+            ),
+        );
+        assert(
+            'end_age' in JSON.parse(
+                spiedSetContractArgument.getCall(0).firstArg,
+            ),
+        );
 
         assert.instanceOf(response, LedgerValidationResult);
 
