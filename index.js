@@ -357,13 +357,21 @@ class ClientServiceBase {
    */
   async validateLedger(assetId, startAge = ClientServiceBase.minAge,
       endAge = ClientServiceBase.maxAge) {
-    const properties = new ClientProperties(this.properties, [], []);
+    if (!(endAge >= startAge && startAge >= ClientServiceBase.minAge &&
+          endAge <= ClientServiceBase.maxAge)) {
+      throw new ClientError(
+          StatusCode.CLIENT_RUNTIME_ERROR,
+          'invalid ages are specified',
+      );
+    }
 
+    const properties = new ClientProperties(this.properties, [], []);
     if (properties.getAuditorEnabled() &&
       properties.getAuditorLinearizableValidationEnabled
     ) {
       return this._validateLedgerWithContractExecution(
           assetId,
+          startAge,
           endAge,
           properties.getAuditorLinearizableValidationContractId(),
       );
@@ -379,17 +387,19 @@ class ClientServiceBase {
 
   /**
    * @param {string} assetId
-   * @param {number} age
+   * @param {number} startAge
+   * @param {number} endAge
    * @param {string} contractId
    */
-  async _validateLedgerWithContractExecution(assetId, age, contractId) {
+  async _validateLedgerWithContractExecution(
+      assetId, startAge, endAge, contractId,
+  ) {
     const argument = {
       'asset_id': assetId,
     };
 
-    if (age !== 0x7fffffff) { // Integer.MAX_VALUE in Java
-      argument['age'] = age;
-    }
+    argument['start_age'] = startAge;
+    argument['end_age'] = endAge;
 
     const result = await this.executeContract(contractId, argument);
 
@@ -865,13 +875,6 @@ class ClientServiceBase {
    * @throws {ClientError|Error}
    */
   async _createLedgerValidationRequest(assetId, startAge, endAge) {
-    if (!(endAge >= startAge && startAge >= ClientServiceBase.minAge &&
-      endAge <= ClientServiceBase.maxAge)) {
-      throw new ClientError(
-          StatusCode.CLIENT_RUNTIME_ERROR,
-          'invalid ages are specified',
-      );
-    }
     const properties = new ClientProperties(
         this.properties,
         [
