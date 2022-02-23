@@ -4,6 +4,9 @@
     "jsrsasign": "^10.4.1",
     "uuid": "^8.3.2"
   },
+  "engine": {
+    "node": ">=16.0.0"
+  },
   "name": "@scalar-labs/scalardl-javascript-sdk-base",
   "repository": "https://github.com/scalar-labs/scalardl-javascript-sdk-base",
   "version": "3.4.0",
