@@ -1,22 +1,4 @@
-const jsrsasign = require('jsrsasign');
-
-/**
- * An internal class to encode utf8 string to Uint8Array
- * @class
- */
-class TextEncoder {
-  /**
-   * To encode utf8 to Uint8Array
-   * @param {string} string
-   * @return {Uint8Array}
-   */
-  encode(string) {
-    return !string ?
-        new Uint8Array() :
-        new Uint8Array(
-            jsrsasign.hextoArrayBuffer(jsrsasign.utf8tohex(string)));
-  }
-}
+const {TextEncoder} = require('../polyfill/text_encoder');
 
 /**
  * An internal class to validate input
@@ -33,14 +15,15 @@ class Validator {
       return;
     }
 
-    if (type.name === 'Uint8Array' && (input instanceof Uint8Array)) {
+    if (type.name === 'Uint8Array' && input instanceof Uint8Array) {
       return;
     }
 
-    if (typeof input === 'undefined' ||
-        input === null ||
-        input.constructor !== type ||
-        (input.constructor === Number && input < 0)
+    if (
+      typeof input === 'undefined' ||
+      input === null ||
+      input.constructor !== type ||
+      (input.constructor === Number && input < 0)
     ) {
       throw new Error('Specified argument is illegal.');
     }
@@ -279,19 +262,25 @@ class ContractRegistrationRequestBuilder {
 
     const contractId = new TextEncoder('utf-8').encode(this.contractId);
     const contractBinaryName = new TextEncoder('utf-8').encode(
-        this.contractBinaryName);
+        this.contractBinaryName,
+    );
     const contractBytes = this.contractByteCode;
     const contractProperties = new TextEncoder('utf-8').encode(
-        this.contractProperties);
+        this.contractProperties,
+    );
     const certHolderId = new TextEncoder('utf-8').encode(this.certHolderId);
     const view = new DataView(new ArrayBuffer(4));
     view.setUint32(0, this.certVersion);
     const certVersion = new Uint8Array(view.buffer);
 
     const buffer = new Uint8Array(
-        contractId.byteLength + contractBinaryName.byteLength +
-        contractBytes.byteLength + contractProperties.byteLength +
-        certHolderId.byteLength + certVersion.byteLength);
+        contractId.byteLength +
+        contractBinaryName.byteLength +
+        contractBytes.byteLength +
+        contractProperties.byteLength +
+        certHolderId.byteLength +
+        certVersion.byteLength,
+    );
 
     let offset = 0;
     buffer.set(contractId, offset);
@@ -382,8 +371,10 @@ class ContractsListingRequestBuilder {
     const contractIdEncoded = new TextEncoder('utf-8').encode(this.contractId);
 
     const buffer = new Uint8Array(
-        contractIdEncoded.byteLength + certHolderId.byteLength +
-        certVersion.byteLength);
+        contractIdEncoded.byteLength +
+        certHolderId.byteLength +
+        certVersion.byteLength,
+    );
     let offset = 0;
 
     buffer.set(contractIdEncoded, offset);
@@ -502,7 +493,8 @@ class LedgerValidationRequestBuilder {
         startAge.byteLength +
         endAge.byteLength +
         certHolderId.byteLength +
-        certVersion.byteLength);
+        certVersion.byteLength,
+    );
     let offset = 0;
     buffer.set(assetId_, offset);
     offset += assetId_.byteLength;
@@ -610,15 +602,19 @@ class ContractExecutionRequestBuilder {
 
     const contractIdEncoded = new TextEncoder('utf-8').encode(this.contractId);
     const contractArgument = new TextEncoder('utf-8').encode(
-        this.contractArgument);
+        this.contractArgument,
+    );
     const certHolderId = new TextEncoder('utf-8').encode(this.certHolderId);
     const view = new DataView(new ArrayBuffer(4));
     view.setUint32(0, this.certVersion);
     const certVersion = new Uint8Array(view.buffer);
 
     const buffer = new Uint8Array(
-        contractIdEncoded.byteLength + contractArgument.byteLength +
-        certHolderId.byteLength + certVersion.byteLength);
+        contractIdEncoded.byteLength +
+        contractArgument.byteLength +
+        certHolderId.byteLength +
+        certVersion.byteLength,
+    );
     let offset = 0;
     buffer.set(contractIdEncoded, offset);
     offset += contractIdEncoded.byteLength;
