@@ -1,3 +1,5 @@
+const {TextEncoder} = require('./polyfill/text_encoder');
+
 /**
  * @public
  */
@@ -5,15 +7,19 @@ class AssetProof {
   /**
    * @param {string} id
    * @param {number} age
-   * @param {Uint8Array} hash
    * @param {string} nonce
+   * @param {string} input
+   * @param {Uint8Array} hash
+   * @param {Uint8Array} prevHash
    * @param {Uint8Array} signature
    */
-  constructor(id, age, hash, nonce, signature) {
+  constructor(id, age, nonce, input, hash, prevHash, signature) {
     this.id = id;
     this.age = age;
-    this.hash = hash;
     this.nonce = nonce;
+    this.input = input;
+    this.hash = hash;
+    this.prevHash = prevHash;
     this.signature = signature;
   }
 
@@ -25,9 +31,11 @@ class AssetProof {
     return new AssetProof(
         proof.getAssetId(),
         proof.getAge(),
-        proof.getHash_asU8() || new Uint8Array(),
         proof.getNonce(),
-        proof.getSignature_asU8() || new Uint8Array(),
+        proof.getInput(),
+        proof.getHash_asU8(),
+        proof.getPrevHash_asU8(),
+        proof.getSignature_asU8(),
     );
   }
 
@@ -53,10 +61,24 @@ class AssetProof {
   }
 
   /**
+   * @return {Uint8Array}
+   */
+  getPrevHash() {
+    return this.prevHash;
+  }
+
+  /**
    * @return {string}
    */
   getNonce() {
     return this.nonce;
+  }
+
+  /**
+   * @return {string}
+   */
+  getInput() {
+    return this.input;
   }
 
   /**
@@ -67,8 +89,9 @@ class AssetProof {
   }
 
   /**
+   * @deprecated
    * @param {Uint8Array} hash
-   * @return {Boolean}
+   * @return {boolean}
    */
   hashEquals(hash) {
     if (!(hash instanceof Uint8Array)) {
@@ -86,17 +109,118 @@ class AssetProof {
   }
 
   /**
+   * @param {AssetProof} other
+   * @return {boolean}
+   */
+  valueEquals(other) {
+    if (!(other instanceof AssetProof)) {
+      return false;
+    }
+
+    return (
+      other.getId() === this.getId() &&
+      other.getAge() === this.getAge() &&
+      other.getNonce() === this.getNonce() &&
+      other.getInput() === this.getInput() &&
+      other.getHash().length === this.getHash().length &&
+      other.getHash().every((e, i) => e === this.getHash()[i]) &&
+      other.getPrevHash().length === this.getPrevHash().length &&
+      other.getPrevHash().every((e, i) => e === this.getPrevHash()[i])
+    );
+  }
+
+  /**
    * @return {string}
    */
   toString() {
     return (
       `AssetProof{id=${this.id},` +
-      `age${this.age}},` +
+      `age=${this.age},` +
       `hash=${this.hash},` +
       `nonce=${this.nonce},` +
-      `signature=${this.signature}}`
+      `input=${this.input},` +
+      `hash=${uint8ArrayToBase64(this.hash)},` +
+      `prev_hash=${uint8ArrayToBase64(this.prevHash)},` +
+      `signature=${uint8ArrayToBase64(this.signature)}}`
     );
   }
+
+  /**
+   * @param {Validator} validator
+   * @throws {Error}
+   */
+  validateWith(validator) {
+    const serilized = serialize(
+        this.id,
+        this.age,
+        this.nonce,
+        this.input,
+        this.hash,
+        this.prevHash,
+    );
+
+    if (!validator.validate(serilized, this.signature)) {
+      throw new Error(
+          'The proof signature can\'t be validated with the certificate.',
+      );
+    }
+  }
+}
+
+/**
+ * @param {Uint8Array} array
+ * @return {string}
+ */
+function uint8ArrayToBase64(array) {
+  return btoa(
+      Array(array.length)
+          .fill('')
+          .map((_, i) => String.fromCharCode(array[i]))
+          .join(''),
+  );
+}
+
+/**
+ *
+ * @param {string} id
+ * @param {number} age
+ * @param {string} nonce
+ * @param {string} input
+ * @param {Uint8Array} hash
+ * @param {Uint8Array} prevHash
+ * @return {Uint8Array}
+ */
+function serialize(id, age, nonce, input, hash, prevHash) {
+  const idBytes = new TextEncoder('utf-8').encode(id);
+  const view = new DataView(new ArrayBuffer(4));
+  view.setUint32(0, age);
+  const ageBytes = new Uint8Array(view.buffer);
+  const nonceBytes = new TextEncoder('utf-8').encode(nonce);
+  const inputBytes = new TextEncoder('utf-8').encode(input);
+
+  const buffer = new Uint8Array(
+      idBytes.byteLength +
+      ageBytes.byteLength +
+      nonceBytes.byteLength +
+      inputBytes.byteLength +
+      hash.byteLength +
+      prevHash.byteLength,
+  );
+
+  let offset = 0;
+  buffer.set(idBytes, 0);
+  offset += idBytes.byteLength;
+  buffer.set(ageBytes, offset);
+  offset += ageBytes.byteLength;
+  buffer.set(nonceBytes, offset);
+  offset += nonceBytes.byteLength;
+  buffer.set(inputBytes, offset);
+  offset += inputBytes.byteLength;
+  buffer.set(hash, offset);
+  offset += hash.byteLength;
+  buffer.set(prevHash, offset);
+
+  return buffer;
 }
 
 module.exports = {

@@ -477,8 +477,10 @@ describe('validateLedger', () => {
                 getAssetId: () => 'asset-id',
                 getAge: () => 1,
                 getHash_asU8: () => new Uint8Array([1, 2, 3]),
+                getPrevHash_asU8: () => new Uint8Array([1, 2, 3]),
                 getNonce: () => 'nonce',
-                getSignature_asU8: () => null,
+                getInput: () => 'input',
+                getSignature_asU8: () => new Uint8Array([1, 2, 3]),
               };
               const mockedResponse = {
                 getStatusCode: () => 0,
@@ -533,8 +535,10 @@ describe('validateLedger', () => {
     expect(assetProof.getId()).toEqual('asset-id');
     expect(assetProof.getAge()).toEqual(1);
     expect(assetProof.getHash()).toEqual(new Uint8Array([1, 2, 3]));
+    expect(assetProof.getPrevHash()).toEqual(new Uint8Array([1, 2, 3]));
     expect(assetProof.getNonce()).toEqual('nonce');
-    expect(assetProof.getSignature()).toEqual(new Uint8Array());
+    expect(assetProof.getInput()).toEqual('input');
+    expect(assetProof.getSignature()).toEqual(new Uint8Array([1, 2, 3]));
   });
 });
 
@@ -580,8 +584,10 @@ describe('executeContract', () => {
               const mockProof = {
                 getAssetId: () => 'asset-id',
                 getAge: () => 1,
-                getHash_asU8: () => null,
+                getHash_asU8: () => new Uint8Array([1, 2, 3]),
+                getPrevHash_asU8: () => new Uint8Array([1, 2, 3]),
                 getNonce: () => 'nonce',
+                getInput: () => 'input',
                 getSignature_asU8: () => new Uint8Array([1, 2, 3]),
               };
               const mockedResponse = {
@@ -661,8 +667,10 @@ describe('executeContract', () => {
     const assetProof = response.getProofs()[0];
     expect(assetProof.getId()).toEqual('asset-id');
     expect(assetProof.getAge()).toEqual(1);
-    expect(assetProof.getHash()).toEqual(new Uint8Array());
+    expect(assetProof.getHash()).toEqual(new Uint8Array([1, 2, 3]));
+    expect(assetProof.getPrevHash()).toEqual(new Uint8Array([1, 2, 3]));
     expect(assetProof.getNonce()).toEqual('nonce');
+    expect(assetProof.getInput()).toEqual('input');
     expect(assetProof.getSignature()).toEqual(new Uint8Array([1, 2, 3]));
   });
 });
@@ -785,7 +793,9 @@ describe('validateLedger linearizably', () => {
               getAssetId: () => 'foo',
               getAge: () => 1,
               getHash_asU8: () => new Uint8Array([0, 0, 0]),
+              getPrevHash_asU8: () => new Uint8Array([0, 0, 0]),
               getNonce: () => 'nonce',
+              getInput: () => 'input',
               getSignature_asU8: () => new Uint8Array([1, 2, 3]),
             },
           ],
@@ -807,7 +817,9 @@ describe('validateLedger linearizably', () => {
               getAssetId: () => 'foo',
               getAge: () => 1,
               getHash_asU8: () => new Uint8Array([0, 0, 0]),
+              getPrevHash_asU8: () => new Uint8Array([0, 0, 0]),
               getNonce: () => 'nonce',
+              getInput: () => 'input',
               getSignature_asU8: () => new Uint8Array([1, 2, 3]),
             },
           ],
@@ -884,12 +896,14 @@ describe('validateLedger linearizably', () => {
     expect(ledgerProof.getId()).toEqual('foo');
     expect(ledgerProof.getAge()).toEqual(1);
     expect(ledgerProof.getHash()).toEqual(new Uint8Array([0, 0, 0]));
+    expect(ledgerProof.getPrevHash()).toEqual(new Uint8Array([0, 0, 0]));
     expect(ledgerProof.getNonce()).toEqual('nonce');
     expect(ledgerProof.getSignature()).toEqual(new Uint8Array([1, 2, 3]));
 
     expect(auditorProof.getId()).toEqual('foo');
     expect(auditorProof.getAge()).toEqual(1);
     expect(auditorProof.getHash()).toEqual(new Uint8Array([0, 0, 0]));
+    expect(auditorProof.getPrevHash()).toEqual(new Uint8Array([0, 0, 0]));
     expect(auditorProof.getNonce()).toEqual('nonce');
     expect(auditorProof.getSignature()).toEqual(new Uint8Array([1, 2, 3]));
   });
