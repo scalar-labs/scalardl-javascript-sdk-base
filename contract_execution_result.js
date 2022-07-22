@@ -5,13 +5,15 @@ const {AssetProof} = require('./asset_proof.js');
  */
 class ContractExecutionResult {
   /**
-   * @param {Object} result
-   * @param {Array} proofs
-   * @param {Array} [auditorProofs = []]
+   * @param {string} contractResult
+   * @param {string} functionResult
+   * @param {AssetProof[]} ledgerProofs
+   * @param {AssetProof[]} auditorProofs
    */
-  constructor(result, proofs, auditorProofs = []) {
-    this.result = result;
-    this.proofs = proofs;
+  constructor(contractResult, functionResult, ledgerProofs, auditorProofs) {
+    this.contractResult = contractResult;
+    this.functionResult = functionResult;
+    this.ledgerProofs = ledgerProofs;
     this.auditorProofs = auditorProofs;
   }
 
@@ -20,33 +22,55 @@ class ContractExecutionResult {
    * @return {ContractExecutionResult}
    */
   static fromGrpcContractExecutionResponse(response) {
-    const resultInString = response.getResult();
-    const resultInObject = resultInString ? JSON.parse(resultInString) : {};
-
     return new ContractExecutionResult(
-        resultInObject,
+        response.getContractresult(),
+        response.getFunctionresult(),
         response
             .getProofsList()
             .map((proof) => AssetProof.fromGrpcAssetProof(proof)),
+        [],
     );
   }
 
   /**
+   * @deprecated
    * @return {Object}
    */
   getResult() {
-    return this.result;
+    return this.contractResult !== '' ? JSON.parse(this.contractResult) : {};
   }
 
   /**
-   * @return {Array}
+   * @return {string}
+   */
+  getContractResult() {
+    return this.contractResult;
+  }
+
+  /**
+   * @return {string}
+   */
+  getFunctionResult() {
+    return this.functionResult;
+  }
+
+  /**
+   * @deprecated
+   * @return {AssetProof[]}
    */
   getProofs() {
-    return this.proofs;
+    return this.ledgerProofs;
   }
 
   /**
-   * @return {Array}
+   * @return {AssetProof[]}
+   */
+  getLedgerProofs() {
+    return this.ledgerProofs;
+  }
+
+  /**
+   * @return {AssetProof[]}
    */
   getAuditorProofs() {
     return this.auditorProofs;

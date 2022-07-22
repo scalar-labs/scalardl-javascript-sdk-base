@@ -591,7 +591,8 @@ describe('executeContract', () => {
                 getSignature_asU8: () => new Uint8Array([1, 2, 3]),
               };
               const mockedResponse = {
-                getResult: () => '',
+                getContractresult: () => '',
+                getFunctionresult: () => '',
                 getProofsList: () => [mockProof],
               };
               callback(null, mockedResponse);
@@ -787,7 +788,8 @@ describe('validateLedger linearizably', () => {
     const mockedLedgerClient = {
       executeContract: (_, __, callback) => {
         callback(null, {
-          getResult: () => '',
+          getContractresult: () => '',
+          getFunctionresult: () => '',
           getProofsList: () => [
             {
               getAssetId: () => 'foo',
@@ -811,7 +813,8 @@ describe('validateLedger linearizably', () => {
       },
       validateExecution: (_, __, callback) => {
         callback(null, {
-          getResult: () => '',
+          getContractresult: () => '',
+          getFunctionresult: () => '',
           getProofsList: () => [
             {
               getAssetId: () => 'foo',

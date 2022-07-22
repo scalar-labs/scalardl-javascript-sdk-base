@@ -520,6 +520,7 @@ class ClientServiceBase {
 
               return resolve(new ContractExecutionResult(
                   ledgerResult.getResult(),
+                  ledgerResult.getFunctionResult(),
                   ledgerResult.getProofs(),
                   auditorResult.getProofs(),
               ));
