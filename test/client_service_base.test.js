@@ -567,6 +567,8 @@ describe('executeContract', () => {
       setCertVersion: function() {},
       setFunctionArgument: function() {},
       setSignature: function() {},
+      setUseFunctionIds: function() {},
+      setFunctionIdsList: function() {},
     };
     const mockedProtobuf = {
       ContractExecutionRequest: function() {
@@ -778,6 +780,8 @@ describe('validateLedger linearizably', () => {
         setFunctionArgument: function() {},
         setSignature: function() {},
         setAuditorSignature: function() {},
+        setUseFunctionIds: function() {},
+        setFunctionIdsList: function() {},
       }),
       ExecutionValidationRequest: () => ({
         setRequest: function() {},

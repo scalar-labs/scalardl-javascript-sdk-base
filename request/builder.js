@@ -524,6 +524,9 @@ class ContractExecutionRequestBuilder {
   constructor(request, signer) {
     this.request = request;
     this.signer = signer;
+
+    this.useFunctionIds = false;
+    this.functionIds = [];
   }
 
   /**
@@ -581,6 +584,24 @@ class ContractExecutionRequestBuilder {
   }
 
   /**
+   * @param {boolean} useFunctionIds
+   * @return {ContractExecutionRequestBuilder}
+   */
+  withUseFunctionIds(useFunctionIds) {
+    this.useFunctionIds = useFunctionIds;
+    return this;
+  }
+
+  /**
+   * @param {string[]} functionIds
+   * @return {ContractExecutionRequestBuilder}
+   */
+  withFunctionIds(functionIds) {
+    this.functionIds = functionIds;
+    return this;
+  }
+
+  /**
    * Builds the ContractExecutionRequest
    * @throws {Error}
    * @return {ContractExecutionRequest}
@@ -592,6 +613,7 @@ class ContractExecutionRequestBuilder {
     validator.validateInput(this.certHolderId, String);
     validator.validateInput(this.certVersion, Number);
     validator.validateInput(this.functionArgument, String, true);
+    validator.validateInput(this.useFunctionIds, Boolean);
 
     const request = this.request;
     request.setContractId(this.contractId);
@@ -599,6 +621,8 @@ class ContractExecutionRequestBuilder {
     request.setCertHolderId(this.certHolderId);
     request.setCertVersion(this.certVersion);
     request.setFunctionArgument(this.functionArgument);
+    request.setUseFunctionIds(this.useFunctionIds);
+    request.setFunctionIdsList(this.functionIds);
 
     const contractIdEncoded = new TextEncoder('utf-8').encode(this.contractId);
     const contractArgument = new TextEncoder('utf-8').encode(
