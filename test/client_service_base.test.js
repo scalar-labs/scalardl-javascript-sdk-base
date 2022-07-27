@@ -569,6 +569,7 @@ describe('executeContract', () => {
       setSignature: function() {},
       setUseFunctionIds: function() {},
       setFunctionIdsList: function() {},
+      setNonce: function() {},
     };
     const mockedProtobuf = {
       ContractExecutionRequest: function() {
@@ -782,6 +783,7 @@ describe('validateLedger linearizably', () => {
         setAuditorSignature: function() {},
         setUseFunctionIds: function() {},
         setFunctionIdsList: function() {},
+        setNonce: function() {},
       }),
       ExecutionValidationRequest: () => ({
         setRequest: function() {},
