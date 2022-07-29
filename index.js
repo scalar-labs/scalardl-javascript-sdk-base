@@ -19,6 +19,7 @@ const {LedgerValidationResult} = require('./ledger_validation_result');
 const {AssetProof} = require('./asset_proof');
 
 const {v4: uuidv4} = require('uuid');
+const {format} = require('./contract_execution_argument');
 
 /**
  * This class handles all client interactions including registering certificates
@@ -459,14 +460,57 @@ class ClientServiceBase {
    * Execute a registered contract
    * @param {string} contractId
    * @param {Object} argument
-   * @param {Object} [functionArgument=undefined]
+   * @param {Object} [functionArgument={}]
    * @return {Promise<ContractExecutionResult|void|*>}
    * @throws {ClientError|Error}
    */
-  async executeContract(contractId, argument, functionArgument) {
+  async executeContract(contractId, argument, functionArgument = {}) {
     const request = await this._createContractExecutionRequest(
-        contractId, argument, functionArgument,
+        contractId,
+        argument,
+        functionArgument,
     );
+    return this._executeContract(request);
+  }
+
+  /**
+   * @param {string} contractId
+   * @param {Object|string} contractArgument
+   * @param {string} [functionId=""]
+   * @param {Object|string} [functionArgument=null]
+   * @param {string} [nonce=null]
+   * @return {Promise<ContractExecutionResult|void|*>}
+   * @throws {ClientError|Error}
+   */
+  async executeContractAndFunction(
+      contractId,
+      contractArgument,
+      functionId = '',
+      functionArgument = null,
+      nonce = null,
+  ) {
+    if (functionArgument === null) {
+      functionArgument = typeof contractArgument === 'object' ? {} : '';
+    }
+
+    if (typeof contractArgument !== typeof functionArgument) {
+      throw Error(
+          'contract argument and function argument must be the same type',
+      );
+    }
+
+    if (nonce === null) {
+      nonce = uuidv4();
+    }
+
+    const request = await this._createContractExecutionRequestV2(
+        contractId,
+        functionId,
+        contractArgument,
+        functionArgument,
+        nonce,
+    );
+
     return this._executeContract(request);
   }
 
@@ -660,26 +704,26 @@ class ClientServiceBase {
    * @throws {ClientError}
    */
   _validateResponses(result1, result2) {
-    // We assume that JSON.parse() creates the identically-ordered object
-    // in fromGrpcContractExecutionResponse() if the execution result is same.
-    if (JSON.stringify(result1.getResult()) !==
-        JSON.stringify(result2.getResult()) ||
-        result1.getProofs().length !== result2.getProofs().length) {
+    if (
+      result1.getContractResult() !== result2.getContractResult() ||
+      result1.getLedgerProofs().length !== result2.getLedgerProofs().length
+    ) {
       return false;
     }
 
     const map = new Map();
-    result1.getProofs().forEach((p) => map.set(p.getId(), p));
-    result2.getProofs().forEach(
-        (p2) => {
-          const p1 = map.get(p2.getId());
-          if (p1 === null || typeof p1 === 'undefined' ||
-              p1.getAge() !== p2.getAge() ||
-              !p1.hashEquals(p2.getHash())) {
-            return false;
-          }
-        },
-    );
+    result1.getLedgerProofs().forEach((p) => map.set(p.getId(), p));
+    result2.getLedgerProofs().forEach((p2) => {
+      const p1 = map.get(p2.getId());
+      if (
+        p1 === null ||
+        typeof p1 === 'undefined' ||
+        p1.getAge() !== p2.getAge() ||
+        !p1.hashEquals(p2.getHash())
+      ) {
+        return false;
+      }
+    });
     return true;
   }
 
@@ -910,12 +954,14 @@ class ClientServiceBase {
   /**
    * @param {string} contractId
    * @param {Object} argument
-   * @param {Object} [functionArgument=undefined]
+   * @param {Object} functionArgument
    * @return {Promise<ContractExecutionRequest>}
    * @throws {ClientError|Error}
    */
   async _createContractExecutionRequest(
-      contractId, argument, functionArgument,
+      contractId,
+      argument,
+      functionArgument,
   ) {
     const properties = new ClientProperties(
         this.properties,
@@ -932,23 +978,82 @@ class ClientServiceBase {
     argument['nonce'] = uuidv4();
     const argumentJson = JSON.stringify(argument);
     const functionArgumentJson = JSON.stringify(functionArgument);
+    const useFunctionIds = argument.hasOwnProperty('_functions_');
 
     const builder = new ContractExecutionRequestBuilder(
         new this.protobuf.ContractExecutionRequest(),
         this._createSigner(properties),
-    ).withContractId(contractId)
+    )
+        .withContractId(contractId)
         .withContractArgument(argumentJson)
         .withFunctionArgument(functionArgumentJson)
         .withCertHolderId(properties.getCertHolderId())
-        .withCertVersion(properties.getCertVersion());
+        .withCertVersion(properties.getCertVersion())
+        .withUseFunctionIds(useFunctionIds)
+        .withFunctionIds(useFunctionIds ? argument['_functions_'] : [])
+        .withNonce(argument['nonce']);
 
     try {
       return builder.build();
     } catch (e) {
-      throw new ClientError(
-          StatusCode.RUNTIME_ERROR,
-          e.message,
-      );
+      throw new ClientError(StatusCode.RUNTIME_ERROR, e.message);
+    }
+  }
+
+  /**
+   * @param {string} contractId
+   * @param {string} functionId
+   * @param {Object|string} contractArgument
+   * @param {Object|string} functionArgument
+   * @param {string} nonce
+   * @return {Promise<ContractExecutionRequest>}
+   * @throws {ClientError|Error}
+   */
+  async _createContractExecutionRequestV2(
+      contractId,
+      functionId,
+      contractArgument,
+      functionArgument,
+      nonce,
+  ) {
+    const properties = new ClientProperties(
+        this.properties,
+        [
+          ClientPropertiesField.CERT_HOLDER_ID,
+          ClientPropertiesField.CERT_VERSION,
+        ],
+        [
+          ClientPropertiesField.PRIVATE_KEY_PEM,
+          ClientPropertiesField.PRIVATE_KEY_CRYPTOKEY,
+        ],
+    );
+
+    const functionIds =
+      typeof functionId === 'string' && functionId.length > 0 ?
+        [functionId] :
+        [];
+
+    const builder = new ContractExecutionRequestBuilder(
+        new this.protobuf.ContractExecutionRequest(),
+        this._createSigner(properties),
+    )
+        .withContractId(contractId)
+        .withContractArgument(format(contractArgument, nonce, functionIds))
+        .withFunctionArgument(
+        typeof functionArgument === 'object' ?
+          JSON.stringify(functionArgument) :
+          functionArgument,
+        )
+        .withCertHolderId(properties.getCertHolderId())
+        .withCertVersion(properties.getCertVersion())
+        .withUseFunctionIds(functionIds.length > 0)
+        .withFunctionIds(functionIds)
+        .withNonce(nonce);
+
+    try {
+      return builder.build();
+    } catch (e) {
+      throw new ClientError(StatusCode.RUNTIME_ERROR, e.message);
     }
   }
 
