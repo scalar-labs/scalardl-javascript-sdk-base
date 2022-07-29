@@ -19,6 +19,7 @@ const {LedgerValidationResult} = require('./ledger_validation_result');
 const {AssetProof} = require('./asset_proof');
 
 const {v4: uuidv4} = require('uuid');
+const {format} = require('./contract_execution_argument');
 
 /**
  * This class handles all client interactions including registering certificates
@@ -458,15 +459,42 @@ class ClientServiceBase {
   /**
    * Execute a registered contract
    * @param {string} contractId
-   * @param {Object} argument
-   * @param {Object} [functionArgument=undefined]
+   * @param {Object|string} contractArgument
+   * @param {Object|string} [functionArgument=null]
+   * @param {string} [functionId=""]
+   * @param {string} [nonce=null]
    * @return {Promise<ContractExecutionResult|void|*>}
    * @throws {ClientError|Error}
    */
-  async executeContract(contractId, argument, functionArgument) {
+  async executeContract(
+      contractId,
+      contractArgument,
+      functionArgument = null,
+      functionId = '',
+      nonce = null,
+  ) {
+    if (functionArgument === null) {
+      functionArgument = typeof contractArgument === 'object' ? {} : '';
+    }
+
+    if (typeof contractArgument !== typeof functionArgument) {
+      throw Error(
+          'contract argument and function argument must be the same type',
+      );
+    }
+
+    if (nonce === null) {
+      nonce = uuidv4();
+    }
+
     const request = await this._createContractExecutionRequest(
-        contractId, argument, functionArgument,
+        contractId,
+        functionId,
+        contractArgument,
+        functionArgument,
+        nonce,
     );
+
     return this._executeContract(request);
   }
 
@@ -548,7 +576,11 @@ class ClientServiceBase {
       contractId, argument, functionArgument,
   ) {
     const request = await this._createContractExecutionRequest(
-        contractId, argument, functionArgument,
+        contractId,
+        argument,
+        functionArgument,
+        '',
+        uuidv4(),
     );
     return request.serializeBinary();
   }
@@ -917,13 +949,19 @@ class ClientServiceBase {
 
   /**
    * @param {string} contractId
-   * @param {Object} argument
-   * @param {Object} [functionArgument=undefined]
+   * @param {string} functionId
+   * @param {Object|string} contractArgument
+   * @param {Object|string} functionArgument
+   * @param {string} nonce
    * @return {Promise<ContractExecutionRequest>}
    * @throws {ClientError|Error}
    */
   async _createContractExecutionRequest(
-      contractId, argument, functionArgument,
+      contractId,
+      functionId,
+      contractArgument,
+      functionArgument,
+      nonce,
   ) {
     const properties = new ClientProperties(
         this.properties,
@@ -937,27 +975,32 @@ class ClientServiceBase {
         ],
     );
 
-    argument['nonce'] = uuidv4();
-    const argumentJson = JSON.stringify(argument);
-    const functionArgumentJson = JSON.stringify(functionArgument);
+    const functionIds =
+      typeof functionId === 'string' && functionId.length > 0 ?
+        [functionId] :
+        [];
 
     const builder = new ContractExecutionRequestBuilder(
         new this.protobuf.ContractExecutionRequest(),
         this._createSigner(properties),
-    ).withContractId(contractId)
-        .withContractArgument(argumentJson)
-        .withFunctionArgument(functionArgumentJson)
+    )
+        .withContractId(contractId)
+        .withContractArgument(format(nonce, functionIds, contractArgument))
+        .withFunctionArgument(
+        typeof functionArgument === 'object' ?
+          JSON.stringify(functionArgument) :
+          functionArgument,
+        )
         .withCertHolderId(properties.getCertHolderId())
         .withCertVersion(properties.getCertVersion())
-        .withNonce(argument['nonce']);
+        .withUseFunctionIds(functionIds.length > 0)
+        .withFunctionIds(functionIds)
+        .withNonce(nonce);
 
     try {
       return builder.build();
     } catch (e) {
-      throw new ClientError(
-          StatusCode.RUNTIME_ERROR,
-          e.message,
-      );
+      throw new ClientError(StatusCode.RUNTIME_ERROR, e.message);
     }
   }
 
