@@ -557,7 +557,7 @@ describe('executeContract', () => {
   // prepare
   const mockedContractId = '12345';
   const mockedArgument = {mocked: 'argument'};
-  const mockedFunctionArgument = 'mockedFunctionArgument';
+  const mockedFunctionArgument = {mocked: 'functionArgument'};
   const mockedFunctionArgumentJson = JSON.stringify(mockedFunctionArgument);
   test('should work as expected', async () => {
     const mockedExecuteContract = {
@@ -650,9 +650,6 @@ describe('executeContract', () => {
     expect(mockSpySetContractId).toBeCalledWith(mockedContractId);
     expect(mockSpySetContractArgument).toBeCalledWith(
         expect.stringContaining('argument'),
-    );
-    expect(mockSpySetContractArgument).toBeCalledWith(
-        expect.stringContaining('nonce'),
     );
     expect(mockSpySetCertHolderId).toBeCalledWith(
         clientProperties['scalar.dl.client.cert_holder_id'],

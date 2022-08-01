@@ -479,36 +479,19 @@ class ClientServiceBase {
   }
 
   /**
-   * Execute a registered contract
-   * @param {string} contractId
-   * @param {Object} argument
-   * @param {Object} [functionArgument={}]
-   * @return {Promise<ContractExecutionResult|void|*>}
-   * @throws {ClientError|Error}
-   */
-  async executeContract(contractId, argument, functionArgument = {}) {
-    const request = await this._createContractExecutionRequest(
-        contractId,
-        argument,
-        functionArgument,
-    );
-    return this._executeContract(request);
-  }
-
-  /**
    * @param {string} contractId
    * @param {Object|string} contractArgument
-   * @param {string} [functionId=""]
    * @param {Object|string} [functionArgument=null]
+   * @param {string} [functionId=""]
    * @param {string} [nonce=null]
    * @return {Promise<ContractExecutionResult|void|*>}
    * @throws {ClientError|Error}
    */
-  async executeContractAndFunction(
+  async executeContract(
       contractId,
       contractArgument,
-      functionId = '',
       functionArgument = null,
+      functionId = '',
       nonce = null,
   ) {
     if (functionArgument === null) {
@@ -525,7 +508,7 @@ class ClientServiceBase {
       nonce = uuidv4();
     }
 
-    const request = await this._createContractExecutionRequestV2(
+    const request = await this._createContractExecutionRequest(
         contractId,
         functionId,
         contractArgument,
@@ -625,6 +608,8 @@ class ClientServiceBase {
         contractId,
         argument,
         functionArgument,
+        '',
+        uuidv4(),
     );
     return request.serializeBinary();
   }
@@ -969,55 +954,6 @@ class ClientServiceBase {
 
   /**
    * @param {string} contractId
-   * @param {Object} argument
-   * @param {Object} functionArgument
-   * @return {Promise<ContractExecutionRequest>}
-   * @throws {ClientError|Error}
-   */
-  async _createContractExecutionRequest(
-      contractId,
-      argument,
-      functionArgument,
-  ) {
-    const properties = new ClientProperties(
-        this.properties,
-        [
-          ClientPropertiesField.CERT_HOLDER_ID,
-          ClientPropertiesField.CERT_VERSION,
-        ],
-        [
-          ClientPropertiesField.PRIVATE_KEY_PEM,
-          ClientPropertiesField.PRIVATE_KEY_CRYPTOKEY,
-        ],
-    );
-
-    argument['nonce'] = uuidv4();
-    const argumentJson = JSON.stringify(argument);
-    const functionArgumentJson = JSON.stringify(functionArgument);
-    const useFunctionIds = argument.hasOwnProperty('_functions_');
-
-    const builder = new ContractExecutionRequestBuilder(
-        new this.protobuf.ContractExecutionRequest(),
-        this._createSigner(properties),
-    )
-        .withContractId(contractId)
-        .withContractArgument(argumentJson)
-        .withFunctionArgument(functionArgumentJson)
-        .withCertHolderId(properties.getCertHolderId())
-        .withCertVersion(properties.getCertVersion())
-        .withUseFunctionIds(useFunctionIds)
-        .withFunctionIds(useFunctionIds ? argument['_functions_'] : [])
-        .withNonce(argument['nonce']);
-
-    try {
-      return builder.build();
-    } catch (e) {
-      throw new ClientError(StatusCode.RUNTIME_ERROR, e.message);
-    }
-  }
-
-  /**
-   * @param {string} contractId
    * @param {string} functionId
    * @param {Object|string} contractArgument
    * @param {Object|string} functionArgument
@@ -1025,7 +961,7 @@ class ClientServiceBase {
    * @return {Promise<ContractExecutionRequest>}
    * @throws {ClientError|Error}
    */
-  async _createContractExecutionRequestV2(
+  async _createContractExecutionRequest(
       contractId,
       functionId,
       contractArgument,
