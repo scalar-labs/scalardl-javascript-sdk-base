@@ -1,4 +1,5 @@
 const {TextEncoder} = require('./polyfill/text_encoder');
+const {btoa} = require('./polyfill/btoa');
 
 /**
  * @public
