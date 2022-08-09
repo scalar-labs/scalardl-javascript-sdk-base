@@ -519,10 +519,10 @@ class ClientServiceBase {
               }
 
               return resolve(new ContractExecutionResult(
-                  ledgerResult.getResult(),
+                  ledgerResult.getContractResult(),
                   ledgerResult.getFunctionResult(),
-                  ledgerResult.getProofs(),
-                  auditorResult.getProofs(),
+                  ledgerResult.getLedgerProofs(),
+                  auditorResult.getLedgerProofs(),
               ));
             } catch (err) {
               return reject(err);
