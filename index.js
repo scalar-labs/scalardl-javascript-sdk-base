@@ -656,23 +656,20 @@ class ClientServiceBase {
   }
 
   /**
-   * @param {proto.rpc.ContractExecutionResponse} rsp1
-   * @param {proto.rpc.ContractExecutionResponse} rsp2
+   * @param {proto.rpc.ContractExecutionResponse} response1
+   * @param {proto.rpc.ContractExecutionResponse} response2
    * @return {boolean}
    */
-  _validateResponses(rsp1, rsp2) {
-    // We assume that JSON.parse() creates the identically-ordered object
-    // in fromGrpcContractExecutionResponse() if the execution result is same.
-
-    const proofs1 = rsp1
+  _validateResponses(response1, response2) {
+    const proofs1 = response1
         .getProofsList()
         .map((p) => AssetProof.fromGrpcAssetProof(p));
-    const proofs2 = rsp2
+    const proofs2 = response2
         .getProofsList()
         .map((p) => AssetProof.fromGrpcAssetProof(p));
 
     if (
-      rsp1.getContractresult() !== rsp2.getContractresult() ||
+      response1.getContractresult() !== response2.getContractresult() ||
       proofs1.length !== proofs2.length
     ) {
       return false;
