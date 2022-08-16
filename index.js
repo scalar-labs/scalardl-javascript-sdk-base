@@ -516,8 +516,8 @@ class ClientServiceBase {
 
               return resolve(
                   new ContractExecutionResult(
-                      response.getContractresult(),
-                      response.getFunctionresult(),
+                      response.getContractResult(),
+                      response.getFunctionResult(),
                       response
                           .getProofsList()
                           .map((p) => AssetProof.fromGrpcAssetProof(p)),
@@ -669,7 +669,7 @@ class ClientServiceBase {
         .map((p) => AssetProof.fromGrpcAssetProof(p));
 
     if (
-      response1.getContractresult() !== response2.getContractresult() ||
+      response1.getContractResult() !== response2.getContractResult() ||
       proofs1.length !== proofs2.length
     ) {
       return false;

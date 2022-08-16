@@ -2,8 +2,8 @@ const {ContractExecutionResult} = require('..');
 const {AssetProof} = require('..');
 
 const mockedResponse = {
-  getContractresult: () => 'contract_result',
-  getFunctionresult: () => 'function_result',
+  getContractResult: () => 'contract_result',
+  getFunctionResult: () => 'function_result',
   getProofsList: () => [
     {
       getAssetId: () => 'foo',
@@ -17,8 +17,8 @@ const mockedResponse = {
   ],
 };
 
-jest.spyOn(mockedResponse, 'getContractresult');
-jest.spyOn(mockedResponse, 'getFunctionresult');
+jest.spyOn(mockedResponse, 'getContractResult');
+jest.spyOn(mockedResponse, 'getFunctionResult');
 jest.spyOn(mockedResponse, 'getProofsList');
 
 afterEach(() => {
@@ -27,8 +27,8 @@ afterEach(() => {
 
 test('if fromGrpcContractExecutionResponse works', () => {
   ContractExecutionResult.fromGrpcContractExecutionResponse(mockedResponse);
-  expect(mockedResponse.getContractresult).toBeCalledTimes(1);
-  expect(mockedResponse.getFunctionresult).toBeCalledTimes(1);
+  expect(mockedResponse.getContractResult).toBeCalledTimes(1);
+  expect(mockedResponse.getFunctionResult).toBeCalledTimes(1);
   expect(mockedResponse.getProofsList).toBeCalledTimes(1);
 });
 

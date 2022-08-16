@@ -23,8 +23,8 @@ class ContractExecutionResult {
    */
   static fromGrpcContractExecutionResponse(response) {
     return new ContractExecutionResult(
-        response.getContractresult(),
-        response.getFunctionresult(),
+        response.getContractResult(),
+        response.getFunctionResult(),
         response
             .getProofsList()
             .map((proof) => AssetProof.fromGrpcAssetProof(proof)),
