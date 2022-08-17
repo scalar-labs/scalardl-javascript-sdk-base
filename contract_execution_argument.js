@@ -24,47 +24,6 @@ function format(argument, nonce, functionIds) {
   }`;
 }
 
-/**
- * @param {Object} argument
- * @param {string} nonce
- * @return {string}
- */
-function formatDeprecated(argument, nonce) {
-  if (typeof argument !== 'object') {
-    throw new Error('argument must be an object');
-  }
-
-  if (typeof nonce !== 'string') {
-    throw new Error('nonce must be a string');
-  }
-
-  argument['nonce'] = nonce;
-
-  return JSON.stringify(argument);
-}
-
-/**
- * @param {Object} argument
- * @return {string[]}
- */
-function getFunctionIds(argument) {
-  if (typeof argument !== 'object') {
-    throw new Error('argument must be an object');
-  }
-
-  if (!argument.hasOwnProperty('_functions_')) {
-    return [];
-  }
-
-  if (!Array.isArray(argument['_functions_'])) {
-    throw new Error('argument._functions_ must be an array');
-  }
-
-  return argument['_functions_'];
-}
-
 module.exports = {
   format,
-  formatDeprecated,
-  getFunctionIds,
 };
