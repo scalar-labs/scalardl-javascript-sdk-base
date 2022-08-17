@@ -500,29 +500,32 @@ class ClientServiceBase {
                   response,
               );
 
-              const ledgerResult = ContractExecutionResult
-                  .fromGrpcContractExecutionResponse(response);
-
-              const auditorResult = ContractExecutionResult
-                  .fromGrpcContractExecutionResponse(auditorResponse);
-
               const isConsistent = this._validateResponses(
-                  ledgerResult,
-                  auditorResult,
+                  response,
+                  auditorResponse,
               );
 
               if (!isConsistent) {
-                return reject(new ClientError(
-                    StatusCode.INCONSISTENT_STATES,
-                    'The results from Ledger and Auditor don\'t match',
-                ));
+                return reject(
+                    new ClientError(
+                        StatusCode.INCONSISTENT_STATES,
+                        'The results from Ledger and Auditor don\'t match',
+                    ),
+                );
               }
 
-              return resolve(new ContractExecutionResult(
-                  ledgerResult.getResult(),
-                  ledgerResult.getProofs(),
-                  auditorResult.getProofs(),
-              ));
+              return resolve(
+                  new ContractExecutionResult(
+                      response.getContractResult(),
+                      response.getFunctionResult(),
+                      response
+                          .getProofsList()
+                          .map((p) => AssetProof.fromGrpcAssetProof(p)),
+                      auditorResponse
+                          .getProofsList()
+                          .map((p) => AssetProof.fromGrpcAssetProof(p)),
+                  ),
+              );
             } catch (err) {
               return reject(err);
             }
@@ -653,32 +656,38 @@ class ClientServiceBase {
   }
 
   /**
-   * @param {ContractExecutionResult} result1
-   * @param {ContractExecutionResult} result2
-   * @return {Boolean}
-   * @throws {ClientError}
+   * @param {proto.rpc.ContractExecutionResponse} response1
+   * @param {proto.rpc.ContractExecutionResponse} response2
+   * @return {boolean}
    */
-  _validateResponses(result1, result2) {
-    // We assume that JSON.parse() creates the identically-ordered object
-    // in fromGrpcContractExecutionResponse() if the execution result is same.
-    if (JSON.stringify(result1.getResult()) !==
-        JSON.stringify(result2.getResult()) ||
-        result1.getProofs().length !== result2.getProofs().length) {
+  _validateResponses(response1, response2) {
+    const proofs1 = response1
+        .getProofsList()
+        .map((p) => AssetProof.fromGrpcAssetProof(p));
+    const proofs2 = response2
+        .getProofsList()
+        .map((p) => AssetProof.fromGrpcAssetProof(p));
+
+    if (
+      response1.getContractResult() !== response2.getContractResult() ||
+      proofs1.length !== proofs2.length
+    ) {
       return false;
     }
 
     const map = new Map();
-    result1.getProofs().forEach((p) => map.set(p.getId(), p));
-    result2.getProofs().forEach(
-        (p2) => {
-          const p1 = map.get(p2.getId());
-          if (p1 === null || typeof p1 === 'undefined' ||
-              p1.getAge() !== p2.getAge() ||
-              !p1.hashEquals(p2.getHash())) {
-            return false;
-          }
-        },
-    );
+    proofs1.forEach((p) => map.set(p.getId(), p));
+    proofs2.forEach((p2) => {
+      const p1 = map.get(p2.getId());
+      if (
+        p1 === null ||
+        typeof p1 === 'undefined' ||
+        p1.getAge() !== p2.getAge() ||
+        !p1.hashEquals(p2.getHash())
+      ) {
+        return false;
+      }
+    });
     return true;
   }
 
