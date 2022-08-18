@@ -1,3 +1,9 @@
+const ARGUMENT_VERSION_PREFIX = 'V';
+const ARGUMENT_FORMAT_VERSION = '2';
+const NONCE_SEPARATOR = '\u0001';
+const FUNCTION_SEPARATOR = '\u0002';
+const ARGUMENT_SEPARATOR = '\u0003';
+
 /**
  * @param {string|Object} argument
  * @param {string} nonce
@@ -17,11 +23,18 @@ function format(argument, nonce, functionIds) {
     throw new Error('functionIds must be an array');
   }
 
-  return `V2\u0001${nonce}\u0003${functionIds
-      .filter((v) => typeof v === 'string')
-      .join('\u0002')}\u0003${
-    typeof argument === 'object' ? JSON.stringify(argument) : argument
-  }`;
+  return (
+    ARGUMENT_VERSION_PREFIX +
+    ARGUMENT_FORMAT_VERSION +
+    NONCE_SEPARATOR +
+    nonce +
+    ARGUMENT_SEPARATOR +
+    `${functionIds
+        .filter((v) => typeof v === 'string')
+        .join(FUNCTION_SEPARATOR)}` +
+    ARGUMENT_SEPARATOR +
+    `${typeof argument === 'object' ? JSON.stringify(argument) : argument}`
+  );
 }
 
 module.exports = {
