@@ -4,29 +4,29 @@ const {
 } = require('../contract_execution_argument');
 
 test('if format works properly', () => {
-  expect(format('stringArgument', 'nonce', ['f1', 'f2'])).toEqual(
+  expect(format('nonce', ['f1', 'f2'], 'stringArgument')).toEqual(
       'V2\u0001nonce\u0003f1\u0002f2\u0003stringArgument',
   );
 
-  expect(format({foo: 'bar'}, 'nonce', ['f1', 'f2'])).toEqual(
+  expect(format('nonce', ['f1', 'f2'], {foo: 'bar'})).toEqual(
       'V2\u0001nonce\u0003f1\u0002f2\u0003{"foo":"bar"}',
   );
 
   expect(
-      format({foo: 'bar'}, 'nonce', ['f1', null, undefined, {}, 'f2']),
+      format('nonce', ['f1', null, undefined, {}, 'f2'], {foo: 'bar'}),
   ).toEqual('V2\u0001nonce\u0003f1\u0002f2\u0003{"foo":"bar"}');
 });
 
 test('if format can throw error', () => {
-  expect(() => format(1, 'nonce', ['f1', 'f2'])).toThrowError(
+  expect(() => format('nonce', ['f1', 'f2'], 1)).toThrowError(
       'argument must be a string or an object',
   );
 
-  expect(() => format('stringArgument', 0, ['f1', 'f2'])).toThrowError(
+  expect(() => format(0, ['f1', 'f2'], 'stringArgument')).toThrowError(
       'nonce must be a string',
   );
 
-  expect(() => format('stringArgument', 'nonce', {})).toThrowError(
+  expect(() => format('nonce', {}, 'stringArgument')).toThrowError(
       'functionIds must be an array',
   );
 });

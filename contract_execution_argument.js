@@ -5,12 +5,12 @@ const FUNCTION_SEPARATOR = '\u0002';
 const ARGUMENT_SEPARATOR = '\u0003';
 
 /**
- * @param {string|Object} argument
  * @param {string} nonce
  * @param {string[]} functionIds
+ * @param {string|Object} argument
  * @return {string}
  */
-function format(argument, nonce, functionIds) {
+function format(nonce, functionIds, argument) {
   if (typeof argument !== 'string' && typeof argument !== 'object') {
     throw new Error('argument must be a string or an object');
   }
