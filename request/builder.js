@@ -623,6 +623,7 @@ class ContractExecutionRequestBuilder {
     validator.validateInput(this.certVersion, Number);
     validator.validateInput(this.functionArgument, String, true);
     validator.validateInput(this.useFunctionIds, Boolean);
+    validator.validateInput(this.nonce, String);
 
     const request = this.request;
     request.setContractId(this.contractId);
