@@ -948,7 +948,8 @@ class ClientServiceBase {
         .withContractArgument(argumentJson)
         .withFunctionArgument(functionArgumentJson)
         .withCertHolderId(properties.getCertHolderId())
-        .withCertVersion(properties.getCertVersion());
+        .withCertVersion(properties.getCertVersion())
+        .withNonce(argument['nonce']);
 
     try {
       return builder.build();

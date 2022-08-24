@@ -602,6 +602,15 @@ class ContractExecutionRequestBuilder {
   }
 
   /**
+   * @param {string} nonce
+   * @return {ContractExecutionRequestBuilder}
+   */
+  withNonce(nonce) {
+    this.nonce = nonce;
+    return this;
+  }
+
+  /**
    * Builds the ContractExecutionRequest
    * @throws {Error}
    * @return {ContractExecutionRequest}
@@ -614,6 +623,7 @@ class ContractExecutionRequestBuilder {
     validator.validateInput(this.certVersion, Number);
     validator.validateInput(this.functionArgument, String, true);
     validator.validateInput(this.useFunctionIds, Boolean);
+    validator.validateInput(this.nonce, String);
 
     const request = this.request;
     request.setContractId(this.contractId);
@@ -623,6 +633,7 @@ class ContractExecutionRequestBuilder {
     request.setFunctionArgument(this.functionArgument);
     request.setUseFunctionIds(this.useFunctionIds);
     request.setFunctionIdsList(this.functionIds);
+    request.setNonce(this.nonce);
 
     const contractIdEncoded = new TextEncoder('utf-8').encode(this.contractId);
     const contractArgument = new TextEncoder('utf-8').encode(
