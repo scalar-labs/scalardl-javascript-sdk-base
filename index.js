@@ -461,7 +461,7 @@ class ClientServiceBase {
    * @param {string} contractId
    * @param {Object|string} contractArgument
    * @param {Object|string} [functionArgument=null]
-   * @param {string} [functionId=""]
+   * @param {string} [functionId=null]
    * @param {string} [nonce=null]
    * @return {Promise<ContractExecutionResult|void|*>}
    * @throws {ClientError|Error}
@@ -470,7 +470,7 @@ class ClientServiceBase {
       contractId,
       contractArgument,
       functionArgument = null,
-      functionId = '',
+      functionId = null,
       nonce = null,
   ) {
     if (functionArgument === null) {
