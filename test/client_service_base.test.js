@@ -560,7 +560,7 @@ describe('executeContract', () => {
 
     // action and assert
     await expect(
-        clientServiceBase.executeContract('id', 'string', {}),
+        clientServiceBase.execute('id', 'string', null, {}),
     ).rejects.toThrowError(
         'contract argument and function argument must be the same type',
     );
@@ -599,11 +599,11 @@ describe('executeContract', () => {
 
     // action and assert
     await expect(
-        clientServiceBase.executeContract(
+        clientServiceBase.execute(
             'contract-id',
             'contract-argument',
-            'function-argument',
             'function-id',
+            'function-argument',
             {},
         ),
     ).rejects.toThrowError('nonce must be a string');
@@ -701,11 +701,11 @@ describe('executeContract', () => {
     );
 
     // act
-    const response = await clientServiceBase.executeContract(
+    const response = await clientServiceBase.execute(
         mockedContractId,
         mockedArgument,
-        mockedFunctionArgument,
         mockedFunctionId,
+        mockedFunctionArgument,
         'nonce',
     );
 

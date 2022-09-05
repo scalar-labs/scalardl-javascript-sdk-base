@@ -459,18 +459,33 @@ class ClientServiceBase {
   /**
    * Execute a registered contract
    * @param {string} contractId
+   * @param {Object} contractArgument
+   * @param {Object} [functionArgument=null]
+   */
+  async executeContract(contractId, contractArgument, functionArgument) {
+    return this.execute(
+        contractId,
+        contractArgument,
+        null,
+        functionArgument,
+    );
+  }
+
+  /**
+   * Execute a registered contract and function (optionally)
+   * @param {string} contractId
    * @param {Object|string} contractArgument
-   * @param {Object|string} [functionArgument=null]
    * @param {string} [functionId=null]
+   * @param {Object|string} [functionArgument=null]
    * @param {string} [nonce=null]
    * @return {Promise<ContractExecutionResult|void|*>}
    * @throws {ClientError|Error}
    */
-  async executeContract(
+  async execute(
       contractId,
       contractArgument,
-      functionArgument = null,
       functionId = null,
+      functionArgument = null,
       nonce = null,
   ) {
     if (functionArgument === null) {
