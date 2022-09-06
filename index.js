@@ -458,6 +458,7 @@ class ClientServiceBase {
 
   /**
    * Execute a registered contract
+   * @deprecated Use {@link execute} instead
    * @param {string} contractId
    * @param {Object} contractArgument
    * @param {Object} [functionArgument=null]
