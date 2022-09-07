@@ -1,7 +1,5 @@
 /* eslint-disable max-len */
-const {
-  format,
-} = require('../contract_execution_argument');
+const {format} = require('../contract_execution_argument');
 
 test('if format works properly', () => {
   expect(format('nonce', ['f1', 'f2'], 'stringArgument')).toEqual(

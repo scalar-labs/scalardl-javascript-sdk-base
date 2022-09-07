@@ -12,9 +12,8 @@ class TextEncoder {
    */
   encode(string) {
     return !string ?
-        new Uint8Array() :
-        new Uint8Array(
-            jsrsasign.hextoArrayBuffer(jsrsasign.utf8tohex(string)));
+      new Uint8Array() :
+      new Uint8Array(jsrsasign.hextoArrayBuffer(jsrsasign.utf8tohex(string)));
   }
 }
 

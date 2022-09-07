@@ -7,5 +7,7 @@ test('if btoa can convert string into base64 string', () => {
 });
 
 test('if btoa can throw an error if string contains characters outside of the Latin1 range.', () => {
-  expect(() => btoa('あ')).toThrow('The string contains characters outside of the Latin1 range.');
+  expect(() => btoa('あ')).toThrow(
+      'The string contains characters outside of the Latin1 range.',
+  );
 });

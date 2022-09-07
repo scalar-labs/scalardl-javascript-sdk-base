@@ -125,17 +125,13 @@ class ClientServiceBase {
     await this._registerToAuditorCertificate(request);
 
     const promise = new Promise((resolve, reject) => {
-      this.ledgerPrivileged.registerCert(
-          request,
-          this.metadata,
-          (err, _) => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve();
-            }
-          },
-      );
+      this.ledgerPrivileged.registerCert(request, this.metadata, (err, _) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
     });
 
     return this._executePromise(promise);
@@ -161,10 +157,12 @@ class ClientServiceBase {
    */
   async registerFunction(id, name, functionBytes) {
     const request = await this._createFunctionRegistrationRequest(
-        id, name, functionBytes,
+        id,
+        name,
+        functionBytes,
     );
     return this._registerFunction(request);
-  };
+  }
 
   /**
    * @param {FunctionRegistrationRequest} request
@@ -187,7 +185,7 @@ class ClientServiceBase {
     });
 
     return this._executePromise(promise);
-  };
+  }
 
   /**
    * Create the byte array of FunctionRegistrationRequest
@@ -199,7 +197,9 @@ class ClientServiceBase {
    */
   async createSerializedFunctionRegistrationRequest(id, name, functionBytes) {
     const request = await this._createFunctionRegistrationRequest(
-        id, name, functionBytes,
+        id,
+        name,
+        functionBytes,
     );
     return request.serializeBinary();
   }
@@ -217,7 +217,10 @@ class ClientServiceBase {
    */
   async registerContract(id, name, contractBytes, properties) {
     const request = await this._createContractRegistrationRequest(
-        id, name, contractBytes, properties,
+        id,
+        name,
+        contractBytes,
+        properties,
     );
     return this._registerContract(request);
   }
@@ -231,17 +234,13 @@ class ClientServiceBase {
     await this._registerToAuditorContract(request);
 
     const promise = new Promise((resolve, reject) => {
-      this.ledgerClient.registerContract(
-          request,
-          this.metadata,
-          (err, _) => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve();
-            }
-          },
-      );
+      this.ledgerClient.registerContract(request, this.metadata, (err, _) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
     });
 
     return this._executePromise(promise);
@@ -259,10 +258,16 @@ class ClientServiceBase {
    * @throws {ClientError|Error}
    */
   async createSerializedContractRegistrationRequest(
-      id, name, contractBytes, properties,
+      id,
+      name,
+      contractBytes,
+      properties,
   ) {
     const request = await this._createContractRegistrationRequest(
-        id, name, contractBytes, properties,
+        id,
+        name,
+        contractBytes,
+        properties,
     );
     return request.serializeBinary();
   }
@@ -334,17 +339,15 @@ class ClientServiceBase {
     const builder = new ContractsListingRequestBuilder(
         new this.protobuf.ContractsListingRequest(),
         this._createSigner(properties),
-    ).withCertHolderId(properties.getCertHolderId())
+    )
+        .withCertHolderId(properties.getCertHolderId())
         .withCertVersion(properties.getCertVersion())
         .withContractId(contractId);
 
     try {
       return builder.build();
     } catch (e) {
-      throw new ClientError(
-          StatusCode.RUNTIME_ERROR,
-          e.message,
-      );
+      throw new ClientError(StatusCode.RUNTIME_ERROR, e.message);
     }
   }
 
@@ -356,10 +359,18 @@ class ClientServiceBase {
    * @return {Promise<LedgerValidationResult>}
    * @throws {ClientError|Error}
    */
-  async validateLedger(assetId, startAge = ClientServiceBase.minAge,
-      endAge = ClientServiceBase.maxAge) {
-    if (!(endAge >= startAge && startAge >= ClientServiceBase.minAge &&
-          endAge <= ClientServiceBase.maxAge)) {
+  async validateLedger(
+      assetId,
+      startAge = ClientServiceBase.minAge,
+      endAge = ClientServiceBase.maxAge,
+  ) {
+    if (
+      !(
+        endAge >= startAge &&
+        startAge >= ClientServiceBase.minAge &&
+        endAge <= ClientServiceBase.maxAge
+      )
+    ) {
       throw new ClientError(
           StatusCode.CLIENT_RUNTIME_ERROR,
           'invalid ages are specified',
@@ -367,7 +378,8 @@ class ClientServiceBase {
     }
 
     const properties = new ClientProperties(this.properties, [], []);
-    if (properties.getAuditorEnabled() &&
+    if (
+      properties.getAuditorEnabled() &&
       properties.getAuditorLinearizableValidationEnabled
     ) {
       return this._validateLedgerWithContractExecution(
@@ -393,10 +405,13 @@ class ClientServiceBase {
    * @param {string} contractId
    */
   async _validateLedgerWithContractExecution(
-      assetId, startAge, endAge, contractId,
+      assetId,
+      startAge,
+      endAge,
+      contractId,
   ) {
     const argument = {
-      'asset_id': assetId,
+      asset_id: assetId,
     };
 
     argument['start_age'] = startAge;
@@ -409,8 +424,8 @@ class ClientServiceBase {
 
     return new LedgerValidationResult(
         StatusCode.OK,
-        ledgerProofs.length > 0 ? ledgerProofs[0] : null,
-        auditorProofs.length > 0 ? ledgerProofs[0] : null,
+      ledgerProofs.length > 0 ? ledgerProofs[0] : null,
+      auditorProofs.length > 0 ? ledgerProofs[0] : null,
     );
   }
 
@@ -433,11 +448,13 @@ class ClientServiceBase {
       promises = [ledgerPromise];
     }
 
-    return Promise.all(promises).then((results) => {
-      return this._validateResult(results[0], results[1]);
-    }).catch((e) => {
-      throw e;
-    });
+    return Promise.all(promises)
+        .then((results) => {
+          return this._validateResult(results[0], results[1]);
+        })
+        .catch((e) => {
+          throw e;
+        });
   }
 
   /**
@@ -448,11 +465,16 @@ class ClientServiceBase {
    * @return {Uint8Array}
    * @throws {ClientError|Error}
    */
-  async createSerializedLedgerValidationRequest(assetId,
+  async createSerializedLedgerValidationRequest(
+      assetId,
       startAge = ClientServiceBase.minAge,
-      endAge = ClientServiceBase.maxAge) {
-    const request = await this._createLedgerValidationRequest(assetId, startAge,
-        endAge);
+      endAge = ClientServiceBase.maxAge,
+  ) {
+    const request = await this._createLedgerValidationRequest(
+        assetId,
+        startAge,
+        endAge,
+    );
     return request.serializeBinary();
   }
 
@@ -464,12 +486,7 @@ class ClientServiceBase {
    * @param {Object} [functionArgument=null]
    */
   async executeContract(contractId, contractArgument, functionArgument) {
-    return this.execute(
-        contractId,
-        contractArgument,
-        null,
-        functionArgument,
-    );
+    return this.execute(contractId, contractArgument, null, functionArgument);
   }
 
   /**
@@ -589,7 +606,9 @@ class ClientServiceBase {
    * @throws {ClientError|Error}
    */
   async createSerializedContractExecutionRequest(
-      contractId, argument, functionArgument,
+      contractId,
+      argument,
+      functionArgument,
   ) {
     const request = await this._createContractExecutionRequest(
         contractId,
@@ -617,17 +636,13 @@ class ClientServiceBase {
       return;
     }
     const promise = new Promise((resolve, reject) => {
-      this.auditorPrivileged.registerCert(
-          request,
-          this.metadata,
-          (err, _) => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve();
-            }
-          },
-      );
+      this.auditorPrivileged.registerCert(request, this.metadata, (err, _) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
     });
     return this._executePromise(promise);
   }
@@ -640,17 +655,13 @@ class ClientServiceBase {
       return;
     }
     const promise = new Promise((resolve, reject) => {
-      this.auditorClient.registerContract(
-          request,
-          this.metadata,
-          (err, _) => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve();
-            }
-          },
-      );
+      this.auditorClient.registerContract(request, this.metadata, (err, _) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
     });
     return this._executePromise(promise);
   }
@@ -747,21 +758,15 @@ class ClientServiceBase {
    */
   async _validateLedgerAsync(client, request) {
     const promise = new Promise((resolve, reject) => {
-      client.validateLedger(
-          request,
-          this.metadata,
-          (err, response) => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve(
-                  LedgerValidationResult.fromGrpcLedgerValidationResponse(
-                      response,
-                  ),
-              );
-            }
-          },
-      );
+      client.validateLedger(request, this.metadata, (err, response) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(
+              LedgerValidationResult.fromGrpcLedgerValidationResponse(response),
+          );
+        }
+      });
     });
     return promise;
   }
@@ -781,10 +786,7 @@ class ClientServiceBase {
       } else if (e.code === StatusCode.INCONSISTENT_STATES) {
         throw e;
       } else {
-        throw new ClientError(
-            StatusCode.UNKNOWN_TRANSACTION_STATUS,
-            e.message,
-        );
+        throw new ClientError(StatusCode.UNKNOWN_TRANSACTION_STATUS, e.message);
       }
     }
   }
@@ -803,16 +805,17 @@ class ClientServiceBase {
     let binaryStatus;
     if (this._isNodeJsRuntime()) {
       const statusMetadata = error.metadata.get(
-          ClientServiceBase.binaryStatusKey);
+          ClientServiceBase.binaryStatusKey,
+      );
       if (Array.isArray(statusMetadata) && statusMetadata.length === 1) {
         binaryStatus = statusMetadata[0];
       }
-    } else { // Web runtime
+    } else {
+      // Web runtime
       binaryStatus = error.metadata[ClientServiceBase.binaryStatusKey];
     }
     if (binaryStatus) {
-      return this.protobuf.Status.deserializeBinary(binaryStatus)
-          .toObject();
+      return this.protobuf.Status.deserializeBinary(binaryStatus).toObject();
     }
   }
 
@@ -829,18 +832,16 @@ class ClientServiceBase {
    * @return {Promise<CertificateRegistrationRequest>}
    */
   async _createCertificateRegistrationRequest() {
-    const properties = new ClientProperties(
-        this.properties,
-        [
-          ClientPropertiesField.CERT_PEM,
-          ClientPropertiesField.CERT_HOLDER_ID,
-          ClientPropertiesField.CERT_VERSION,
-        ],
-    );
+    const properties = new ClientProperties(this.properties, [
+      ClientPropertiesField.CERT_PEM,
+      ClientPropertiesField.CERT_HOLDER_ID,
+      ClientPropertiesField.CERT_VERSION,
+    ]);
 
     const builder = new CertificateRegistrationRequestBuilder(
         new this.protobuf.CertificateRegistrationRequest(),
-    ).withCertHolderId(properties.getCertHolderId())
+    )
+        .withCertHolderId(properties.getCertHolderId())
         .withCertVersion(properties.getCertVersion())
         .withCertPem(properties.getCertPem());
 
@@ -864,7 +865,8 @@ class ClientServiceBase {
 
     const builder = new FunctionRegistrationRequestBuilder(
         new this.protobuf.FunctionRegistrationRequest(),
-    ).withFunctionId(id)
+    )
+        .withFunctionId(id)
         .withFunctionBinaryName(name)
         .withFunctionByteCode(functionBytes);
 
@@ -882,7 +884,10 @@ class ClientServiceBase {
    * @throws {ClientError|Error}
    */
   async _createContractRegistrationRequest(
-      id, name, contractBytes, contractProperties,
+      id,
+      name,
+      contractBytes,
+      contractProperties,
   ) {
     if (!(contractBytes instanceof Uint8Array)) {
       throw new ClientError(
@@ -907,7 +912,8 @@ class ClientServiceBase {
     const builder = new ContractRegistrationRequestBuilder(
         new this.protobuf.ContractRegistrationRequest(),
         this._createSigner(properties),
-    ).withContractId(id)
+    )
+        .withContractId(id)
         .withContractBinaryName(name)
         .withContractByteCode(contractBytes)
         .withContractProperties(contractPropertiesJson)
@@ -917,10 +923,7 @@ class ClientServiceBase {
     try {
       return builder.build();
     } catch (e) {
-      throw new ClientError(
-          StatusCode.RUNTIME_ERROR,
-          e.message,
-      );
+      throw new ClientError(StatusCode.RUNTIME_ERROR, e.message);
     }
   }
 
@@ -947,7 +950,8 @@ class ClientServiceBase {
     const builder = new LedgerValidationRequestBuilder(
         new this.protobuf.LedgerValidationRequest(),
         this._createSigner(properties),
-    ).withAssetId(assetId)
+    )
+        .withAssetId(assetId)
         .withStartAge(startAge)
         .withEndAge(endAge)
         .withCertHolderId(properties.getCertHolderId())
@@ -956,10 +960,7 @@ class ClientServiceBase {
     try {
       return builder.build();
     } catch (e) {
-      throw new ClientError(
-          StatusCode.RUNTIME_ERROR,
-          e.message,
-      );
+      throw new ClientError(StatusCode.RUNTIME_ERROR, e.message);
     }
   }
 
@@ -1028,7 +1029,8 @@ class ClientServiceBase {
   _createExecutionValidationRequest(request, response) {
     const builder = new ExecutionValidationRequestBuilder(
         new this.protobuf.ExecutionValidationRequest(),
-    ).withContractExecutionRequest(request)
+    )
+        .withContractExecutionRequest(request)
         .withProofs(response.getProofsList());
 
     return builder.build();
@@ -1054,13 +1056,12 @@ class ClientServiceBase {
   _validateResult(ledgerResult, auditorResult) {
     if (this._isAuditorEnabled()) {
       let code = StatusCode.INCONSISTENT_STATES;
-      if (ledgerResult.getCode() === StatusCode.OK &&
-          auditorResult.getCode() === StatusCode.OK &&
-          ledgerResult.getProof() !== null &&
-          auditorResult.getProof() !== null &&
-          ledgerResult.getProof().hashEquals(
-              auditorResult.getProof().getHash(),
-          )
+      if (
+        ledgerResult.getCode() === StatusCode.OK &&
+        auditorResult.getCode() === StatusCode.OK &&
+        ledgerResult.getProof() !== null &&
+        auditorResult.getProof() !== null &&
+        ledgerResult.getProof().hashEquals(auditorResult.getProof().getHash())
       ) {
         code = StatusCode.OK;
       }
