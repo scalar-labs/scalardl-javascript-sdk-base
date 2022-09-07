@@ -24,45 +24,45 @@ const ClientPropertiesField = {
 };
 
 const defaultSchema = {
-  '$schema': 'http://json-schema.org/draft-07/schema',
-  'type': 'object',
-  'properties': {},
+  $schema: 'http://json-schema.org/draft-07/schema',
+  type: 'object',
+  properties: {},
 };
 defaultSchema.properties[ClientPropertiesField.CERT_HOLDER_ID] = {
-  'type': 'string',
+  type: 'string',
 };
 defaultSchema.properties[ClientPropertiesField.CERT_VERSION] = {
-  'type': 'number',
+  type: 'number',
 };
 defaultSchema.properties[ClientPropertiesField.CERT_PEM] = {
-  'type': 'string',
+  type: 'string',
 };
 defaultSchema.properties[ClientPropertiesField.PRIVATE_KEY_PEM] = {
-  'type': 'string',
+  type: 'string',
 };
 defaultSchema.properties[ClientPropertiesField.PRIVATE_KEY_CRYPTOKEY] = {
-  'type': 'object',
+  type: 'object',
 };
 defaultSchema.properties[ClientPropertiesField.SERVER_HOST] = {
-  'type': 'string',
+  type: 'string',
 };
 defaultSchema.properties[ClientPropertiesField.SERVER_PORT] = {
-  'type': 'number',
+  type: 'number',
 };
 defaultSchema.properties[ClientPropertiesField.SERVER_PRIVILEGED_PORT] = {
-  'type': 'number',
+  type: 'number',
 };
 defaultSchema.properties[ClientPropertiesField.AUDITOR_ENABLED] = {
-  'type': 'boolean',
+  type: 'boolean',
 };
 defaultSchema.properties[ClientPropertiesField.AUDITOR_HOST] = {
-  'type': 'string',
+  type: 'string',
 };
 defaultSchema.properties[ClientPropertiesField.AUDITOR_PORT] = {
-  'type': 'number',
+  type: 'number',
 };
 defaultSchema.properties[ClientPropertiesField.AUDITOR_PRIVILEGED_PORT] = {
-  'type': 'number',
+  type: 'number',
 };
 defaultSchema.properties[
     ClientPropertiesField.AUDITOR_LINEARIZABLE_VALIDATION_ENABLED
@@ -75,13 +75,13 @@ defaultSchema.properties[
   type: 'string',
 };
 defaultSchema.properties[ClientPropertiesField.TLS_CA_ROOT_CERT_PEM] = {
-  'type': 'string',
+  type: 'string',
 };
 defaultSchema.properties[ClientPropertiesField.TLS_ENABLED] = {
-  'type': 'boolean',
+  type: 'boolean',
 };
 defaultSchema.properties[ClientPropertiesField.AUTHORIZATION_CREDENTIAL] = {
-  'type': 'string',
+  type: 'string',
 };
 
 /**
@@ -135,11 +135,11 @@ class ClientProperties {
     };
 
     if (allOf.length > 0) {
-      schema['allOf'] = allOf.map((property) => ({'required': [property]}));
+      schema['allOf'] = allOf.map((property) => ({required: [property]}));
     }
 
     if (oneOf.length > 0) {
-      schema['oneOf'] = oneOf.map((property) => ({'required': [property]}));
+      schema['oneOf'] = oneOf.map((property) => ({required: [property]}));
     }
 
     if (!ajv.validate(schema, properties)) {
