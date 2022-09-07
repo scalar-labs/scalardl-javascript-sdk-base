@@ -554,10 +554,66 @@ describe('executeContract', () => {
     ).rejects.toThrowError();
   });
 
+  test('should throw error when the type of the contract argument and the function argument is different', async () => {
+    // arrange
+    const clientServiceBase = new ClientServiceBase({}, {}, clientProperties);
+
+    // action and assert
+    await expect(
+        clientServiceBase.execute('id', 'string', null, {}),
+    ).rejects.toThrowError(
+        'contract argument and function argument must be the same type',
+    );
+  });
+
+  test('should throw error is nonce is not string', async () => {
+    // arrange
+    const mockedExecuteContract = {
+      setContractId: function() {},
+      setContractArgument: function() {},
+      setCertHolderId: function() {},
+      setCertVersion: function() {},
+      setFunctionArgument: function() {},
+      setSignature: function() {},
+      setUseFunctionIds: function() {},
+      setFunctionIdsList: function() {},
+      setNonce: function() {},
+    };
+    const mockedProtobuf = {
+      ContractExecutionRequest: function() {
+        return mockedExecuteContract;
+      },
+    };
+    const clientServiceBase = new ClientServiceBase(
+        {
+          ledgerClient: {},
+          signerFactory: {
+            create: () => ({
+              sign: () => {},
+            }),
+          },
+        },
+        mockedProtobuf,
+        clientProperties,
+    );
+
+    // action and assert
+    await expect(
+        clientServiceBase.execute(
+            'contract-id',
+            'contract-argument',
+            'function-id',
+            'function-argument',
+            {},
+        ),
+    ).rejects.toThrowError('nonce must be a string');
+  });
+
   // prepare
-  const mockedContractId = '12345';
-  const mockedArgument = {mocked: 'argument'};
-  const mockedFunctionArgument = 'mockedFunctionArgument';
+  const mockedContractId = 'contract-id';
+  const mockedFunctionId = 'function-id';
+  const mockedArgument = {mocked: 'contact-argument'};
+  const mockedFunctionArgument = {mocked: 'function-argument'};
   const mockedFunctionArgumentJson = JSON.stringify(mockedFunctionArgument);
   test('should work as expected', async () => {
     const mockedExecuteContract = {
@@ -638,21 +694,26 @@ describe('executeContract', () => {
     );
     const mockSpySign = jest.spyOn(mockedSigner, 'sign');
 
+    const spiedSetNonce = jest.spyOn(mockedExecuteContract, 'setNonce');
+    const spiedSetFunctionIdsList = jest.spyOn(
+        mockedExecuteContract,
+        'setFunctionIdsList',
+    );
+
     // act
-    const response = await clientServiceBase.executeContract(
+    const response = await clientServiceBase.execute(
         mockedContractId,
         mockedArgument,
+        mockedFunctionId,
         mockedFunctionArgument,
+        'nonce',
     );
 
     // assert
     expect(mockSpyContractExecutionRequest).toBeCalledTimes(1);
     expect(mockSpySetContractId).toBeCalledWith(mockedContractId);
     expect(mockSpySetContractArgument).toBeCalledWith(
-        expect.stringContaining('argument'),
-    );
-    expect(mockSpySetContractArgument).toBeCalledWith(
-        expect.stringContaining('nonce'),
+        'V2\u0001nonce\u0003function-id\u0003{"mocked":"contact-argument"}',
     );
     expect(mockSpySetCertHolderId).toBeCalledWith(
         clientProperties['scalar.dl.client.cert_holder_id'],
@@ -665,6 +726,8 @@ describe('executeContract', () => {
     expect(mockSpySetFunctionArgument).toBeCalledWith(
         mockedFunctionArgumentJson,
     );
+    expect(spiedSetNonce).toBeCalledWith('nonce');
+    expect(spiedSetFunctionIdsList).toBeCalledWith(['function-id']);
 
     expect(response).toBeInstanceOf(ContractExecutionResult);
 
