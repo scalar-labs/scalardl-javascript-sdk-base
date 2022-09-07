@@ -378,10 +378,7 @@ class ClientServiceBase {
     }
 
     const properties = new ClientProperties(this.properties, [], []);
-    if (
-      properties.getAuditorEnabled() &&
-      properties.getAuditorLinearizableValidationEnabled
-    ) {
+    if (properties.getAuditorEnabled()) {
       return this._validateLedgerWithContractExecution(
           assetId,
           startAge,

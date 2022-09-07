@@ -139,7 +139,6 @@ test('should overwrite default values of default properties', () => {
 
 test('should have default linearizable properties', () => {
   const properties = new ClientProperties({}, [], []);
-  expect(properties.getAuditorLinearizableValidationEnabled()).toEqual(false);
   expect(properties.getAuditorLinearizableValidationContractId()).toEqual(
       'validate-ledger',
   );
@@ -149,13 +148,11 @@ test('should be able to configure linearizable properties in auditor mode', () =
   const properties = new ClientProperties(
       {
         'scalar.dl.client.auditor.enabled': true,
-        'scalar.dl.client.auditor.linearizable_validation.enabled': true,
         'scalar.dl.client.auditor.linearizable_validation.contract_id': 'foo',
       },
       [],
       [],
   );
-  expect(properties.getAuditorLinearizableValidationEnabled()).toEqual(true);
   expect(properties.getAuditorLinearizableValidationContractId()).toEqual(
       'foo',
   );
@@ -168,13 +165,11 @@ test(
       const properties = new ClientProperties(
           {
             'scalar.dl.client.auditor.enabled': false,
-            'scalar.dl.client.auditor.linearizable_validation.enabled': true,
             'scalar.dl.client.auditor.linearizable_validation.contract_id': 'foo',
           },
           [],
           [],
       );
-      expect(properties.getAuditorLinearizableValidationEnabled()).toEqual(false);
       expect(properties.getAuditorLinearizableValidationContractId()).toEqual(
           'validate-ledger',
       );
