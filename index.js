@@ -391,7 +391,26 @@ class ClientServiceBase {
           startAge,
           endAge,
       );
-      return this._validateLedger(request);
+
+      const promise = new Promise((resolve, reject) => {
+        this.ledgerClient.validateLedger(
+            request,
+            this.metadata,
+            (err, response) => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(
+                    LedgerValidationResult.fromGrpcLedgerValidationResponse(
+                        response,
+                    ),
+                );
+              }
+            },
+        );
+      });
+
+      return this._executePromise(promise);
     }
   }
 
@@ -424,34 +443,6 @@ class ClientServiceBase {
       ledgerProofs.length > 0 ? ledgerProofs[0] : null,
       auditorProofs.length > 0 ? ledgerProofs[0] : null,
     );
-  }
-
-  /**
-   * @param {LedgerValidationRequest} request
-   * @return {Promise<LedgerValidationResult>}
-   * @throws {ClientError|Error}
-   */
-  async _validateLedger(request) {
-    let promises;
-    const ledgerPromise = this._executePromise(
-        this._validateLedgerAsync(this.ledgerClient, request),
-    );
-    if (this._isAuditorEnabled()) {
-      const auditorPromise = this._executePromise(
-          this._validateLedgerAsync(this.auditorClient, request),
-      );
-      promises = [ledgerPromise, auditorPromise];
-    } else {
-      promises = [ledgerPromise];
-    }
-
-    return Promise.all(promises)
-        .then((results) => {
-          return this._validateResult(results[0], results[1]);
-        })
-        .catch((e) => {
-          throw e;
-        });
   }
 
   /**
@@ -1043,33 +1034,6 @@ class ClientServiceBase {
     this.signer = this.signer || this.signerFactory.create(key);
 
     return this.signer;
-  }
-
-  /**
-   * @param {LedgerValidationResult} ledgerResult
-   * @param {LedgerValidationResult} auditorResult
-   * @return {LedgerValidationResult}
-   */
-  _validateResult(ledgerResult, auditorResult) {
-    if (this._isAuditorEnabled()) {
-      let code = StatusCode.INCONSISTENT_STATES;
-      if (
-        ledgerResult.getCode() === StatusCode.OK &&
-        auditorResult.getCode() === StatusCode.OK &&
-        ledgerResult.getProof() !== null &&
-        auditorResult.getProof() !== null &&
-        ledgerResult.getProof().hashEquals(auditorResult.getProof().getHash())
-      ) {
-        code = StatusCode.OK;
-      }
-      return new LedgerValidationResult(
-          code,
-          ledgerResult.getProof(),
-          auditorResult.getProof(),
-      );
-    } else {
-      return ledgerResult;
-    }
   }
 }
 
