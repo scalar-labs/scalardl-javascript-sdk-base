@@ -739,27 +739,6 @@ class ClientServiceBase {
   }
 
   /**
-   * @param {LedgerClient|AuditorClient} client
-   * @param {LedgerValidationRequest} request
-   * @return {Promise}
-   * @throws {ClientError}
-   */
-  async _validateLedgerAsync(client, request) {
-    const promise = new Promise((resolve, reject) => {
-      client.validateLedger(request, this.metadata, (err, response) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(
-              LedgerValidationResult.fromGrpcLedgerValidationResponse(response),
-          );
-        }
-      });
-    });
-    return promise;
-  }
-
-  /**
    * @param {Promise} promise
    * @return {Promise}
    * @throws {ClientError}
