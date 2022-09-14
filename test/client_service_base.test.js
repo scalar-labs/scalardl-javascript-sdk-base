@@ -911,7 +911,6 @@ describe('validateLedger linearizably', () => {
         {
           ...clientProperties,
           'scalar.dl.client.auditor.enabled': true,
-          'scalar.dl.client.auditor.linearizable_validation.enable': true,
         },
     );
 

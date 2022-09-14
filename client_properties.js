@@ -14,8 +14,6 @@ const ClientPropertiesField = {
   AUDITOR_HOST: 'scalar.dl.client.auditor.host',
   AUDITOR_PORT: 'scalar.dl.client.auditor.port',
   AUDITOR_PRIVILEGED_PORT: 'scalar.dl.client.auditor.privileged_port',
-  AUDITOR_LINEARIZABLE_VALIDATION_ENABLED:
-    'scalar.dl.client.auditor.linearizable_validation.enabled',
   AUDITOR_LINEARIZABLE_VALIDATION_CONTRACT_ID:
     'scalar.dl.client.auditor.linearizable_validation.contract_id',
   TLS_CA_ROOT_CERT_PEM: 'scalar.dl.client.tls.ca_root_cert_pem',
@@ -65,11 +63,6 @@ defaultSchema.properties[ClientPropertiesField.AUDITOR_PRIVILEGED_PORT] = {
   type: 'number',
 };
 defaultSchema.properties[
-    ClientPropertiesField.AUDITOR_LINEARIZABLE_VALIDATION_ENABLED
-] = {
-  type: 'boolean',
-};
-defaultSchema.properties[
     ClientPropertiesField.AUDITOR_LINEARIZABLE_VALIDATION_CONTRACT_ID
 ] = {
   type: 'string',
@@ -100,9 +93,6 @@ function defaultProperties() {
   properties[ClientPropertiesField.AUDITOR_HOST] = 'localhost';
   properties[ClientPropertiesField.AUDITOR_PORT] = 40051;
   properties[ClientPropertiesField.AUDITOR_PRIVILEGED_PORT] = 40052;
-  properties[
-      ClientPropertiesField.AUDITOR_LINEARIZABLE_VALIDATION_ENABLED
-  ] = false;
   properties[
       ClientPropertiesField.AUDITOR_LINEARIZABLE_VALIDATION_CONTRACT_ID
   ] = 'validate-ledger';
@@ -152,12 +142,6 @@ class ClientProperties {
     }
 
     if (properties[ClientPropertiesField.AUDITOR_ENABLED] !== true) {
-      properties[
-          ClientPropertiesField.AUDITOR_LINEARIZABLE_VALIDATION_ENABLED
-      ] =
-        theDefaultProperties[
-            ClientPropertiesField.AUDITOR_LINEARIZABLE_VALIDATION_ENABLED
-        ];
       properties[
           ClientPropertiesField.AUDITOR_LINEARIZABLE_VALIDATION_CONTRACT_ID
       ] =
@@ -251,15 +235,6 @@ class ClientProperties {
    */
   getAuditorPrivilegedPort() {
     return this.properties[ClientPropertiesField.AUDITOR_PRIVILEGED_PORT];
-  }
-
-  /**
-   * @return {Boolean}
-   */
-  getAuditorLinearizableValidationEnabled() {
-    return this.properties[
-        ClientPropertiesField.AUDITOR_LINEARIZABLE_VALIDATION_ENABLED
-    ];
   }
 
   /**
