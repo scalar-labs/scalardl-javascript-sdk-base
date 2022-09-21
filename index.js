@@ -600,9 +600,9 @@ class ClientServiceBase {
   ) {
     const request = await this._createContractExecutionRequest(
         contractId,
+        '',
         argument,
         functionArgument,
-        '',
         uuidv4(),
     );
     return request.serializeBinary();
