@@ -587,6 +587,7 @@ class ClientServiceBase {
 
   /**
    * Create the byte array of ContractExecutionRequest
+   * @deprecated Use {@link createSerializedExecutionRequest} instead
    * @param {string} contractId
    * @param {Object} argument
    * @param {Object} [functionArgument=undefined]
