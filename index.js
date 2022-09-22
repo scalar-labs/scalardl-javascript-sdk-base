@@ -621,7 +621,7 @@ class ClientServiceBase {
   async createSerializedExecutionRequest(
       contractId,
       contractArgument,
-      functionId,
+      functionId = null,
       functionArgument = null,
       nonce = null,
   ) {
