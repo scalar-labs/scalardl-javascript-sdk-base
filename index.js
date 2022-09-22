@@ -609,6 +609,48 @@ class ClientServiceBase {
   }
 
   /**
+   * Create the byte array of ContractExecutionRequest
+   * @param {string} contractId
+   * @param {Object|string} contractArgument
+   * @param {string} [functionId=null]
+   * @param {Object|string} [functionArgument=null]
+   * @param {string} [nonce=null]
+   * @return {Promise<Uint8Array>}
+   * @throws {ClientError|Error}
+   */
+  async createSerializedExecutionRequest(
+      contractId,
+      contractArgument,
+      functionId,
+      functionArgument = null,
+      nonce = null,
+  ) {
+    if (functionArgument === null) {
+      functionArgument = typeof contractArgument === 'object' ? {} : '';
+    }
+
+    if (typeof contractArgument !== typeof functionArgument) {
+      throw Error(
+          'contract argument and function argument must be the same type',
+      );
+    }
+
+    if (nonce === null) {
+      nonce = uuidv4();
+    }
+
+    const request = await this._createContractExecutionRequest(
+        contractId,
+        functionId,
+        contractArgument,
+        functionArgument,
+        nonce,
+    );
+
+    return request.serializeBinary();
+  }
+
+  /**
    * @return {Boolean}
    */
   _isAuditorEnabled() {
