@@ -80,3 +80,51 @@ test('createSerializedContractExecutionRequest passes parameters properly', asyn
   );
   expect(spied3).toBeCalledWith('{"function-argument-1":"b"}');
 });
+
+test('createSerializedExecutionRequest passes parameters properly', async () => {
+  // Arrange;
+  const base = new ClientServiceBase(services, protobuf, properties);
+  const spied1 = jest.spyOn(mockedContractExecutionRequest, 'setContractId');
+  const spied2 = jest.spyOn(mockedContractExecutionRequest, 'setFunctionIdsList');
+  const spied3 = jest.spyOn(
+      mockedContractExecutionRequest,
+      'setContractArgument',
+  );
+  const spied4 = jest.spyOn(
+      mockedContractExecutionRequest,
+      'setFunctionArgument',
+  );
+
+  // Action;
+  await base.createSerializedExecutionRequest(
+      'contract-id',
+      {'contract-argument-1': 'a'},
+      'function-id',
+      {'function-argument-1': 'b'},
+      'nonce',
+  );
+
+  // Assert
+  expect(spied1).toBeCalledWith('contract-id');
+  expect(spied2).toBeCalledWith(['function-id']);
+  expect(spied3).toBeCalledWith(
+      expect.stringContaining('{"contract-argument-1":"a"}'),
+  );
+  expect(spied4).toBeCalledWith('{"function-argument-1":"b"}');
+});
+
+test('createSerializedExecutionRequest throws error when argument types are not the same', async () => {
+  // Arrange;
+  const base = new ClientServiceBase(services, protobuf, properties);
+
+  // Action;
+
+  // Assert
+  await expect(base.createSerializedExecutionRequest(
+      'contract-id',
+      {'contract-argument-1': 'a'},
+      'function-id',
+      '{"function-argument-1":"b"}',
+      'nonce',
+  )).rejects.toThrowError('contract argument and function argument must be the same type');
+});
